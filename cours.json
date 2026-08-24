@@ -1,0 +1,76 @@
+{
+  "cours": [
+    {
+      "titre": "Hypno Yoga",
+      "formateur": "",
+      "jour": "Lundi",
+      "heure": "18 h 30",
+      "ordre": 1,
+      "photo": "",
+      "description": "Un yoga doux qui invite le corps à se déposer et le mental à relâcher, entre mouvement lent et suggestion apaisante."
+    },
+    {
+      "titre": "Gymnastique sensorielle",
+      "formateur": "",
+      "jour": "Mardi",
+      "heure": "10 h",
+      "ordre": 2,
+      "photo": "",
+      "description": "On réapprend à sentir le mouvement de l'intérieur. Lent, précis, réparateur."
+    },
+    {
+      "titre": "Méditation ressourcement",
+      "formateur": "",
+      "jour": "Mardi",
+      "heure": "12 h 15",
+      "ordre": 3,
+      "photo": "",
+      "description": "Une pause guidée en plein cœur de la journée pour revenir à soi et repartir plus clair."
+    },
+    {
+      "titre": "Yoga Kundalini",
+      "formateur": "Farah Quiroga",
+      "jour": "Mercredi",
+      "heure": "19 h 15",
+      "ordre": 4,
+      "photo": "",
+      "description": "Souffle, mantra et mouvement pour réveiller l'énergie et calmer le système nerveux."
+    },
+    {
+      "titre": "Cercle de voix",
+      "formateur": "",
+      "jour": "Jeudi",
+      "heure": "19 h",
+      "ordre": 5,
+      "photo": "",
+      "description": "On pose la voix, on ose le son, ensemble. Aucun prérequis, juste l'envie de vibrer."
+    },
+    {
+      "titre": "Qi Gong",
+      "formateur": "",
+      "jour": "Samedi",
+      "heure": "9 h 30",
+      "ordre": 6,
+      "photo": "",
+      "description": "Des gestes lents qui font circuler le souffle et ancrent le corps pour toute la semaine."
+    },
+    {
+      "titre": "Yoga du rire",
+      "formateur": "",
+      "jour": "Samedi",
+      "heure": "11 h",
+      "ordre": 7,
+      "photo": "",
+      "description": "Le rire d'abord provoqué, puis franc et libre. On repart léger."
+    },
+    {
+      "titre": "Méditation pleine conscience",
+      "formateur": "",
+      "jour": "Dimanche",
+      "heure": "10 h",
+      "ordre": 8,
+      "photo": "",
+      "description": "S'asseoir, observer, revenir. Une pratique simple pour retrouver de l'espace en soi."
+    }
+  ]
+}

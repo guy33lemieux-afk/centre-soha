@@ -1,68 +1,55 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Générateur du Centre Soha — lit les fichiers de contenu (que l'éditeur
-modifie) et fabrique les pages du site dans la charte « Le calme habité ».
+Générateur du Centre Soha — version « à plat » (aucun dossier à monter à la main).
 
-C'est la pièce qui relie l'éditeur au site : tu changes un cours dans
-l'éditeur -> il enregistre un fichier -> ce script refabrique la page.
+Lit deux fichiers simples que l'éditeur modifie :
+  - cours.json    : la liste des cours de la semaine
+  - accueil.json  : les textes/photo d'en-tête de l'accueil
+et fabrique le dossier `site/` (la page + l'éditeur /admin) dans la charte Soha.
+
+L'éditeur (Sveltia CMS) et sa configuration sont écrits automatiquement dans
+site/admin/ — il n'y a donc AUCUN dossier à créer soi-même dans GitHub.
 
 Usage : python3 build.py
 Aucune dépendance externe.
 """
 
-import os, re, glob, html, shutil
+import os, json, glob, html, shutil
 
 RACINE = os.path.dirname(os.path.abspath(__file__))
 JOURS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
+REPO = "guy33lemieux-afk/centre-soha"   # ton dépôt GitHub
 
-# ---------- petit lecteur de "frontmatter" (les champs en haut des .md) ----------
-def lire_md(chemin):
-    txt = open(chemin, encoding="utf-8").read()
-    meta, corps = {}, ""
-    m = re.match(r"^---\s*\n(.*?)\n---\s*\n?(.*)$", txt, re.S)
-    if m:
-        bloc, corps = m.group(1), m.group(2).strip()
-        for ligne in bloc.splitlines():
-            if ":" in ligne:
-                cle, val = ligne.split(":", 1)
-                val = val.strip().strip('"').strip("'")
-                meta[cle.strip()] = val
-    else:
-        corps = txt.strip()
-    meta["_corps"] = corps
-    return meta
+# ---------- lecture du contenu ----------
+def charger_json(nom, defaut):
+    chemin = os.path.join(RACINE, nom)
+    if os.path.exists(chemin):
+        try:
+            return json.load(open(chemin, encoding="utf-8"))
+        except Exception as e:
+            print("  ! lecture de", nom, ":", e)
+    return defaut
+
+def cle_tri(c):
+    try: j = JOURS.index(c.get("jour", ""))
+    except ValueError: j = 99
+    try: o = int(c.get("ordre", 99))
+    except (TypeError, ValueError): o = 99
+    return (j, o, c.get("titre", ""))
 
 def paragraphes(texte):
-    blocs = [b.strip() for b in re.split(r"\n\s*\n", texte) if b.strip()]
+    blocs = [b.strip() for b in (texte or "").split("\n") if b.strip()]
     return "".join("<p>{}</p>".format(html.escape(b)) for b in blocs)
 
-# ---------- chargement du contenu ----------
-def charger_cours():
-    items = []
-    for f in glob.glob(os.path.join(RACINE, "content", "cours", "*.md")):
-        c = lire_md(f)
-        items.append(c)
-    def cle(c):
-        try: j = JOURS.index(c.get("jour", ""))
-        except ValueError: j = 99
-        try: o = int(c.get("ordre", 99))
-        except (TypeError, ValueError): o = 99
-        return (j, o, c.get("titre", ""))
-    return sorted(items, key=cle)
-
-def charger_page(nom):
-    chemin = os.path.join(RACINE, "content", "pages", nom + ".md")
-    return lire_md(chemin) if os.path.exists(chemin) else {}
-
-# ---------- rendu d'une carte de cours (charte du site) ----------
+# ---------- rendu d'une carte de cours ----------
 def carte(c):
     titre = html.escape(c.get("titre", ""))
     jour = html.escape(c.get("jour", ""))
     heure = html.escape(c.get("heure", ""))
-    form = c.get("formateur", "").strip()
+    form = (c.get("formateur") or "").strip()
     meta = (("Avec " + html.escape(form) + "  ·  ") if form else "") + jour + " · " + heure
-    photo = c.get("photo", "").strip()
+    photo = (c.get("photo") or "").strip()
     if photo:
         ph = '<div class="ph" style="background-image:url({})"></div>'.format(html.escape(photo))
     else:
@@ -75,10 +62,10 @@ def carte(c):
         <p class="meta">{meta}</p>
         {desc}
       </div>
-    </article>""".format(ph=ph, titre=titre, meta=meta, desc=paragraphes(c.get("_corps", "")))
+    </article>""".format(ph=ph, titre=titre, meta=meta, desc=paragraphes(c.get("description", "")))
 
-# ---------- gabarit de page ----------
-GABARIT = """<!DOCTYPE html>
+# ---------- gabarit de la page publique ----------
+PAGE = """<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -122,38 +109,106 @@ GABARIT = """<!DOCTYPE html>
 {cartes}
     </div>
   </div></main>
-  <p class="note">Page fabriquée automatiquement à partir des fichiers de contenu ({n} cours). Modifie un cours dans l'éditeur, relance, et cette page se met à jour.</p>
+  <p class="note">Page fabriquée automatiquement à partir de tes fichiers ({n} cours). Modifie un cours dans l'éditeur, et cette page se met à jour.</p>
 </body>
 </html>
 """
 
+# ---------- l'éditeur (Sveltia CMS) — écrit dans site/admin/ ----------
+ADMIN_INDEX = """<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Éditeur — Centre Soha</title>
+  <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url">
+</head>
+<body>
+  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
+</body>
+</html>
+"""
+
+ADMIN_CONFIG = """# Configuration de l'éditeur du Centre Soha (Sveltia CMS)
+# Générée automatiquement par build.py — ne pas modifier à la main.
+backend:
+  name: github
+  repo: {repo}
+  branch: main
+media_folder: "images"     # les photos téléversées sont créées dans /images (le dossier se crée tout seul)
+public_folder: "/images"
+locale: "fr"
+collections:
+  - name: "cours"
+    label: "Cours de la semaine"
+    description: "Ajoute, modifie ou retire un cours. Change la date, l'heure, la photo."
+    files:
+      - name: "liste"
+        label: "La semaine"
+        file: "cours.json"
+        fields:
+          - label: "Cours"
+            name: "cours"
+            widget: "list"
+            label_singular: "Cours"
+            summary: "{{{{fields.jour}}}} {{{{fields.heure}}}} — {{{{fields.titre}}}}"
+            fields:
+              - {{ label: "Titre", name: "titre", widget: "string" }}
+              - {{ label: "Formateur·rice", name: "formateur", widget: "string", required: false }}
+              - {{ label: "Jour", name: "jour", widget: "select",
+                   options: ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"] }}
+              - {{ label: "Heure", name: "heure", widget: "string", hint: "ex. 18 h 30" }}
+              - {{ label: "Ordre d'affichage", name: "ordre", widget: "number", required: false, default: 99 }}
+              - {{ label: "Photo", name: "photo", widget: "image", required: false, hint: "Glisse une image depuis ton ordi" }}
+              - {{ label: "Description", name: "description", widget: "text" }}
+  - name: "accueil"
+    label: "Page d'accueil"
+    description: "Le titre, le sous-titre et la photo d'en-tête."
+    files:
+      - name: "textes"
+        label: "En-tête de l'accueil"
+        file: "accueil.json"
+        fields:
+          - {{ label: "Titre d'en-tête", name: "hero_titre", widget: "string" }}
+          - {{ label: "Sous-titre", name: "hero_soustitre", widget: "string" }}
+          - {{ label: "Photo d'en-tête", name: "hero_photo", widget: "image", required: false }}
+          - {{ label: "Bande de faits", name: "bande_faits", widget: "string" }}
+"""
+
 def main():
-    cours = charger_cours()
-    accueil = charger_page("accueil")
-    cartes = "\n".join(carte(c) for c in cours)
-    page = GABARIT.format(
+    cours_data = charger_json("cours.json", {"cours": []})
+    cours = sorted(cours_data.get("cours", []), key=cle_tri)
+    accueil = charger_json("accueil.json", {})
+
+    page = PAGE.format(
         titre_page="Se ressourcer",
         hero_titre=html.escape(accueil.get("hero_titre", "Les cours de la semaine")),
         hero_soustitre=html.escape(accueil.get("hero_soustitre", "")),
         faits=html.escape(accueil.get("bande_faits", "")),
-        cartes=cartes,
+        cartes="\n".join(carte(c) for c in cours),
         n=len(cours),
     )
+
     sortie = os.path.join(RACINE, "site")
-    os.makedirs(sortie, exist_ok=True)
+    os.makedirs(os.path.join(sortie, "admin"), exist_ok=True)
     with open(os.path.join(sortie, "index.html"), "w", encoding="utf-8") as f:
         f.write(page)
+    with open(os.path.join(sortie, "admin", "index.html"), "w", encoding="utf-8") as f:
+        f.write(ADMIN_INDEX)
+    with open(os.path.join(sortie, "admin", "config.yml"), "w", encoding="utf-8") as f:
+        f.write(ADMIN_CONFIG.format(repo=REPO))
 
-    # Recopie l'éditeur (/admin) et les photos (/media) dans le dossier publié
-    for dossier in ("admin", "media"):
-        src = os.path.join(RACINE, dossier)
-        dst = os.path.join(sortie, dossier)
-        if os.path.isdir(src):
-            if os.path.isdir(dst):
-                shutil.rmtree(dst)
-            shutil.copytree(src, dst)
+    # recopie les photos (dossier images/, créé par l'éditeur au 1er téléversement)
+    src_img = os.path.join(RACINE, "images")
+    if os.path.isdir(src_img):
+        dst_img = os.path.join(sortie, "images")
+        if os.path.isdir(dst_img):
+            shutil.rmtree(dst_img)
+        shutil.copytree(src_img, dst_img)
 
-    print("OK — {} cours rendus dans site/index.html (+ /admin, /media copiés)".format(len(cours)))
+    print("OK — {} cours rendus".format(len(cours)))
+    print("     site/index.html   (la page)")
+    print("     site/admin/       (l'éditeur)")
     for c in cours:
         print("   ·", c.get("jour"), c.get("heure"), "—", c.get("titre"))
 
