@@ -1,0 +1,56 @@
+# ------------------------------------------------------------------
+#  Configuration de l'éditeur du Centre Soha
+#  (Sveltia CMS — compatible Decap, gratuit, connexion GitHub simple)
+#
+#  UNE SEULE chose à remplir avant la mise en ligne : "repo" ci-dessous,
+#  avec le nom de ton dépôt GitHub (je le ferai avec toi).
+# ------------------------------------------------------------------
+
+backend:
+  name: github
+  repo: guy33lemieux-afk/centre-soha   # ton compte GitHub + le dépôt qu'on va créer
+  branch: main
+
+# Où les photos que tu téléverses sont rangées
+media_folder: "media"
+public_folder: "/media"
+
+# Langue de l'interface
+locale: "fr"
+
+collections:
+  # ---------------- LES COURS DE LA SEMAINE ----------------
+  - name: "cours"
+    label: "Cours de la semaine"
+    label_singular: "Cours"
+    description: "Ajoute, modifie ou retire un cours. Change la date, l'heure, la photo."
+    folder: "content/cours"
+    create: true            # tu peux AJOUTER un cours
+    delete: true            # et en retirer un
+    slug: "{{jour}}-{{slug}}"
+    sortable_fields: ["ordre", "jour", "titre"]
+    fields:
+      - { label: "Titre du cours", name: "titre", widget: "string" }
+      - { label: "Formateur·rice", name: "formateur", widget: "string", required: false }
+      - { label: "Jour", name: "jour", widget: "select",
+          options: ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"] }
+      - { label: "Heure", name: "heure", widget: "string", hint: "ex. 18 h 30" }
+      - { label: "Ordre d'affichage", name: "ordre", widget: "number", required: false, default: 99 }
+      - { label: "Photo", name: "photo", widget: "image", required: false,
+          hint: "Glisse une image depuis ton ordi" }
+      - { label: "Description", name: "body", widget: "markdown" }
+
+  # ---------------- TEXTES DES PAGES (exemple : l'accueil) ----------------
+  - name: "pages"
+    label: "Textes des pages"
+    description: "Les grands textes et la photo d'en-tête, page par page."
+    files:
+      - name: "accueil"
+        label: "Accueil"
+        file: "content/pages/accueil.md"
+        fields:
+          - { label: "Titre d'en-tête", name: "hero_titre", widget: "string" }
+          - { label: "Sous-titre", name: "hero_soustitre", widget: "string" }
+          - { label: "Photo d'en-tête", name: "hero_photo", widget: "image", required: false }
+          - { label: "Bande de faits", name: "bande_faits", widget: "string",
+              hint: "ex. 12 cours · 9 thérapeutes · 5 salles · 7 j/7" }
