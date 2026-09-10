@@ -1149,3 +1149,54 @@ mesure de l'époque et écrit la leçon, mais nulle part le code ne disait « ic
 le JSON est échappé ». Une leçon qui vit dans des notes protège la prochaine
 lecture des notes. Une leçon qui vit dans un commentaire à l'endroit du piège
 protège la prochaine personne qui passe.
+
+---
+
+# Cycle 18 · Ce que l'onglet Réseau a montré
+
+Mala a envoyé deux captures de l'onglet Réseau, côté visiteur et côté
+administration. Trois choses en sortent.
+
+## 1. Le nettoyage a marché — mesuré, pas supposé
+Aucun appel vers un domaine tiers. Ni `cookieyes`, ni `googleapis`, ni
+`gravatar`. Les trois familles du canon sont servies depuis le site :
+`schibsted-grotesk-v7-latin-regular.woff2`, `fraunces-v38-latin-600.woff2`,
+`schibsted-grotesk-v7-latin-700.woff2`, toutes en 200. La promesse « zéro appel
+externe » est vraie sur le site réel, pas seulement sur la version statique.
+
+## 2. Le héros de l'accueil est cassé, et c'est le doublon
+`soha-accueil-001-1.webp` → **404**, sur les deux captures. Le `-1` est la
+signature du doublon d'import : la page pointe vers la copie, et la copie
+n'existe plus. L'image d'accueil ne s'affiche pas, aujourd'hui, en production.
+
+C'est exactement le deuxième contrôle de l'écran livré au cycle 17 — « images
+référencées mais absentes ». Il aurait nommé celle-là.
+
+## 3. Le site est derrière Cloudflare, Rocket Loader actif
+`rocket-loader.min.js` apparaît dans les deux captures, et deux scripts de la
+page (`hello-frontend.js`, `user-agent.js`) sont initiés **par lui**. Rocket
+Loader diffère et réordonne les scripts de la page. Nos quatre scripts — menu
+mobile, accessibilité, pont de l'estimateur, avis de témoins — touchent au DOM
+tout de suite et n'aiment pas être déplacés.
+
+**Finition v1.3.1** pose donc `data-cfasync="false"` sur chacun des quatre.
+C'est la façon documentée de dire à Rocket Loader de ne pas y toucher. Ça ne
+coûte rien s'il est désactivé, et ça sauve la mise s'il ne l'est pas — ou s'il
+est réactivé un jour sans qu'on le sache. Le banc vérifie que les quatre le
+portent : un attribut posé à trois endroits sur quatre serait pire qu'aucun,
+parce qu'on le croirait posé.
+
+**Et une question de fond** : si Cloudflare sert le site, tout le trafic des
+visiteurs transite par son réseau, y compris leurs adresses IP. La politique dit
+aujourd'hui que les renseignements sont à Toronto. À vérifier auprès de Mala —
+Cloudflare peut n'être qu'en DNS, sans proxy, auquel cas rien ne transite.
+
+## Livré
+`soha_extensionfinition_20260910_v131.zip`. Banc : 31 vérifications, 0 échec.
+
+## Leçon
+**Une capture d'écran vaut un audit, quand on la lit ligne à ligne.** Deux
+images envoyées en passant contenaient : la preuve que le nettoyage avait
+réussi, un 404 en production que personne n'avait vu, et un intermédiaire dont
+je ne soupçonnais pas l'existence. Rien de tout ça n'était dans la question
+posée.

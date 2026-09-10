@@ -160,6 +160,36 @@ dit("il nomme le formulaire muet", false !== strpos($html, 'Demande de location'
 dit("il montre le lien fautif", false !== strpos($html, '/dev2/contact/'));
 dit("il rappelle le chemin du site", false !== strpos($html, 'Ce site est installé dans'));
 
+/* --- les scripts sont à l'abri de Rocket Loader --------------------------- */
+/*
+ * Le site est servi derrière Cloudflare, Rocket Loader actif : il diffère et
+ * réordonne les scripts de la page. Nos quatre scripts touchent au DOM tout de
+ * suite. `data-cfasync="false"` est la façon documentée de lui dire de ne pas y
+ * toucher — encore faut-il qu'il soit vraiment sur chacun.
+ */
+wp_set_current_user(0);
+wp_set_current_user(get_user_by('login', 'mala')->ID);
+
+/* Déclencher `wp_footer` hors d'un vrai rendu de page fait râler WordPress
+   lui-même (`the_block_template_skip_link`, obsolète depuis 6.4). C'est son
+   avertissement, pas le nôtre : on ne le confond pas avec un défaut de
+   l'extension. */
+ob_start(); do_action('wp_footer'); $pied = ob_get_clean();
+ob_start(); do_action('wp_head'); $tete = ob_get_clean();
+$sortie = $tete . $pied;
+
+$scripts = preg_match_all('/<script\b([^>]*)>/i', $sortie, $m) ? $m[1] : array();
+$nos = array();
+foreach ($scripts as $attributs) {
+    if (false !== strpos($attributs, 'soha-')) {
+        $nos[] = $attributs;
+    }
+}
+dit("nos scripts sont bien posés dans la page", count($nos) >= 3, count($nos) . ' script(s)');
+$sans = array_filter($nos, function ($a) { return false === strpos($a, 'data-cfasync="false"'); });
+dit("chacun porte data-cfasync=\"false\"", 0 === count($sans),
+    $sans ? implode(' | ', $sans) : 'tous protégés');
+
 /* --- l'écran est au menu, et réservé ------------------------------------- */
 $GLOBALS['menu'] = array(); $GLOBALS['submenu'] = array();
 do_action('admin_menu');

@@ -3,13 +3,23 @@
  * Plugin Name:       Centre Soha — Finition (/dev)
  * Plugin URI:        https://centresoha.com/dev
  * Description:        Réunit en UNE extension tout ce qui tournait dans les boîtes Code Snippets : accessibilité, finition mobile, vitesse, estimateur, menu mobile — PLUS (v1.2.0) : textes alternatifs des 61 images (posés une fois), préchargement du héros (LCP) et avis de témoins en français (remplace CookieYes) — et (v1.3.0) un écran « Contrôle Soha » dans Outils, qui cherche après un import les quatre défauts que ce site a réellement subis. 100% réversible : désactiver l'extension retire absolument tout, rien n'est écrit dans les pages.
- * Version:           1.3.0
+ * Version:           1.3.1
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Centre Soha
  * License:           GPL-2.0-or-later
  * Text Domain:       centre-soha
  *
+ * ============================================================================
+ *  `data-cfasync="false"` sur chacun de nos scripts : mesuré le 10 septembre
+ *  2026, le site est servi derrière Cloudflare avec Rocket Loader actif —
+ *  `rocket-loader.min.js` apparaît dans l'onglet Réseau et prend la main sur
+ *  les scripts de la page. Rocket Loader les diffère et les réordonne ; nos
+ *  quatre scripts (menu mobile, accessibilité, pont de l'estimateur, avis de
+ *  témoins) touchent au DOM tout de suite et n'aiment pas être déplacés.
+ *  Cet attribut est la façon documentée de lui dire de ne pas y toucher. Il ne
+ *  coûte rien si Rocket Loader est désactivé, et il sauve la mise s'il ne l'est
+ *  pas — ou s'il est réactivé un jour sans qu'on le sache.
  * ============================================================================
  *  REMPLACE les 3 boîtes Code Snippets : soha_a11y, soha_finition, soha_vitesse.
  *  APRÈS avoir activé cette extension, DÉSACTIVER ces 3 boîtes (sinon double
@@ -273,7 +283,7 @@ CSS;
 add_action('wp_footer', function () {
     echo <<<'SOHA_MENU_JS'
 
-<script id="soha-menu-js">
+<script id="soha-menu-js" data-cfasync="false">
 (function(){
   function ready(fn){ if(document.readyState!=='loading'){fn();}else{document.addEventListener('DOMContentLoaded',fn);} }
   ready(function(){
@@ -376,7 +386,7 @@ add_action('wp_head', function () {
 add_action('wp_footer', function () {
     echo <<<'SOHA_A11Y_JS'
 
-<script id="soha-a11y-js">
+<script id="soha-a11y-js" data-cfasync="false">
 (function(){
   function parse(c){var m=c&&c.match(/[\d.]+/g);if(!m)return null;return [+m[0],+m[1],+m[2],m[3]===undefined?1:+m[3]];}
   function rl(c){var a=[c[0],c[1],c[2]].map(function(v){v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);});return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2];}
@@ -616,7 +626,7 @@ add_action('wp_head', function () {
  * ========================================================================== */
 add_action('wp_footer', function () {
     ?>
-    <script>
+    <script id="soha-estimateur-pont-js" data-cfasync="false">
     (function () {
       try {
         var p = new URLSearchParams(window.location.search);
@@ -665,7 +675,7 @@ add_action('wp_footer', function () {
       #soha-avis-ok:focus-visible{outline:2px solid #F4F0E7;outline-offset:2px}
       @media(max-width:600px){#soha-avis-temoins{text-align:center}}
     </style>
-    <script>(function(){try{var K='soha_avis_temoins_vu',el=document.getElementById('soha-avis-temoins');if(!el)return;var vu=false;try{vu=localStorage.getItem(K)==='1'}catch(e){}if(!vu)el.hidden=false;var b=document.getElementById('soha-avis-ok');if(b)b.addEventListener('click',function(){el.hidden=true;try{localStorage.setItem(K,'1')}catch(e){}})}catch(e){}})();</script>
+    <script id="soha-avis-temoins-js" data-cfasync="false">(function(){try{var K='soha_avis_temoins_vu',el=document.getElementById('soha-avis-temoins');if(!el)return;var vu=false;try{vu=localStorage.getItem(K)==='1'}catch(e){}if(!vu)el.hidden=false;var b=document.getElementById('soha-avis-ok');if(b)b.addEventListener('click',function(){el.hidden=true;try{localStorage.setItem(K,'1')}catch(e){}})}catch(e){}})();</script>
     <?php
 }, 100);
 
