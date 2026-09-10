@@ -158,7 +158,7 @@ section>h2+p{margin-top:15px}
     <div><dt>Documents lus</dt><dd>20</dd></div>
     <div><dt>Font autorité</dt><dd>14</dd></div>
     <div><dt>Périmés</dt><dd>9</dd></div>
-    <div><dt>À corriger</dt><dd>2</dd></div>
+    <div><dt>Corrigés</dt><dd>2</dd></div>
   </dl>
 
   <div class="legende">
@@ -332,15 +332,17 @@ section>h2+p{margin-top:15px}
 
 <section id="chantier">
   <h2>Ce qui suit</h2>
-  <p>Dans cet ordre. <strong>Les deux premiers sont faits</strong> — les fichiers sont livrés avec ce document. Le troisième est à moi ; les trois derniers demandent une décision de toi.</p>
+  <p><strong>Quatre des six sont faits</strong>, et le cinquième est tranché. Les fichiers sont livrés avec ce document. Il reste deux choses, et elles ne dépendent que de toi.</p>
 
   <ul class="chantier">
     <li><span class="n">01</span><div><b>Le cyan, partout — fait</b><span><code>#046C86</code> → <code>#19A7DB</code> : <strong>65 remplacements</strong> dans 13 fichiers du kit, plus 3 dans le socle du site. Il n'en reste aucun, ni dans le kit v08, ni dans les 26 pages HTML. Reste à supprimer les deux couleurs globales d'Elementor après l'import, sinon elles le réintroduiront.</span></div></li>
     <li><span class="n">02</span><div><b>L'estimateur rendu à sa destination — fait</b><span>Extension <strong>v2.0.2</strong> : retour vers <code>/reservation/</code>, résolue par <code>home_url()</code> — donc juste sur le clone comme à la racine. Et la <strong>page montée</strong> d'après ta recette : treize champs dans l'ordre, deux consentements distincts, aucun pré-coché. Le kit passe à 13 pages, le site à 26.</span></div></li>
-    <li><span class="n">03</span><div><b>Les trois ateliers deviennent des pages — à faire</b><span>Tes métas décrivent 15 pages, le kit en a 12. Le texte des trois manquantes existe dans <code>pagesjson</code>. Le site passe à 15, et les cinq boutons cessent de sortir vers la production.</span></div></li>
-    <li><span class="n">04</span><div><b>La feuille de maison</b><span>Un seul style pour tous les documents. Les quatre composés en Inter la reprennent. C'est ce qui fait qu'une trousse devient un cabinet.</span></div></li>
-    <li><span class="n">05</span><div><b>La page Ateliers — décision attendue</b><span>Elle double « Se transformer ». Une seule doit vivre. Dis-moi laquelle et je fusionne.</span></div></li>
-    <li><span class="n">06</span><div><b>Deux champs et deux polices — décision attendue</b><span>Le service d'acheminement des formulaires et celui de l'infolettre, pour la politique. Et <b>Fraunces</b> + <b>DM Mono</b> en <code>.woff2</code>, pour cesser d'appeler Google.</span></div></li>
+    <li><span class="n">03</span><div><b>Les trois ateliers sont des pages — fait</b><span>Écriture spontanée, Core Energetics et Énergie sacrée, montées depuis <code>pagesjson</code> : palette remise au canon (46 corrections), 11 liens recâblés, un H1 juste sur chacune. Les cinq boutons rentrent dans le site — <strong>plus aucune sortie vers la production</strong>. Le kit passe à 16 pages, le site à 29.</span></div></li>
+    <li><span class="n">04</span><div><b>La feuille de maison — fait</b><span>Un outil, <code>build_documents.py</code>, et une seule feuille de style. <strong>Sept documents</strong> recomposés : index, métas, réseaux, livre de bord, miroir, formulaire, infolettre. Fraunces, Schibsted Grotesk, DM Mono, palette v06, clair et sombre. Plus une seule ligne d'Inter. Le prochain document naît déjà à la marque.</span></div></li>
+    <li><span class="n">05</span><div><b>La page Ateliers — tranchée</b><span>Elle est retirée, et « <strong>Se transformer</strong> » vit. La raison a changé de camp en cours de route : Se transformer est dans le menu, dans le kit, et elle a désormais <em>trois vraies fiches d'atelier</em> derrière elle. La maquette Ateliers promettait ce que Se transformer livre maintenant — avec de vrais liens et de vraies photos. Son bon apport, les filtres par type, est noté pour un cycle ultérieur.</span></div></li>
+    <li><span class="n">06</span><div><b>Les métas SEO posées — fait</b><span>Les 15 titres et descriptions rédigés sont câblés dans le site, page par page. Confidentialité et Page introuvable restent volontairement sans méta marketing : elles ne doivent pas être proposées dans les résultats.</span></div></li>
+    <li><span class="n">07</span><div><b>Deux polices — bloqué, il me faut les fichiers</b><span><b>Fraunces</b> (300 à 700 + italique) et <b>DM Mono</b> (400, 500) en <code>.woff2</code>, même source que Schibsted. Je ne peux pas les fabriquer : sans elles, le site continue d'appeler Google, et la Loi 25 reste en suspens sur ce point.</span></div></li>
+    <li><span class="n">08</span><div><b>Deux champs de la politique — bloqué, il me faut les faits</b><span>Le service qui achemine les formulaires est vraisemblablement <b>WP Mail SMTP</b> et l'infolettre passe par l'extension <b>Newsletter</b> — tous deux sont dans ta liste d'extensions. Mais je ne <em>publie pas</em> une politique de confidentialité sur une vraisemblance, et je n'invente pas une durée de conservation. Confirme les deux et je pose le texte.</span></div></li>
   </ul>
 </section>
 

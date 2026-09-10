@@ -27,6 +27,57 @@ import sys
 from collections import Counter, OrderedDict
 
 # --------------------------------------------------------------------------
+#  Les métas SEO rédigées (soha_metas-seo_20260907_v01), page par page.
+#  Elles priment sur le titre et l'extrait du kit : c'est le texte travaillé.
+#  Confidentialité (7386) et Page introuvable (7388) restent sans méta
+#  marketing — elles ne doivent pas être proposées dans les résultats.
+# --------------------------------------------------------------------------
+METAS = {
+    7319: ("Centre Soha — cours, soins et ateliers · Plateau, Montréal",
+           "Un lieu vivant au 961 Rachel Est : cours, soins et ateliers, plus des salles "
+           "et un studio à louer. Viens voir. Réserve en ligne."),
+    7326: ("Se ressourcer au Centre Soha — Plateau Mont-Royal, Montréal",
+           "Des pratiques pour souffler et revenir à toi, au 961 Rachel Est. Cours et "
+           "ateliers ouverts à tous les niveaux. Réserve ta place."),
+    7339: ("Prendre soin — pratiques et présence · Centre Soha, Montréal",
+           "Prendre le temps du corps et du souffle, au 961 sur le Plateau. Une pratique, "
+           "pas un soin médical. Découvre l'horaire et réserve."),
+    7350: ("Se transformer — ateliers et parcours · Centre Soha, Montréal",
+           "Des ateliers pour bouger quelque chose en toi, au 961 Rachel Est. Petits "
+           "groupes, artisan·es présent·es. Vois les prochaines dates."),
+    7355: ("Studio podcast à louer à Montréal — Centre Soha, dès 200 $",
+           "Un studio insonorisé sur le Plateau pour enregistrer ton balado. Équipé, "
+           "calme, dès 200 $. Estime ton prix et réserve en ligne."),
+    7373: ("Salle à louer sur le Plateau, Montréal — Centre Soha",
+           "Cabinet, grand plateau de 2200 pi² ou studio : loue ton espace au 961, à deux "
+           "pas du métro Mont-Royal. Dès 30 $. Estime ton prix."),
+    7380: ("Journal du Centre Soha — bien-être, écologie, herboristerie",
+           "Nos textes sur le vivant : bien-être, écologie, herboristerie, recettes. "
+           "À lire depuis le 961 Rachel Est, sur le Plateau."),
+    7382: ("Contact — Centre Soha, 961 Rachel Est, Montréal",
+           "Une question, une visite, une location ? Écris-nous ou passe au 961 Rachel "
+           "Est, sur le Plateau. On te répond vite."),
+    7385: ("Première visite au Centre Soha — tout savoir avant de venir",
+           "Comment se passe une première visite au 961 : accès, stationnement, à quoi "
+           "t'attendre. Le Plateau t'attend. Réserve ta place."),
+    7387: ("Dialogue Authentique — atelier d'introduction · Centre Soha",
+           "Un atelier pour parler et écouter autrement, au 961 sur le Plateau. Une "
+           "pratique de présence, ouverte à tous. Vois les dates."),
+    7389: ("Atelier d'écriture spontanée à Montréal — Centre Soha",
+           "Laisser venir les mots sans les juger, en petit groupe au 961 Rachel Est. "
+           "Aucune expérience requise. Réserve ta place."),
+    7390: ("Core Energetics : cœur et bassin — atelier · Centre Soha",
+           "Un atelier de mouvement et de présence au corps, au 961 sur le Plateau. "
+           "Une pratique, pas un soin. Découvre les prochaines dates."),
+    7391: ("Demander une location — Centre Soha, 961 Rachel Est",
+           "Réserve un espace au 961 : cabinet, grand plateau de 2200 pi² ou studio "
+           "insonorisé. Dis-nous ta date, on te revient sous 24 h."),
+    7392: ("Activation de l'Énergie Sacrée — atelier · Centre Soha",
+           "Un atelier pour renouer avec ton énergie, au 961 Rachel Est. Une pratique de "
+           "présence, pas un soin. Vois les dates et inscris-toi."),
+}
+
+# --------------------------------------------------------------------------
 #  Points de rupture — ceux que déclare le kit (viewport_md 768, viewport_lg 1025)
 # --------------------------------------------------------------------------
 MQ_TABLETTE = "@media (max-width:1024px)"
@@ -129,7 +180,10 @@ def css_conteneur(s):
         w = longueur(s.get(cle))
         if w:
             dest.append("width:%s" % w)
-            dest.append("max-width:%s" % w)
+            # une largeur figée ne doit jamais dépasser l'écran : mesuré à 768 px
+            # sur les pages d'atelier, où un conteneur de 900 px faisait glisser
+            # toute la page de côté faute de palier tablette.
+            dest.append("max-width:min(%s, 100%%)" % w)
     for cle, dest in (("padding", base), ("padding_tablet", tab), ("padding_mobile", tel)):
         p = boite(s.get(cle))
         if p:
@@ -1110,9 +1164,10 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
         prem = premiere_image(contenu)
         if prem:
             pre = '<link rel="preload" as="image" href="%s" fetchpriority="high">' % prem
+        seo = METAS.get(p["id"])
         doc = GABARIT.format(
-            titre=html.escape("%s — Centre Soha" % p["titre"]),
-            description=html.escape(re.sub(r"\s+", " ", p["extrait"])[:300]),
+            titre=html.escape(seo[0] if seo else "%s — Centre Soha" % p["titre"]),
+            description=html.escape(seo[1] if seo else re.sub(r"\s+", " ", p["extrait"])[:300]),
             corps=re.sub(r"[^a-z0-9]+", "-", (p["slug"] or "accueil").lower()).strip("-"),
             prechargement=pre, entete=entete, pied=pied, contenu=contenu)
         chemin = os.path.join(sortie, p["fichier"])

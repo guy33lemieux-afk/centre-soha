@@ -217,3 +217,61 @@ Contrôles : 628 liens internes, 0 cassé · 155 ressources, 0 manquante ·
 destination déjà arbitrée. Lire l'index avant d'agir, pas après. Et un contrôle
 automatique ne remplace pas le jugement : la « faute » de police de l'infolettre
 était la bonne décision.
+
+---
+
+# Complément 4 du 10 septembre — « go pour tout »
+
+## Les trois ateliers sont des pages (kit v09)
+Montés depuis `pagesjson v02` : palette remise au canon (46 corrections :
+`#16241F`→`#0E1A15`, `#FAFAF8`→`#F4F0E7`, `#046C86`→`#19A7DB`), 11 liens
+recâblés vers `/dev2/`, identifiants d'éléments réattribués, un H1 juste par
+page. Une seule des trois images existait dans le kit médias
+(`soha-evenement-atelier-core-energetics-107.webp`) ; les deux autres widgets
+image sont retirés plutôt que laissés cassés.
+
+Les 5 boutons « Voir le détail / Voir l'atelier » pointent maintenant vers ces
+pages internes. **Plus aucun lien ne sort vers `centresoha.com/event/`.**
+
+Kit : 16 pages · Site : 29 pages (16 + 13 articles).
+
+## La feuille de maison (`build_documents.py`)
+Un outil, une feuille de style, sept documents recomposés dans le canon v06.
+Rendu Markdown maison (titres, listes, tableaux, citations, code, filets) — zéro
+dépendance. Plus une ligne d'Inter : seules `--serif`, `--sans`, `--mono` sont
+déclarées, en clair et en sombre.
+
+## Métas SEO posées
+Les 15 titres + descriptions rédigés sont câblés page par page dans le
+générateur. Confidentialité et Page introuvable restent sans méta marketing.
+
+## Décision tranchée : la page Ateliers est retirée
+« Se transformer » vit. Elle est dans le menu, dans le kit, et elle a désormais
+trois vraies fiches derrière elle. La maquette Ateliers promettait exactement ce
+que Se transformer livre maintenant, mais avec 12 liens morts et 8 visuels en
+réserve. Son bon apport — les filtres par type — est noté pour un cycle ultérieur.
+
+## Un défaut trouvé par la mesure, corrigé à la source
+Les trois pages d'atelier débordaient à **768 px** : un conteneur de 900 px de
+large sans palier tablette. Le correctif n'est pas sur ces pages mais dans le
+générateur — toute largeur figée est désormais bornée par
+`max-width:min(<largeur>, 100%)`. La règle protège toutes les pages, y compris
+celles à venir.
+
+**Porte finale : 116 rendus (29 pages × 4 largeurs), 0 débordement, 0 image en
+échec sur 136, un seul H1 partout, 702 liens internes sans un cassé.**
+
+## Ce qui reste bloqué, et pourquoi
+- **Fraunces + DM Mono en `.woff2`** : je ne peux pas les fabriquer. Sans elles,
+  le site appelle encore Google et la Loi 25 reste en suspens sur ce point.
+- **Deux champs de la politique de confidentialité** : WP Mail SMTP et
+  l'extension Newsletter sont dans la liste des extensions, mais on ne publie
+  pas une politique sur une vraisemblance, et une durée de conservation ne
+  s'invente pas.
+
+## Leçon
+**Un correctif se pose à la source, pas sur le symptôme.** Le débordement à
+768 px venait de trois pages ; la règle qui l'empêche vit maintenant dans le
+générateur et couvre tout ce qui sera produit ensuite. Même logique pour la
+feuille de maison : on ne répare pas quatre documents, on écrit l'outil qui
+fait que le cinquième naît déjà juste.
