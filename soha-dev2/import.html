@@ -272,6 +272,32 @@ strong{font-weight:600}
 
 <!-- ================================================================= -->
 <section class="phase">
+  <h2><em>Phase 6</em> L'infolettre chez Mailchimp <span class="duree">20 min · quand le reste marche</span></h2>
+  <p>Rien de ceci n'est urgent le jour de l'import. Mais tant que ce n'est pas fait, les consentements s'accumulent dans le CRM sans que personne ne puisse écrire à ces gens.</p>
+
+  <ol class="gestes">
+    <li><label><input type="checkbox"><span class="quoi"><b>Crée l'audience dans Mailchimp</b><span>Une seule, pour tout le centre. Le nom de l'expéditeur : <strong>Centre Soha</strong>, l'adresse : <strong>info@centresoha.com</strong>, et l'adresse postale du 961 Rachel Est — la loi canadienne l'exige dans chaque envoi.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Fabrique une clé d'API</b><span><span class="ou">Profil → Extras → API keys → Create A Key</span> Elle finit par un tiret et un code du genre <code>-us21</code> : c'est son centre de données, et le CRM en a besoin. Copie-la une seule fois — Mailchimp ne la remontre jamais.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Colle-la dans le CRM</b><span><span class="ou">CRM Soha → Infolettre</span> Puis <strong>Tester la liaison</strong> : le nom du compte doit s'afficher. Choisis ensuite l'audience dans la liste. La clé ne se réaffiche plus après ça, c'est voulu.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Branche le retour des désabonnements</b><span>Le CRM te donne une adresse. Dans Mailchimp : <span class="ou">Audience → Settings → Webhooks → Create New Webhook</span>, colle-la, coche <strong>Unsubscribes</strong>. Sans ça, quelqu'un qui se désabonne resterait « abonnée » sur sa fiche.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Colle le paragraphe dans la politique</b><span>L'écran Infolettre te le donne tout écrit. Il nomme Intuit, les États-Unis, et dit ce qui <em>ne</em> part <em>pas</em>. Sans lui, la politique de confidentialité devient fausse le jour où tu branches la clé.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Regarde le compteur de contacts facturés</b><span>Mailchimp facture au nombre de contacts, et selon le forfait les désabonnés peuvent continuer d'être comptés. Avant de payer quoi que ce soit, compare le nombre affiché dans <strong>Audience</strong> à celui de la page de facturation. S'ils diffèrent, dis-le-moi.</span></span></label></li>
+  </ol>
+
+  <div class="attention">
+    <p class="titre">Aucun script Mailchimp sur le site</p>
+    <p>Leurs formulaires embarqués posent un traceur sur chaque page qui les affiche. Ici, tout passe par le serveur : le visiteur ne parle jamais à Mailchimp, seul WordPress le fait. Ne colle jamais un « embedded form » de Mailchimp dans une page — la promesse « zéro appel externe » tomberait, et la politique avec elle.</p>
+  </div>
+
+  <div class="piege">
+    <p class="titre">Ce que Mailchimp ne garde pas</p>
+    <p>Il garde une adresse et un prénom. Pas la page qui a recueilli le consentement, pas le jour où la case a été cochée, pas le texte qui était affiché à ce moment-là. <strong>C'est le CRM qui porte la preuve</strong>, et c'est lui qu'il faudra ouvrir si on te la demande un jour.</p>
+    <p>C'est aussi pourquoi certaines demandes de plus de 24 mois ne s'effacent pas : quand elles sont la seule trace d'un consentement encore en usage, le CRM les retient et te le dit sur l'écran Demandes.</p>
+  </div>
+</section>
+
+<!-- ================================================================= -->
+<section class="phase">
   <h2><em>Au besoin</em> Si ça tourne mal <span class="duree">15 min</span></h2>
   <p>Il n'y a pas de honte à revenir en arrière. Il y a une honte à s'acharner sur un site cassé pendant que des gens essaient de le lire.</p>
 
@@ -297,7 +323,7 @@ strong{font-weight:600}
 <script>
 (function () {
   var cases = Array.prototype.slice.call(document.querySelectorAll('.gestes input'));
-  var CLE = 'soha-import-v16';
+  var CLE = 'soha-import-v17';
   var compte = document.getElementById('compte');
   var total = document.getElementById('total');
   total.textContent = cases.length;
