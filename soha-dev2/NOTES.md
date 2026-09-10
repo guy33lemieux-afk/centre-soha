@@ -114,3 +114,55 @@ Un lien « mort » n'est pas toujours une page manquante : vérifier le **type d
 contenu** avant de conclure. Trois fiches d'atelier existaient depuis le début,
 sous `/event/`. Et avant de livrer un demi-correctif (une police sur trois),
 mesurer s'il ne dégrade pas ce qu'il prétend améliorer.
+
+---
+
+# Complément 2 du 10 septembre — le site en HTML
+
+Reçus : `soha_generateur_20260825_v10.zip` (6 scripts), `soha_pagesjson_20260825_v02.zip`
+(28 pages), les deux pages d'accueil sauvegardées, et de nouveau l'estimateur v2.0.0.
+
+## Pourquoi le site est bâti depuis le kit, pas depuis pagesjson
+`pagesjson v02` contient 28 pages (dont les 13 articles et les 4 ateliers) — mais
+ses 95 images portent des noms à empreinte (`soha-accueil-picto-0def2c.webp`) qui
+**n'existent dans aucun kit fourni : zéro correspondance** avec le kit médias.
+Le kit v06/v07, lui, référence 65 images qui correspondent toutes. Bâtir depuis
+pagesjson aurait donné 95 carrés gris.
+
+## Le générateur : `build_site.py`
+Lit le kit + le kit médias → 25 pages HTML autonomes (12 pages + 13 articles tirés
+du WXR). Rend le **balisage réel d'Elementor** et applique le CSS global du kit tel
+quel : ce qui est rendu est ce que WordPress rendra.
+
+    python3 build_site.py --kit <kit> --medias <medias> [--polices <woff2>] --sortie site
+
+Couvre conteneur, titre, texte, image, bouton, séparateur, formulaire, accordéon,
+témoignage, liste d'articles, menu — et porte l'estimateur en statique (24 tarifs).
+
+## Ce que la mesure au navigateur a trouvé (100 rendus : 25 pages × 4 largeurs)
+Quatre défauts invisibles à la lecture des fichiers, tous corrigés **dans le CSS
+global du kit** pour que WordPress en profite aussi :
+
+| Défaut | Mesure | Correctif |
+|---|---|---|
+| Case de consentement | 13 × 13 px (min. WCAG 2.5.8 : 24) | `flex:none` + 24 × 24 |
+| Liens du pied de page | 14 px de haut sur téléphone | `min-height:44px` sous 767 px |
+| Adresse web de 96 car. | débordement de 22 px à 360 px | `overflow-wrap:break-word` |
+| Dates des 13 articles | toutes à 2026-08-29 (date d'import) | vraies dates 2021-2023 rétablies |
+
+La case de consentement rétrécissait parce qu'elle est un élément flexible à côté
+d'un long texte : fixer `width` ne suffit pas, il faut `flex:none`.
+
+Résultat final : **0 débordement horizontal sur 100 rendus, 0 image en échec sur
+127, un seul H1 sur chacune des 25 pages, 608 liens internes vérifiés sans un seul
+cassé.**
+
+## Réserve
+Le site appelle encore Google pour Fraunces et DM Mono. Schibsted Grotesk est
+auto-hébergée (fichier fourni). Il manque les deux autres familles en `.woff2`.
+
+## Leçon
+**Lire les fichiers ne remplace pas le rendu.** Les quatre défauts de ce cycle —
+dont une case de consentement sous le minimum légal — étaient invisibles dans le
+JSON et évidents dès la première mesure au navigateur. Toute livraison web passe
+désormais par la porte du regard : capturer, mesurer, puis seulement conclure.

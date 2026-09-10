@@ -275,7 +275,7 @@ section > h2 + p{margin-top:16px}
   <p>J'ai relevé <strong>107 liens et boutons</strong> dans les douze pages, l'en-tête et le pied de page, puis vérifié chaque ancre, chaque cible interne et chaque fichier appelé. Dans le kit livré, <strong>aucun ne mène plus dans le vide</strong> — 107 sur 107. Voici ce qui n'allait pas, et ce qu'il en reste.</p>
 
   <ul class="constats">
-    <li><span class="etat repare">Réparé</span><div><b>Le bouton « Voir la semaine » ne descendait nulle part</b><span>Sur <em>Se ressourcer</em>, le bouton principal du haut de page visait <code>#horaire</code> — une ancre qui n'existe sur aucune page. La grille de la semaine s'appelle <code>#soha-semaine</code>. Corrigé dans le kit v06.</span></div></li>
+    <li><span class="etat repare">Réparé</span><div><b>Le bouton « Voir la semaine » ne descendait nulle part</b><span>Sur <em>Se ressourcer</em>, le bouton principal du haut de page visait <code>#horaire</code> — une ancre qui n'existe sur aucune page. La grille de la semaine s'appelle <code>#soha-semaine</code>. Corrigé dans le kit v07.</span></div></li>
     <li><span class="etat repare">Réparé</span><div><b>Cinq boutons d'atelier menaient dans le vide</b><span>« Voir le détail » et « Voir l'atelier » visaient trois pages absentes du kit. Ces trois ateliers ne sont pas des pages : ce sont des <strong>événements du site de production</strong>, et ils existent bel et bien. Les cinq boutons pointent maintenant vers leur vraie adresse — <code>centresoha.com/event/…</code> — et s'ouvrent dans un nouvel onglet, pour que le visiteur ne perde pas sa place.</span></div></li>
     <li><span class="etat repare">Réparé</span><div><b>Le bouton final de l'estimateur tombait dans le vide</b><span>L'extension pointait vers <code>/reservation/</code>, une page qui n'existe nulle part sur le site. Elle vise désormais le formulaire de demande réel, <code>#demande</code>, sur la page des espaces — et l'adresse se recalcule toute seule, quel que soit le dossier d'installation.</span></div></li>
     <li><span class="etat repare">Réparé</span><div><b>Un conteneur vide traînait dans l'en-tête</b><span>Un second bloc de premier niveau, sans aucun contenu, hérité des allers-retours. Retiré.</span></div></li>
@@ -330,13 +330,39 @@ section > h2 + p{margin-top:16px}
 </section>
 
 <section id="fichiers">
-  <h2>Les deux fichiers à utiliser</h2>
+  <h2>Les trois fichiers à utiliser</h2>
   <p>Ils remplacent les versions précédentes. Tout le reste de ce que tu m'as envoyé sert de source ou de filet, pas d'ingrédient.</p>
   <ul class="fichiers">
-    <li><span class="nom">soha_kitdev_20260910_v06.zip</span><span class="quoi">Le kit du site. Reprend le kit corrigé v04 et y applique quatre correctifs : l'ancre morte, les cinq boutons sans page, le conteneur vide de l'en-tête, et les 73 liens de page recâblés vers la nouvelle adresse. Les 65 adresses d'images restent volontairement pointées sur le <code>/dev</code> actuel — c'est de là que l'import ira les chercher.</span></li>
+    <li><span class="nom">soha_kitdev_20260910_v07.zip</span><span class="quoi">Le kit du site. Reprend le kit corrigé v04 et y applique quatre correctifs : l'ancre morte, les cinq boutons sans page, le conteneur vide de l'en-tête, et les 73 liens de page recâblés vers la nouvelle adresse. Les 65 adresses d'images restent volontairement pointées sur le <code>/dev</code> actuel — c'est de là que l'import ira les chercher.</span></li>
     <li><span class="nom">soha_extensionestimateur_20260910_v201.zip</span><span class="quoi">L'estimateur, corrigé. Même grille de 24 tarifs, même affichage ; seul le bouton final change de destination et devient indépendant du dossier d'installation.</span></li>
+    <li><span class="nom">soha_site-html_20260910_v02.zip</span><span class="quoi">Le site entier en HTML, à ouvrir sans rien installer : décompresse et double-clique <code>index.html</code>. Vingt-cinq pages — les douze du kit plus les treize articles du Journal — avec leurs 65 photos en local et l'estimateur qui calcule pour de vrai. C'est le même contenu que ce que WordPress affichera : le balisage et le CSS sont ceux du kit.</span></li>
   </ul>
   <p style="font-size:.94rem;color:var(--texte-doux)"><strong>Le kit médias ne sert pas</strong> à cette installation — garde-le comme sauvegarde des 74 photos d'origine. Sur les quatre extensions maison, deux seulement changent quelque chose à l'écran : l'estimateur et la Finition. Les extensions <em>Praticien·nes (CMS)</em> et <em>Centre (shortcodes)</em> déclarent huit raccourcis dont <strong>aucun n'apparaît dans les pages du kit</strong> : les installer ne casse rien, mais ne rend rien visible non plus. Elles attendent un usage futur.</p>
+</section>
+
+<section id="site-html">
+  <h2>Le site en HTML, et ce qu'il a révélé</h2>
+  <p>J'ai écrit un générateur qui lit le kit et fabrique le site complet en HTML statique. Ce n'est pas une maquette : il rend le balisage réel d'Elementor et applique le CSS global du kit tel quel. Ce que tu vois dans ce fichier est donc ce que WordPress affichera — et ça m'a permis de <strong>mesurer</strong> les trois vues au lieu de les déduire.</p>
+
+  <dl class="mesures">
+    <div><dt>Rendus mesurés</dt><dd>100<small>25 pages × 360, 768, 1024 et 1440 px</small></dd></div>
+    <div><dt>Débordement latéral</dt><dd>0<small>aucune page ne glisse de côté, à aucune largeur</small></dd></div>
+    <div><dt>Images qui échouent</dt><dd>0<small>sur 127 images rendues</small></dd></div>
+    <div><dt>Liens internes</dt><dd>608<small>vérifiés un par un, aucun cassé</small></dd></div>
+  </dl>
+
+  <p>Le navigateur a trouvé quatre choses que la lecture des fichiers ne montrait pas. Toutes sont corrigées, et corrigées <em>dans le CSS global du kit</em> — donc le site WordPress en profite aussi, pas seulement le HTML.</p>
+
+  <ul class="constats">
+    <li><span class="etat repare">Réparé</span><div><b>La case de consentement faisait 13 pixels</b><span>Sur téléphone, la case « j'accepte » des formulaires se rendait à 13 × 13 px : sous le minimum de 24 px exigé par l'accessibilité — et c'est une case de <em>consentement</em>, donc du ressort de la Loi 25. Elle rétrécissait parce qu'elle est dans une rangée souple à côté d'un long texte. Elle fait maintenant 24 × 24 et ne peut plus rétrécir.</span></div></li>
+    <li><span class="etat repare">Réparé</span><div><b>Les liens du pied de page faisaient 14 pixels de haut</b><span>Or c'est par eux qu'on atteint Contact et Première visite, absents du menu. Ils passent à 44 px sur téléphone. La règle des 44 px existait déjà dans le kit, mais elle ne visait que les boutons et le menu — pas ces liens-là.</span></div></li>
+    <li><span class="etat repare">Réparé</span><div><b>Une adresse web de 96 caractères débordait la page</b><span>Dans la note de bas de page de l'article « Apiculture Urbaine ». Un seul mot insécable suffit à faire glisser toute la page de côté sur un téléphone. Les longs mots se coupent désormais dans les textes.</span></div></li>
+    <li><span class="etat repare">Réparé</span><div><b>Les treize articles portaient tous la même date</b><span>29 août 2026 — la date de l'import, pas celle de leur publication. Leur signature dit pourtant 2021 à 2023. J'ai rétabli les treize vraies dates depuis le texte des articles : le Journal se lit maintenant dans le bon ordre, du plus récent au plus ancien.</span></div></li>
+  </ul>
+
+  <p>Ce qui a tenu sans rien corriger : <strong>un seul H1 sur chacune des 25 pages</strong>, le menu qui bascule en bouton au bon moment, l'estimateur qui calcule ses 24 tarifs, et les 65 photos qui se chargent toutes. Le générateur reste dans le dépôt : à chaque nouvelle version du kit, une commande refait le site et refait passer les mesures.</p>
+
+  <p style="font-size:.94rem;color:var(--texte-doux)">Une réserve honnête : le site HTML appelle encore Google pour Fraunces et DM Mono. Schibsted Grotesk, elle, est bien auto-hébergée grâce au fichier que tu m'as envoyé. C'est exactement le point soulevé plus bas — avec les deux polices manquantes, l'appel disparaît.</p>
 </section>
 
 <section id="procedure">
@@ -402,7 +428,7 @@ section > h2 + p{margin-top:16px}
       <span class="duree">environ 15 minutes, l'import est long</span>
       <ol>
         <li><span class="chemin">Elementor → Outils → Importer / Exporter</span> → <strong>Importer un kit</strong>.</li>
-        <li>Choisis <code>soha_kitdev_20260910_v06.zip</code>.</li>
+        <li>Choisis <code>soha_kitdev_20260910_v07.zip</code>.</li>
         <li>À l'écran de sélection, laisse <strong>tout coché</strong> : réglages du site, contenu, gabarits, extensions.</li>
         <li>Lance l'import et <strong>ne ferme pas l'onglet</strong>. Il télécharge 65 images depuis <code>/dev</code> : c'est ce qui prend le temps.</li>
       </ol>
@@ -450,7 +476,7 @@ section > h2 + p{margin-top:16px}
         <li><input type="checkbox" id="v1"><label for="v1">Sur téléphone, les six pages du menu s'ouvrent, et rien ne déborde sur le côté<small>Aucune page ne doit se faire glisser horizontalement.</small></label></li>
         <li><input type="checkbox" id="v2"><label for="v2">Sur téléphone, l'en-tête collant ne mange pas la moitié de l'écran<small>Le logo s'empile au-dessus du menu : c'est le point à juger.</small></label></li>
         <li><input type="checkbox" id="v3"><label for="v3">Sur tablette, le bouton hamburger s'ouvre, se ferme, et les liens se touchent au doigt sans effort</label></li>
-        <li><input type="checkbox" id="v4"><label for="v4">Le bouton « Voir la semaine » descend bien jusqu'à la grille des cours<small>C'est le lien réparé — la preuve que le kit v06 est bien celui qui est en place.</small></label></li>
+        <li><input type="checkbox" id="v4"><label for="v4">Le bouton « Voir la semaine » descend bien jusqu'à la grille des cours<small>C'est le lien réparé — la preuve que le kit v07 est bien celui qui est en place.</small></label></li>
         <li><input type="checkbox" id="v5"><label for="v5">Sur Espaces professionnels, l'estimateur s'affiche et calcule<small>Change de salle, de moment : le prix doit changer.</small></label></li>
         <li><input type="checkbox" id="v6"><label for="v6">Le bouton « Demander cette réservation » descend jusqu'au formulaire de la même page<small>Il ne doit plus mener à une page introuvable.</small></label></li>
         <li><input type="checkbox" id="v7"><label for="v7">Les dix-sept photos du studio s'affichent toutes<small>C'est la page qui portait le problème d'images : si elle est bonne, tout l'est.</small></label></li>
@@ -458,9 +484,10 @@ section > h2 + p{margin-top:16px}
         <li><input type="checkbox" id="v9"><label for="v9">Sur Se transformer, chaque « Voir le détail » ouvre la fiche de l'atelier dans un nouvel onglet<small>Trois ateliers, trois adresses réelles sur le site de production.</small></label></li>
         <li><input type="checkbox" id="v10"><label for="v10">Le pied de page mène aux dix destinations, et le logo du haut ramène à l'accueil</label></li>
         <li><input type="checkbox" id="v11"><label for="v11">Le Journal affiche ses treize articles, chacun avec sa photo<small>C'est le seul endroit où il restait un doute sur les images.</small></label></li>
+        <li><input type="checkbox" id="v13"><label for="v13">Sur téléphone, la case « j'accepte » d'un formulaire se coche du premier coup de pouce<small>Elle faisait 13 px ; elle en fait 24.</small></label></li>
         <li><input type="checkbox" id="v12"><label for="v12">Nulle part une adresse ne se termine par <code>-2</code><small>La preuve définitive qu'aucun doublon n'est revenu.</small></label></li>
       </ul>
-      <p class="progres" id="progres">0 sur 12 vérifié</p>
+      <p class="progres" id="progres">0 sur 13 vérifié</p>
     </div>
   </div>
 </section>
@@ -506,7 +533,7 @@ section > h2 + p{margin-top:16px}
 </section>
 
 <footer class="pied">
-  <p>Analyse fondée sur neuf sources : l'export réel <code>dev_2</code> du 9 septembre, le kit corrigé v04 du 7 septembre, le kit médias v04, les quatre extensions maison, les quatre fiches d'atelier du site de production, trois pages du /dev sauvegardées en HTML, et le jeu de polices Schibsted Grotesk. Les deux fichiers livrés passent les contrôles automatiques — les 45 fichiers du kit se relisent sans erreur, et l'extension passe <code>php -l</code>.</p>
+  <p>Analyse fondée sur quatorze sources : l'export réel <code>dev_2</code> du 9 septembre, le kit corrigé v04 du 7 septembre, le kit médias v04, les quatre extensions maison, les quatre fiches d'atelier du site de production, trois pages du /dev sauvegardées en HTML, le jeu de polices Schibsted Grotesk, les deux pages d'accueil sauvegardées, le générateur de kit et les 28 pages en JSON. Les fichiers livrés passent les contrôles automatiques — les 45 fichiers du kit se relisent sans erreur, l'extension passe <code>php -l</code>, et le site HTML franchit ses 100 rendus mesurés sans un débordement.</p>
   <p style="margin-bottom:0">Le cap n'a pas changé : à chaque cycle, moins d'étapes à la main. Celui-ci en retire une grosse — le téléversement des médias disparaît de la procédure, et avec lui la moitié des ennuis.</p>
 </footer>
 

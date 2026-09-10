@@ -214,7 +214,7 @@ class Kit:
             titre = re.search(r"<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>", bloc, re.S)
             entrees.append({
                 "ordre": int(ordre.group(1)) if ordre else 99,
-                "titre": (titre.group(1).strip() if titre else ""),
+                "titre": html.unescape(titre.group(1).strip() if titre else ""),
                 "type": meta("_menu_item_type"),
                 "objet": meta("_menu_item_object_id"),
                 "url": meta("_menu_item_url"),
@@ -254,7 +254,9 @@ class Kit:
                 continue
             arts.append({
                 "id": pid,
-                "titre": champ("title"),
+                # le WXR porte déjà des entités HTML : on les défait avant de
+                # ré-échapper, sinon « j&#039;osais » devient « j&amp;#039;osais »
+                "titre": html.unescape(champ("title")),
                 "slug": champ("wp:post_name"),
                 "date": champ("wp:post_date")[:10],
                 "contenu": champ("content:encoded"),
@@ -282,6 +284,7 @@ class Rendu:
         self.images_manquantes = Counter()
         self.journal_fichier = journal_fichier
         self.estimateur_pose = False
+        self.premiere_image_posee = False
 
     # ---- chemins ----
     def media(self, url):
@@ -471,7 +474,14 @@ class Rendu:
             d.append("border-radius:%s" % r)
         self.ajoute(self.sel(eid) + " img", d)
         alt = texte_alternatif(src)
-        balise = '<img src="%s" alt="%s" loading="lazy" decoding="async">' % (src, html.escape(alt))
+        # la première image de la page est celle du héros : elle est préchargée,
+        # donc jamais paresseuse — sinon le préchargement se contredit lui-même
+        if self.premiere_image_posee:
+            attrs_img = ' loading="lazy" decoding="async"'
+        else:
+            attrs_img = ' loading="eager" fetchpriority="high" decoding="async"'
+            self.premiere_image_posee = True
+        balise = '<img src="%s" alt="%s"%s>' % (src, html.escape(alt), attrs_img)
         if s.get("link_to") == "custom" and isinstance(s.get("link"), dict):
             balise = '<a href="%s">%s</a>' % (self.lien(s["link"].get("url", "")), balise)
         return self.enveloppe(e, "image", balise)
@@ -882,7 +892,7 @@ figure{margin:0}
   border-radius:2px;background:#fff;color:inherit;width:100%}
 .soha-formulaire textarea{min-height:110px;resize:vertical}
 .soha-champ-case label{display:flex;gap:10px;align-items:flex-start;font-weight:400}
-.soha-champ-case input{width:auto;min-height:0;margin-top:4px}
+.soha-champ-case input{flex:none;width:24px;height:24px;min-height:0;margin-top:2px;accent-color:#19A7DB}
 .soha-formulaire button{font:inherit;cursor:pointer;border:0;background:#19A7DB;color:#fff;
   padding:14px 26px;min-height:48px;border-radius:2px;justify-self:start}
 .soha-note-form{font-size:.8rem;color:#6B7A73;margin:0}
@@ -907,7 +917,8 @@ figure{margin:0}
 .soha-article h1{font-family:"Fraunces",Georgia,serif;font-weight:600;
   font-size:clamp(2rem,5vw,3rem);line-height:1.06;margin:0 0 12px}
 .soha-article-photo{margin:0 0 34px}
-.soha-article-corps{max-width:38rem;margin:0 auto;font-size:1.06rem;line-height:1.7}
+.soha-article-corps{max-width:38rem;margin:0 auto;font-size:1.06rem;line-height:1.7;
+  overflow-wrap:break-word}
 .soha-article-corps h2{font-family:"Fraunces",Georgia,serif;font-weight:600;
   font-size:clamp(1.4rem,3.4vw,2rem);line-height:1.15;margin:1.8em 0 .6em}
 .soha-article-corps h3{font-family:"Fraunces",Georgia,serif;font-weight:600;
@@ -1070,6 +1081,7 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
     # en-tête et pied, rendus une fois et partagés
     entete = "".join(r.element(e, 0) for e in (kit.entete["content"] if kit.entete else []))
     entete = '<header class="soha-entete">%s</header>' % entete
+    r.premiere_image_posee = False
     pied = "".join(r.element(e, 0) for e in (kit.pied["content"] if kit.pied else []))
     pied = '<footer class="soha-pied">%s</footer>' % pied
 
@@ -1077,6 +1089,7 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
 
     # les 12 pages du kit
     for p in kit.pages.values():
+        r.premiere_image_posee = False
         contenu = "".join(r.element(e, 0) for e in p["doc"]["content"])
         pre = ""
         prem = premiere_image(contenu)
@@ -1093,8 +1106,10 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
 
     # les 13 articles du Journal
     for a in kit.articles:
+        r.premiere_image_posee = True      # la photo de l'article est posée à la main
         vign = r.media(a["vignette"]) if a["vignette"] else ""
-        photo = ('<figure class="soha-article-photo"><img src="%s" alt="%s"></figure>'
+        photo = ('<figure class="soha-article-photo"><img src="%s" alt="%s" '
+                 'loading="eager" fetchpriority="high" decoding="async"></figure>'
                  % (vign, html.escape(a["titre"]))) if vign else ""
         corps = r.reecrire_html(a["contenu"])
         if "<p" not in corps:
