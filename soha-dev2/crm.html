@@ -164,7 +164,7 @@ section>h2+p{margin-top:15px}
   <div class="sceau" aria-hidden="true"><i></i><b></b><u></u></div>
   <p class="kicker">Centre Soha · 961 Rachel Est · 10 septembre 2026</p>
   <h1>Le CRM du 961</h1>
-  <p class="sous">Ton CRM v02 avait un défaut qu'on ne voyait pas à l'usage : il ne gardait rien. C'est réparé — ton interface est intacte, c'est le sol sous ses pieds qui a changé. Et depuis, il garde aussi chaque demande reçue par formulaire. Voici l'extension, la marche à suivre, et ce qui a été mesuré.</p>
+  <p class="sous">Ton CRM v02 avait un défaut qu'on ne voyait pas à l'usage : il ne gardait rien. C'est réparé — ton interface est intacte, c'est le sol sous ses pieds qui a changé. Depuis, il garde aussi chaque demande reçue par formulaire — et, en un clic, la transforme en fiche et en réservation. Voici l'extension, la marche à suivre, et ce qui a été mesuré.</p>
 </header>
 
 <section id="constat" style="margin-top:0">
@@ -289,10 +289,15 @@ section>h2+p{margin-top:15px}
   <h3 style="margin-top:36px">Ce qui a été mesuré</h3>
   <p>Pas sur une imitation : sur un <strong>WordPress 6.8.3 complet</strong>, monté pour l'occasion, où l'extension est installée et activée comme elle le sera chez toi. Trois séries d'épreuves, chacune repartant d'une base vierge — une épreuve qui hérite de la veille ne prouve rien.</p>
   <div class="mesures">
-    <div><p>Vérifications passées, en tout</p><em>87 sur 87</em></div>
+    <div><p>Vérifications passées, en tout</p><em>128 sur 128</em></div>
     <div><p>Chromium se connecte, ouvre le CRM, crée un contact</p><em>écrit en base</em></div>
     <div><p>Le contact est encore là après rechargement</p><em>oui</em></div>
     <div><p>Un envoi de formulaire est archivé, nom et courriel repérés</p><em>oui</em></div>
+    <div><p>Une demande de location, en un clic, devient une réservation</p><em>bon espace, bon prix</em></div>
+    <div><p>Une date que le formulaire n'a pas su donner</p><em>non devinée</em></div>
+    <div><p>Une demande de contact, elle, ne crée pas de réservation</p><em>correct</em></div>
+    <div><p>La sauvegarde téléchargée, puis relue</p><em>complète</em></div>
+    <div><p>Un fichier qui n'est pas un registre, à la remise</p><em>refusé</em></div>
     <div><p>Le même courriel une deuxième fois</p><em>0 doublon</em></div>
     <div><p>La purge efface 25 mois et épargne 23</p><em>oui</em></div>
     <div><p>Un abonné WordPress qui tente d'entrer</p><em>refusé</em></div>
@@ -335,6 +340,42 @@ section>h2+p{margin-top:15px}
   </div>
 </section>
 
+<section id="location">
+  <h2>De l'estimateur à la réservation, sans ressaisie</h2>
+  <p>Il manquait le dernier maillon. L'estimateur affichait un prix, le formulaire le transportait, la demande le gardait — et tu ressaisissais tout à la main : l'espace, la date, le montant. Trois occasions de te tromper, pour une information qui était déjà juste.</p>
+
+  <div class="chaine">
+    <div class="maillon existe"><span class="quoi">L'estimateur</span><div><b>La personne choisit et voit un prix</b><span>Espace SÖHA, fin de semaine, demi-journée : <strong>400 $</strong>. Elle clique « Demander cette réservation ».</span></div></div>
+    <div class="maillon existe"><span class="quoi">Le formulaire</span><div><b>Le choix la suit</b><span>Les quatre champs cachés arrivent remplis. Elle précise sa date, sa fréquence, ce qu'elle veut faire.</span></div></div>
+    <div class="maillon existe"><span class="quoi">Demandes</span><div><b>Tout est en base avant le courriel</b><span>Rien ne dépend plus d'un message qui arrive ou pas.</span></div></div>
+    <div class="maillon existe"><span class="quoi">Un clic</span><div><b>Fiche + réservation</b><span>Espace SÖHA, le 17 octobre, 400 $, en devis, rattachée à sa fiche. Le reste — plage, usage, profil, détails — va dans la note, en clair.</span></div></div>
+  </div>
+
+  <div class="avertis">
+    <p class="titre">Rien n'est deviné, et c'est la partie importante</p>
+    <ul>
+      <li>Une <strong>date</strong> que le formulaire n'a pas su donner reste vide, et la phrase exacte de la personne part dans la note. Mieux vaut un champ vide qu'une date inventée.</li>
+      <li>Les <strong>heures</strong> de début et de fin restent vides : elles se conviennent au téléphone, pas dans un formulaire.</li>
+      <li>Le <strong>paiement</strong> arrive toujours en <em>devis</em>. C'est toi qui confirmes, jamais le formulaire.</li>
+      <li>« Récurrent (résident·e) » devient <strong>« Récurrent »</strong>, pas « Hebdomadaire ». Choisir un rythme à ta place, ce serait inventer.</li>
+    </ul>
+  </div>
+
+  <h3 style="margin-top:36px">Et le CRM nomme enfin les bonnes salles</h3>
+  <p>C'était le défaut le plus coûteux, et il n'était pas technique. Le CRM proposait « Grande salle · Studio · Petite salle ». Le site, l'estimateur et le formulaire nomment <strong>Studio · Espace SÖHA · Salle 4 · Salles 1·2·3</strong>. Deux vocabulaires pour un même lieu, c'est une réservation mal saisie par mois — et un revenu qu'on ne sait plus attribuer à un espace quand vient le temps de décider lequel fait vivre le 961.</p>
+</section>
+
+<section id="filet">
+  <h2>Un filet sous le registre</h2>
+  <p>Tout le CRM tient dans un seul enregistrement de la base. C'est ce qui le rend simple — et c'est un seul endroit où tout perdre. UpdraftPlus sauvegarde le site entier, mais restaurer un site entier pour rattraper une fausse manœuvre dans le CRM, c'est un marteau pour une punaise.</p>
+
+  <ol class="etapes">
+    <li><div><b>Télécharger</b><span>Un fichier daté, avec tout : fiches, réservations, ateliers. Range-le ailleurs que sur le serveur. Une fois par mois suffit.</span></div></li>
+    <li><div><b>Remettre</b><span>Réservé aux administratrices, avec une case à cocher. Un fichier qui n'a pas la forme d'un registre est refusé <em>avant</em> d'avoir touché quoi que ce soit.</span></div></li>
+    <li><div><b>Revenir en arrière</b><span>L'état d'avant la remise est conservé. Si tu te trompes de fichier, un bouton te ramène. Une fois — après, c'est le nouvel état qui devient le retour possible.</span></div></li>
+  </ol>
+</section>
+
 <section id="quatre">
   <h2>Vous êtes quatre</h2>
   <p>Toi, Dominique, Cassandra et Fred. Ça change deux choses dans le code, pas seulement une case à cocher.</p>
@@ -349,11 +390,11 @@ section>h2+p{margin-top:15px}
 
 <section id="montage">
   <h2>Le montage</h2>
-  <p>Le socle est posé et la première phase est faite. Restent les deux autres.</p>
+  <p>Deux phases sur trois sont faites. Reste la dernière.</p>
 
   <ol class="phases">
     <li><span class="n">1</span><div><b>Ne plus rien perdre</b><span>Fait. Chaque envoi de formulaire est archivé avec sa date et son consentement, un écran pour les lire et les marquer traitées, la purge à 24 mois, et le versement au répertoire en un clic.<span class="duree" style="color:var(--cultiver)">Livré le 10 septembre 2026</span></span></div></li>
-    <li><span class="n">2</span><div><b>Les contacts et les réservations</b><span>Les trois types de contenu, la fiche contact avec son historique, la réservation avec son statut de paiement. Reprise du modèle de ton v02, et du vocabulaire réel des quatre espaces. Import de ce que tu as déjà, par le fichier JSON que ton CRM sait exporter.<span class="duree">Un à deux cycles</span></span></div></li>
+    <li><span class="n">2</span><div><b>Les contacts et les réservations</b><span>Fait. Le vocabulaire réel des quatre espaces, la réservation créée depuis la demande avec le tarif de l'estimateur, et la sauvegarde du registre en un fichier.<span class="duree" style="color:var(--cultiver)">Livré le 10 septembre 2026</span></span></div></li>
     <li><span class="n">3</span><div><b>Le tableau de bord et l'infolettre</b><span>Les vues de synthèse, et la jonction avec l'extension Newsletter — le consentement coché sur le formulaire inscrit la personne, sans double saisie et sans export à trimballer.<span class="duree">Un cycle</span></span></div></li>
   </ol>
 </section>
@@ -364,12 +405,12 @@ section>h2+p{margin-top:15px}
 
   <ol class="defauts">
     <li><span class="n">01</span><div><b>Où sont les serveurs de ton hébergeur ?</b><span>La section 4 de ta politique doit dire où dorment les données. C'est une question à poser à l'hébergeur, en une phrase : « Dans quel pays sont hébergées les données de mon site ? »</span></div></li>
-    <li><span class="n">02</span><div><b>Le service de relais de WP Mail SMTP</b><span>Toujours en suspens, et c'est la même section 4. C'est dans <code>WP Mail SMTP → Réglages → Programme de messagerie</code>, la rangée de logos : dis-moi lequel est sélectionné.</span></div></li>
+    <li><span class="n">02</span><div><b>Le service de relais de WP Mail SMTP</b><span>Ne cherche pas dans la rangée de logos, c'est difficile à lire. Va plutôt dans <code>Outils → Santé du site → onglet Infos</code>, déplie la section <strong>WP Mail SMTP</strong> : le service y est écrit en toutes lettres, à la ligne <em>Mailer</em>. Copie-colle-moi ce que tu y vois.</span></div></li>
   </ol>
 </section>
 
 <footer class="pied">
-  <p>Diagnostic établi en lisant les 897 lignes de <code>soha_crm_20260903_v02.jsx</code> et en mesurant le comportement réel de son stockage dans Chromium. L'extension <code>v1.1.0</code> est livrée, éprouvée sur un WordPress 6.8.3 complet monté pour l'occasion : 87 vérifications, aucun échec. Le pont entre l'estimateur et le formulaire est livré et testé.</p>
+  <p>Diagnostic établi en lisant les 897 lignes de <code>soha_crm_20260903_v02.jsx</code> et en mesurant le comportement réel de son stockage dans Chromium. L'extension <code>v1.2.0</code> est livrée, éprouvée sur un WordPress 6.8.3 complet monté pour l'occasion : 128 vérifications, aucun échec. Le pont entre l'estimateur et le formulaire est livré et testé.</p>
   <p style="margin-bottom:0">Périmètre : Centre Soha, 961 Rachel Est. Le pôle soha.live n'est pas concerné.</p>
 </footer>
 
