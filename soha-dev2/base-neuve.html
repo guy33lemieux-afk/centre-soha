@@ -1,0 +1,537 @@
+<title>La base neuve du Centre Soha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Schibsted+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --encre:#0E1A15;
+  --ivoire:#F4F0E7;
+  --papier:#FBF8F3;
+  --soigner:#19A7DB;
+  --profond:#046C86;
+  --cramoisi:#AE1E3B;
+  --cultiver:#5E8C5A;
+  --batir:#D29A4E;
+
+  --fond:var(--papier);
+  --surface:#FFFFFF;
+  --surface-2:#F0EAE0;
+  --texte:var(--encre);
+  --texte-doux:#5A6862;
+  --filet:#E0D8CA;
+  --filet-fort:#C9BEAB;
+  --accent:var(--profond);
+  --accent-vif:var(--soigner);
+  --alerte:var(--cramoisi);
+  --ok:#3F6B3C;
+  --attente:#8A6220;
+
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --fond:#0B1512;
+    --surface:#131F1B;
+    --surface-2:#1B2A25;
+    --texte:#ECE6DA;
+    --texte-doux:#9DAAA3;
+    --filet:#2A3A34;
+    --filet-fort:#3D5148;
+    --accent:#5CC4E4;
+    --accent-vif:#19A7DB;
+    --alerte:#E8677F;
+    --ok:#8FBF89;
+    --attente:#D8A94E;
+  }
+}
+:root[data-theme="dark"]{
+  --fond:#0B1512;
+  --surface:#131F1B;
+  --surface-2:#1B2A25;
+  --texte:#ECE6DA;
+  --texte-doux:#9DAAA3;
+  --filet:#2A3A34;
+  --filet-fort:#3D5148;
+  --accent:#5CC4E4;
+  --accent-vif:#19A7DB;
+  --alerte:#E8677F;
+  --ok:#8FBF89;
+  --attente:#D8A94E;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--fond);
+  color:var(--texte);
+  font-family:var(--sans);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.page{
+  max-width:820px;
+  margin:0 auto;
+  padding-inline:20px;
+  padding-block:48px 96px;
+}
+
+/* ---------- typographie ---------- */
+h1,h2,h3,h4{font-family:var(--serif);font-weight:500;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.1rem,5.4vw,3.1rem);line-height:1.04;letter-spacing:-.015em}
+h2{font-size:clamp(1.45rem,3.4vw,2.05rem);line-height:1.12;letter-spacing:-.01em}
+h3{font-size:clamp(1.12rem,2.2vw,1.32rem);line-height:1.2}
+p{margin:0 0 1em;max-width:66ch}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:3px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent-vif);outline-offset:3px;border-radius:2px}
+strong{font-weight:600}
+code,.mono{font-family:var(--mono);font-size:.88em}
+code{background:var(--surface-2);padding:.12em .38em;border-radius:3px;overflow-wrap:break-word}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--texte-doux);margin:0 0 14px;
+}
+
+/* ---------- en-tête ---------- */
+.chapeau{border-bottom:1px solid var(--filet-fort);padding-bottom:34px;margin-bottom:44px}
+.chapeau .sous{font-size:1.1rem;color:var(--texte-doux);max-width:60ch;margin-top:16px}
+.sceau{display:flex;align-items:center;gap:9px;margin-bottom:20px}
+.sceau i{display:block;width:9px;height:9px;border-radius:50%;background:var(--soigner)}
+.sceau b{display:block;width:44px;height:2px;background:var(--batir)}
+.sceau u{display:block;width:7px;height:7px;border-radius:50%;background:var(--cramoisi)}
+
+/* ---------- bandeau de chiffres ---------- */
+.mesures{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));
+  gap:1px;background:var(--filet);border:1px solid var(--filet);margin:34px 0 8px;
+}
+.mesures div{background:var(--fond);padding:15px 16px}
+.mesures dt{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--texte-doux);margin-bottom:6px}
+.mesures dd{margin:0;font-family:var(--serif);font-size:1.72rem;line-height:1;font-variant-numeric:tabular-nums}
+.mesures dd small{font-family:var(--sans);font-size:.72rem;color:var(--texte-doux);display:block;margin-top:6px;line-height:1.35}
+
+/* ---------- sections ---------- */
+section{margin-top:60px}
+section > h2{padding-bottom:12px;border-bottom:1px solid var(--filet)}
+section > h2 + p{margin-top:16px}
+
+/* ---------- constat ---------- */
+.preuve{
+  border-left:3px solid var(--accent-vif);
+  background:var(--surface);
+  padding:20px 22px;margin:26px 0;
+}
+.preuve p:last-child{margin-bottom:0}
+.preuve .titre{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+
+.piege{
+  border:1px solid var(--alerte);
+  background:color-mix(in srgb,var(--alerte) 7%,var(--fond));
+  padding:20px 22px;margin:26px 0;
+}
+.piege .titre{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--alerte);margin-bottom:10px}
+.piege p:last-child{margin-bottom:0}
+
+/* ---------- constats : liste à puces d'état ---------- */
+.constats{list-style:none;margin:24px 0;padding:0;display:grid;gap:1px;background:var(--filet);border-block:1px solid var(--filet)}
+.constats li{background:var(--fond);padding:14px 0 14px 0;display:grid;grid-template-columns:82px 1fr;gap:16px;align-items:start}
+.etat{
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 0;border-top:2px solid currentColor;margin-top:5px;
+}
+.etat.bloque{color:var(--alerte)}
+.etat.repare{color:var(--ok)}
+.etat.avoir{color:var(--attente)}
+.etat.sain{color:var(--texte-doux)}
+.constats b{font-weight:600;display:block;margin-bottom:2px}
+.constats span{color:var(--texte-doux);font-size:.94rem}
+
+/* ---------- vues ---------- */
+.vues{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:18px;margin:26px 0}
+.vue{border-top:2px solid var(--filet-fort);padding-top:14px}
+.vue h3{font-family:var(--sans);font-size:.95rem;font-weight:600;margin-bottom:3px}
+.vue .px{font-family:var(--mono);font-size:.72rem;color:var(--texte-doux);letter-spacing:.04em;display:block;margin-bottom:10px}
+.vue p{font-size:.93rem;margin:0;color:var(--texte-doux)}
+
+/* ---------- départements ---------- */
+.dep{border-top:1px solid var(--filet);padding:18px 0}
+.dep:last-of-type{border-bottom:1px solid var(--filet)}
+.dep h3{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.dep h3 em{font-family:var(--mono);font-style:normal;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--texte-doux)}
+.dep .flux{font-size:.94rem;color:var(--texte-doux);margin:8px 0 0}
+.dep .flux b{color:var(--texte);font-weight:500}
+
+/* ---------- procédure ---------- */
+.etape{
+  display:grid;grid-template-columns:56px 1fr;gap:20px;
+  padding:28px 0;border-top:1px solid var(--filet);
+}
+.etape:last-of-type{border-bottom:1px solid var(--filet)}
+.num{
+  font-family:var(--serif);font-size:2.1rem;line-height:1;color:var(--accent-vif);
+  font-variant-numeric:tabular-nums;padding-top:2px;
+}
+.etape h3{margin-bottom:4px}
+.duree{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--texte-doux);display:block;margin-bottom:12px}
+.etape ol,.etape ul{margin:0 0 4px;padding-left:1.15em}
+.etape li{margin-bottom:9px}
+.etape li:last-child{margin-bottom:0}
+.chemin{font-family:var(--mono);font-size:.86em;background:var(--surface-2);padding:.1em .4em;border-radius:3px}
+.verif{
+  margin-top:14px;padding:12px 14px;background:var(--surface);
+  border-left:2px solid var(--ok);font-size:.93rem;
+}
+.verif b{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ok);display:block;margin-bottom:5px}
+.verif p{margin:0}
+.stop{
+  margin-top:14px;padding:12px 14px;background:color-mix(in srgb,var(--alerte) 7%,var(--fond));
+  border-left:2px solid var(--alerte);font-size:.93rem;
+}
+.stop b{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--alerte);display:block;margin-bottom:5px}
+.stop p{margin:0}
+
+/* ---------- cases à cocher ---------- */
+.liste-verif{list-style:none;margin:22px 0;padding:0}
+.liste-verif li{
+  display:grid;grid-template-columns:auto 1fr;gap:13px;align-items:start;
+  padding:11px 0;border-bottom:1px solid var(--filet);
+}
+.liste-verif input{
+  width:19px;height:19px;margin:2px 0 0;accent-color:var(--accent-vif);cursor:pointer;flex:none;
+}
+.liste-verif label{cursor:pointer}
+.liste-verif input:checked + label{color:var(--texte-doux);text-decoration:line-through;text-decoration-color:var(--filet-fort)}
+.liste-verif small{display:block;color:var(--texte-doux);font-size:.87rem;text-decoration:none}
+.progres{
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--texte-doux);margin-top:16px;
+}
+
+/* ---------- fichiers ---------- */
+.fichiers{list-style:none;margin:22px 0;padding:0;display:grid;gap:10px}
+.fichiers li{border:1px solid var(--filet);padding:14px 16px;background:var(--surface)}
+.fichiers .nom{font-family:var(--mono);font-size:.83rem;word-break:break-all;display:block;margin-bottom:5px;color:var(--accent)}
+.fichiers .quoi{font-size:.93rem;color:var(--texte-doux)}
+
+/* ---------- décisions ---------- */
+.decision{border-top:1px solid var(--filet);padding:18px 0}
+.decision:last-of-type{border-bottom:1px solid var(--filet)}
+.decision h3{font-family:var(--sans);font-size:1rem;font-weight:600;margin-bottom:6px}
+.decision p{font-size:.95rem;margin-bottom:8px}
+.options{margin:0;padding-left:1.15em;font-size:.94rem;color:var(--texte-doux)}
+.options li{margin-bottom:5px}
+
+.pied{margin-top:70px;padding-top:22px;border-top:1px solid var(--filet-fort);font-size:.88rem;color:var(--texte-doux)}
+.pied p{max-width:none}
+
+@media (max-width:520px){
+  .etape{grid-template-columns:1fr;gap:6px}
+  .num{font-size:1.5rem}
+  .constats li{grid-template-columns:1fr;gap:4px}
+  .etat{border-top:none;border-left:2px solid currentColor;padding-left:8px;margin-top:0}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="page">
+
+<header class="chapeau">
+  <div class="sceau" aria-hidden="true"><i></i><b></b><u></u></div>
+  <p class="eyebrow">Centre Soha · 961 Rachel Est · 10 septembre 2026</p>
+  <h1>La base neuve, de bout en bout</h1>
+  <p class="sous">L'analyse de ton export « dev 2 », du kit corrigé, du kit médias et des quatre extensions maison — puis la marche à suivre, bouton par bouton, pour repartir sur une base propre sans refabriquer un seul doublon.</p>
+</header>
+
+<section id="preuve" style="margin-top:0">
+  <h2>Ce que les fichiers prouvent</h2>
+  <p>Je n'ai pas deviné : j'ai comparé le kit corrigé du 7 septembre avec l'export réel du site du 9 septembre. Les deux décrivent les mêmes pages. Ce qui a changé entre les deux dit exactement ce qui s'est passé.</p>
+
+  <div class="preuve">
+    <p class="titre">La preuve, en une ligne</p>
+    <p>Le kit du 7 septembre demande <strong>59 images</strong> aux noms nets — <code>soha-accueil-001.webp</code>. L'export du site du 9 septembre référence ces <strong>mêmes 59 images</strong>, mais <strong>toutes</strong> renommées <code>soha-accueil-001-1.webp</code>. Cinquante-neuf sur cinquante-neuf. Aucune exception.</p>
+  </div>
+
+  <p>Un renommage à 100 % n'est pas un hasard de manipulation : c'est une mécanique. Elle est celle-ci — <strong>les médias ont été téléversés avant l'import</strong>. L'import a ensuite retéléchargé chaque image depuis sa propre adresse, WordPress a trouvé le nom déjà pris, il a ajouté <code>-1</code>, et les pages ont été recâblées vers ces nouvelles copies. Deux exemplaires de chaque photo, et des pages qui pointent vers le mauvais.</p>
+
+  <div class="piege">
+    <p class="titre">Le piège à désamorcer</p>
+    <p>Le fichier <code>_medias.csv</code> de ton kit médias porte, sur chacune de ses 74 lignes, la consigne « <em>téléverser AVANT import</em> ». <strong>C'est cette consigne qui fabrique les doublons.</strong> Dans la procédure ci-dessous, on ne téléverse rien : on laisse l'import aller chercher les images lui-même, une seule fois, dans une médiathèque vide.</p>
+  </div>
+
+  <dl class="mesures">
+    <div><dt>Pages dans l'export</dt><dd>24<small>soit 12 pages réelles, chacune en double</small></dd></div>
+    <div><dt>Menus</dt><dd>2<small>l'en-tête pointait vers « Menu Galerie duplicate »</small></dd></div>
+    <div><dt>En-têtes · pieds</dt><dd>2 · 2<small>un seul de chaque était actif</small></dd></div>
+    <div><dt>Images recâblées</dt><dd>59<small>toutes vers un doublon en <code>-1</code></small></dd></div>
+  </dl>
+  <p style="font-size:.9rem;color:var(--texte-doux);margin-top:14px">S'y ajoutent 14 gabarits « The Events Calendar » empilés, 13 articles du Journal en double, et une page d'accueil publique servie depuis la <em>copie</em> : l'adresse réelle de tes pages était devenue <code>/dev/se-ressourcer-2/</code>, pas <code>/dev/se-ressourcer/</code>.</p>
+</section>
+
+<section id="etat">
+  <h2>Les liens, les boutons, les trois vues</h2>
+  <p>J'ai relevé <strong>107 liens et boutons</strong> dans les douze pages, l'en-tête et le pied de page, puis vérifié chaque ancre, chaque cible interne et chaque fichier appelé. Voici tout ce qui n'allait pas — et son état après correction.</p>
+
+  <ul class="constats">
+    <li><span class="etat repare">Réparé</span><div><b>Le bouton « Voir la semaine » ne descendait nulle part</b><span>Sur <em>Se ressourcer</em>, le bouton principal du haut de page visait <code>#horaire</code> — une ancre qui n'existe sur aucune page. La grille de la semaine s'appelle <code>#soha-semaine</code>. Corrigé dans le kit v05.</span></div></li>
+    <li><span class="etat repare">Réparé</span><div><b>Cinq boutons menaient à des pages inexistantes</b><span>« Voir le détail » et « Voir l'atelier » pointaient vers <code>activation-de-lenergie-sacree</code>, <code>atelier-decriture-spontanee</code> et <code>core-energetics-coeur-et-bassin</code> : trois pages absentes du kit. Les cinq mènent maintenant à la section <em>Ce qui vient</em> de <em>Se transformer</em>, qui existe. Plus aucune erreur 404.</span></div></li>
+    <li><span class="etat repare">Réparé</span><div><b>Le bouton final de l'estimateur tombait dans le vide</b><span>L'extension pointait vers <code>/reservation/</code>, une page qui n'existe nulle part sur le site. Elle vise désormais le formulaire de demande réel, <code>#demande</code>, sur la page des espaces — et l'adresse se recalcule toute seule, quel que soit le dossier d'installation.</span></div></li>
+    <li><span class="etat repare">Réparé</span><div><b>Un conteneur vide traînait dans l'en-tête</b><span>Un second bloc de premier niveau, sans aucun contenu, hérité des allers-retours. Retiré.</span></div></li>
+    <li><span class="etat avoir">À décider</span><div><b>Quatre « Visite virtuelle » pointent vers des vidéos hors du kit</b><span>Les quatre fichiers <code>.mp4</code> vivent dans <code>uploads/2026/06/</code> sur le <code>/dev</code> actuel et ne sont pas dans le kit médias. Ils continueront de fonctionner tant que <code>/dev</code> reste en ligne. À rapatrier avant de le retirer.</span></div></li>
+    <li><span class="etat avoir">À décider</span><div><b>Contact et Première visite ne sont pas dans le menu</b><span>Le menu compte six entrées plus <em>soha·live ↗</em>. Contact n'est joignable que par le pied de page et par les boutons dans les pages. Ce n'est pas cassé — c'est un choix à confirmer.</span></div></li>
+    <li><span class="etat sain">Sain</span><div><b>Le reste des liens tient</b><span>Les vingt ancres restantes trouvent leur cible. Les liens de réservation GoRendezvous, la carte, le téléphone et les courriels sont bien formés. Le pied de page rattrape les dix départements.</span></div></li>
+  </ul>
+
+  <h3 style="margin-top:44px;font-family:var(--sans);font-size:1rem;font-weight:600">Les trois vues, telles que le kit les définit</h3>
+  <div class="vues">
+    <div class="vue"><h3>Téléphone</h3><span class="px">moins de 768 px</span><p>Les rangées repassent en colonne, les titres sont fluides, les zones sûres (encoche) sont gérées. L'en-tête collant empile le logo au-dessus du menu — c'est le seul point à juger à l'œil.</p></div>
+    <div class="vue"><h3>Tablette</h3><span class="px">768 à 1024 px</span><p>Le menu bascule en bouton hamburger et les cibles tactiles passent à 44 px minimum. C'est la vue la moins regardée jusqu'ici, donc celle à ouvrir en premier.</p></div>
+    <div class="vue"><h3>Ordinateur</h3><span class="px">1025 px et plus</span><p>Menu sur une seule ligne, contenu cadré à 1200 px. La vue déjà validée au fil des cycles.</p></div>
+  </div>
+
+  <p>La bonne nouvelle : <strong>rien n'est masqué sur aucune des trois vues</strong> — aucun élément « ordinateur seulement », aucun bloc qui disparaît au téléphone. Et <strong>aucune rangée ne refuse de s'empiler</strong>. Les 21 largeurs figées en pixels que j'ai relevées sont les portraits de 132 px des artisan·es et le logo de 120 px du pied de page : sans danger sur un écran de 360 px. Le CSS global du kit fait déjà le travail de fond — titres en <code>clamp()</code>, <code>safe-area-inset</code>, cibles à 44 px, images bornées à 100 %.</p>
+  <p style="color:var(--texte-doux);font-size:.94rem">Un seul manque de fond côté mouvement : <code>prefers-reduced-motion</code> n'est déclaré nulle part. À traiter au prochain cycle, ça ne bloque pas la mise en route.</p>
+</section>
+
+<section id="departements">
+  <h2>Les six départements et leur suite logique</h2>
+  <p>Chaque département doit mener quelque part : à une inscription, à une demande, ou à une conversation. Voici le chemin réel, vérifié lien par lien dans le kit.</p>
+
+  <div class="dep">
+    <h3>Se ressourcer <em>les cours</em></h3>
+    <p class="flux">Accueil → <b>Voir la semaine</b> → la grille des douze cours → <b>S'inscrire</b> → GoRendezvous. Repli pour qui hésite : <b>Écrire au Centre</b> et le numéro de téléphone en bas de page.</p>
+  </div>
+  <div class="dep">
+    <h3>Prendre soin <em>les artisan·es</em></h3>
+    <p class="flux">Accueil → <b>Voir les thérapeutes</b> → les neuf fiches → <b>Prendre rendez-vous</b> → GoRendezvous, une adresse propre par personne. Celles et ceux qui n'ont pas de réservation en ligne renvoient vers <b>Écrire au Centre</b>. Le lien <b>Première visite</b> est bien présent en haut.</p>
+  </div>
+  <div class="dep">
+    <h3>Se transformer <em>ateliers et formations</em></h3>
+    <p class="flux">Accueil → <b>Voir ce qui vient</b> → la liste des ateliers → <b>Voir le détail</b>. C'est le département le plus fragile : une seule fiche d'atelier existe. Les autres boutons mènent désormais à la liste elle-même plutôt qu'au vide.</p>
+  </div>
+  <div class="dep">
+    <h3>Studio podcast <em>location du studio</em></h3>
+    <p class="flux">Accueil → <b>Voir les formules</b> → les forfaits → <b>Demander cette formule</b> → le formulaire <code>#contact-studio</code>, dans la page. Boucle complète, sans sortie vers un outil externe.</p>
+  </div>
+  <div class="dep">
+    <h3>Espaces professionnels <em>location des salles</em></h3>
+    <p class="flux">Accueil → <b>Louer une salle</b> → <b>Estimer ta location</b> → l'estimateur (24 tarifs réels) → <b>Demander cette réservation</b> → le formulaire <code>#demande</code>. C'est ce dernier maillon qui était rompu ; il est rétabli.</p>
+  </div>
+  <div class="dep">
+    <h3>Journal <em>textes et épisodes</em></h3>
+    <p class="flux">Menu → <b>Les textes</b> et <b>Les épisodes</b> → les treize articles → <b>Voir le studio</b>, qui ramène vers une offre. Le seul département qui ne vend rien directement, et c'est très bien ainsi.</p>
+  </div>
+
+  <p style="margin-top:22px">Les quatre pages de service — <em>Accueil</em>, <em>Contact</em>, <em>Première visite</em>, <em>Confidentialité</em> — plus la page d'erreur complètent l'ensemble. Le pied de page les liste toutes : c'est lui, et non le menu, qui garantit qu'aucun département n'est hors d'atteinte.</p>
+</section>
+
+<section id="fichiers">
+  <h2>Les deux fichiers à utiliser</h2>
+  <p>Ils remplacent les versions précédentes. Tout le reste de ce que tu m'as envoyé sert de source ou de filet, pas d'ingrédient.</p>
+  <ul class="fichiers">
+    <li><span class="nom">soha_kitdev_20260910_v05.zip</span><span class="quoi">Le kit du site. Reprend le kit corrigé v04 et y applique quatre correctifs : l'ancre morte, les cinq boutons sans page, le conteneur vide de l'en-tête, et les 73 liens de page recâblés vers la nouvelle adresse. Les 65 adresses d'images restent volontairement pointées sur le <code>/dev</code> actuel — c'est de là que l'import ira les chercher.</span></li>
+    <li><span class="nom">soha_extensionestimateur_20260910_v201.zip</span><span class="quoi">L'estimateur, corrigé. Même grille de 24 tarifs, même affichage ; seul le bouton final change de destination et devient indépendant du dossier d'installation.</span></li>
+  </ul>
+  <p style="font-size:.94rem;color:var(--texte-doux)"><strong>Le kit médias ne sert pas</strong> à cette installation — garde-le comme sauvegarde des 74 photos d'origine. Sur les quatre extensions maison, deux seulement changent quelque chose à l'écran : l'estimateur et la Finition. Les extensions <em>Praticien·nes (CMS)</em> et <em>Centre (shortcodes)</em> déclarent huit raccourcis dont <strong>aucun n'apparaît dans les pages du kit</strong> : les installer ne casse rien, mais ne rend rien visible non plus. Elles attendent un usage futur.</p>
+</section>
+
+<section id="procedure">
+  <h2>La marche à suivre</h2>
+  <p>Sept étapes, dans cet ordre. L'ordre compte : chacune prépare la suivante, et deux d'entre elles perdent tout leur sens si on les inverse. Compte une heure et demie, sans se presser.</p>
+
+  <div class="etape">
+    <div class="num">1</div>
+    <div>
+      <h3>Cloner <code>/dev</code> vers <code>/dev2</code></h3>
+      <span class="duree">WP Toolkit · environ 10 minutes</span>
+      <ol>
+        <li>Ouvre <span class="chemin">Plesk → WordPress</span> (le WP Toolkit).</li>
+        <li>Repère la carte du site <span class="chemin">centresoha.com/dev</span>.</li>
+        <li>Clique <strong>Cloner</strong>.</li>
+        <li>Dans <em>Chemin</em>, remplace ce qui est proposé par <strong><code>dev2</code></strong>. Laisse le domaine sur <code>centresoha.com</code>.</li>
+        <li>Lance le clonage et attends la fin.</li>
+      </ol>
+      <div class="verif"><b>Vérifie avant de continuer</b><p>Ouvre <code>centresoha.com/dev2</code> dans ton navigateur. Tu dois voir une copie du site actuel — avec ses doublons, c'est normal à cette étape. Et surtout : <code>centresoha.com/dev</code> doit toujours répondre.</p></div>
+      <div class="stop"><b>Ne fais pas ça</b><p>Ne touche plus jamais à <code>/dev</code> après cette étape. Il reste en ligne pour deux raisons : c'est ton filet de sécurité, et c'est de lui que l'import ira chercher les 65 photos.</p></div>
+    </div>
+  </div>
+
+  <div class="etape">
+    <div class="num">2</div>
+    <div>
+      <h3>Vider entièrement <code>/dev2</code></h3>
+      <span class="duree">Tableau de bord de /dev2 · environ 20 minutes</span>
+      <p style="font-size:.95rem">C'est l'étape qui transforme une copie en base neuve. On garde les extensions, le thème et la licence Elementor Pro ; on retire tout le contenu.</p>
+      <ol>
+        <li><span class="chemin">Pages</span> → coche la case du haut pour tout sélectionner → <em>Actions groupées → Mettre à la corbeille</em> → <strong>Appliquer</strong>. Puis onglet <em>Corbeille</em> → <strong>Vider la corbeille</strong>.</li>
+        <li><span class="chemin">Articles</span> → même chose, corbeille comprise.</li>
+        <li><span class="chemin">Modèles → Constructeur de thème</span> → supprime les en-têtes, les pieds de page et les gabarits d'événement. Il ne doit plus rien rester.</li>
+        <li><span class="chemin">Modèles → Modèles enregistrés</span> → supprime tout ce qui s'y trouve.</li>
+        <li><span class="chemin">Apparence → Menus</span> → pour chaque menu de la liste : <strong>Supprimer le menu</strong>. Y compris « Menu Galerie duplicate ».</li>
+        <li><span class="chemin">Médias → Bibliothèque</span> → bascule en <em>mode liste</em> (l'icône de liste en haut à gauche), coche la case du haut, <em>Actions groupées → Supprimer définitivement</em>. Répète jusqu'à ce que la bibliothèque affiche zéro élément.</li>
+        <li><span class="chemin">Snippets</span> (Code Snippets) → désactive et supprime les trois boîtes <code>soha_a11y</code>, <code>soha_finition</code>, <code>soha_vitesse</code> si elles sont là.</li>
+        <li><span class="chemin">Événements</span> (The Events Calendar) → supprime les événements, les lieux et les organisateurs qui restent.</li>
+      </ol>
+      <div class="verif"><b>Vérifie avant de continuer</b><p>Pages : 0. Articles : 0. Médiathèque : 0 élément. Menus : aucun. Constructeur de thème : vide. <strong>Cette dernière ligne est la plus importante</strong> — une médiathèque non vide, et les <code>-1</code> reviennent.</p></div>
+    </div>
+  </div>
+
+  <div class="etape">
+    <div class="num">3</div>
+    <div>
+      <h3>Installer l'estimateur corrigé</h3>
+      <span class="duree">environ 3 minutes</span>
+      <ol>
+        <li><span class="chemin">Extensions → Ajouter → Téléverser une extension</span>.</li>
+        <li>Choisis <code>soha_extensionestimateur_20260910_v201.zip</code> → <strong>Installer</strong>.</li>
+        <li>Si une version 2.0.0 est déjà là, WordPress proposera <strong>Remplacer par l'envoi</strong> : accepte.</li>
+        <li><strong>Activer</strong>.</li>
+      </ol>
+      <div class="verif"><b>Vérifie</b><p>Dans la liste des extensions, « Soha — Estimateur de location » affiche <strong>2.0.1</strong> et est active. On l'installe avant l'import pour que le raccourci <code>[soha_estimateur]</code> soit reconnu dès que la page arrive.</p></div>
+    </div>
+  </div>
+
+  <div class="etape">
+    <div class="num">4</div>
+    <div>
+      <h3>Importer le kit — une seule fois</h3>
+      <span class="duree">environ 15 minutes, l'import est long</span>
+      <ol>
+        <li><span class="chemin">Elementor → Outils → Importer / Exporter</span> → <strong>Importer un kit</strong>.</li>
+        <li>Choisis <code>soha_kitdev_20260910_v05.zip</code>.</li>
+        <li>À l'écran de sélection, laisse <strong>tout coché</strong> : réglages du site, contenu, gabarits, extensions.</li>
+        <li>Lance l'import et <strong>ne ferme pas l'onglet</strong>. Il télécharge 65 images depuis <code>/dev</code> : c'est ce qui prend le temps.</li>
+      </ol>
+      <div class="stop"><b>La règle de cette étape</b><p>Un import, un seul. Si quelque chose te semble incomplet, <strong>ne relance pas l'import</strong> — c'est exactement ce geste qui a créé les doublons. Écris-moi plutôt.</p></div>
+      <div class="verif"><b>Vérifie avant de continuer</b><p>Ouvre <span class="chemin">Pages</span> : tu dois en compter <strong>douze</strong>, sans aucun suffixe <code>-2</code> dans les adresses. Puis <span class="chemin">Médias</span> : environ 65 images, <strong>aucune ne finissant par <code>-1</code></strong>. Enfin, ouvre la page d'accueil : les photos doivent s'afficher. Si elles manquent, arrête-toi là et dis-le-moi — j'ai la variante de rechange prête, c'est deux minutes.</p></div>
+    </div>
+  </div>
+
+  <div class="etape">
+    <div class="num">5</div>
+    <div>
+      <h3>Installer la Finition</h3>
+      <span class="duree">environ 3 minutes</span>
+      <ol>
+        <li><span class="chemin">Extensions → Ajouter → Téléverser une extension</span> → <code>soha_extensionfinition_20260909_v121.zip</code> → <strong>Installer</strong> → <strong>Activer</strong>.</li>
+        <li>Retourne dans <span class="chemin">Snippets</span> et confirme qu'aucune des trois anciennes boîtes n'est active : l'extension fait leur travail, et les avoir toutes les deux pose les images d'articles en double.</li>
+      </ol>
+      <div class="verif"><b>Vérifie</b><p>« Centre Soha — Finition » affiche <strong>1.2.1</strong> et est active. Elle apporte l'accessibilité, les textes alternatifs des photos, le préchargement du grand visuel et l'avis de témoins en français.</p></div>
+    </div>
+  </div>
+
+  <div class="etape">
+    <div class="num">6</div>
+    <div>
+      <h3>Les réglages qui ne s'importent pas</h3>
+      <span class="duree">environ 10 minutes</span>
+      <ol>
+        <li><span class="chemin">Réglages → Lecture</span> → <em>Votre page d'accueil affiche</em> : <strong>Une page statique</strong> → Page d'accueil : <strong>Accueil</strong>. Laisse « Page des articles » vide.</li>
+        <li><span class="chemin">Réglages → Permaliens</span> → <strong>Titre de la publication</strong> → Enregistrer. <em>Refais-le une seconde fois</em> même sans rien changer : c'est ce qui régénère les adresses.</li>
+        <li><span class="chemin">Apparence → Menus</span> → sélectionne « Menu Galerie » → coche son emplacement d'affichage → Enregistrer.</li>
+        <li><span class="chemin">Elementor → Outils → Régénérer les fichiers CSS</span> → lance-le.</li>
+        <li><span class="chemin">Réglages → Lecture</span> → assure-toi que <em>« Demander aux moteurs de recherche de ne pas indexer ce site »</em> est <strong>coché</strong>. C'est un site de travail : il ne doit pas apparaître dans Google.</li>
+      </ol>
+      <div class="verif"><b>Vérifie</b><p>L'adresse <code>centresoha.com/dev2/</code> affiche l'accueil, avec le menu complet en haut et le pied de page en bas.</p></div>
+    </div>
+  </div>
+
+  <div class="etape">
+    <div class="num">7</div>
+    <div>
+      <h3>La tournée des trois écrans</h3>
+      <span class="duree">environ 25 minutes · à faire sur un vrai téléphone</span>
+      <p style="font-size:.95rem">Pas l'aperçu d'Elementor : ton téléphone, ta tablette, ton ordinateur. La liste ci-dessous est faite pour être cochée au fur et à mesure.</p>
+      <ul class="liste-verif" id="verifs">
+        <li><input type="checkbox" id="v1"><label for="v1">Sur téléphone, les six pages du menu s'ouvrent, et rien ne déborde sur le côté<small>Aucune page ne doit se faire glisser horizontalement.</small></label></li>
+        <li><input type="checkbox" id="v2"><label for="v2">Sur téléphone, l'en-tête collant ne mange pas la moitié de l'écran<small>Le logo s'empile au-dessus du menu : c'est le point à juger.</small></label></li>
+        <li><input type="checkbox" id="v3"><label for="v3">Sur tablette, le bouton hamburger s'ouvre, se ferme, et les liens se touchent au doigt sans effort</label></li>
+        <li><input type="checkbox" id="v4"><label for="v4">Le bouton « Voir la semaine » descend bien jusqu'à la grille des cours<small>C'est le lien réparé — la preuve que le kit v05 est bien celui qui est en place.</small></label></li>
+        <li><input type="checkbox" id="v5"><label for="v5">Sur Espaces professionnels, l'estimateur s'affiche et calcule<small>Change de salle, de moment : le prix doit changer.</small></label></li>
+        <li><input type="checkbox" id="v6"><label for="v6">Le bouton « Demander cette réservation » descend jusqu'au formulaire de la même page<small>Il ne doit plus mener à une page introuvable.</small></label></li>
+        <li><input type="checkbox" id="v7"><label for="v7">Les dix-sept photos du studio s'affichent toutes<small>C'est la page qui portait le problème d'images : si elle est bonne, tout l'est.</small></label></li>
+        <li><input type="checkbox" id="v8"><label for="v8">Sur Prendre soin, les neuf portraits sont là et chaque « Prendre rendez-vous » ouvre GoRendezvous</label></li>
+        <li><input type="checkbox" id="v9"><label for="v9">Sur Se transformer, plus aucun « Voir le détail » ne mène à une erreur</label></li>
+        <li><input type="checkbox" id="v10"><label for="v10">Le pied de page mène aux dix destinations, et le logo du haut ramène à l'accueil</label></li>
+        <li><input type="checkbox" id="v11"><label for="v11">Le Journal affiche ses treize articles, chacun avec sa photo<small>C'est le seul endroit où il restait un doute sur les images.</small></label></li>
+        <li><input type="checkbox" id="v12"><label for="v12">Nulle part une adresse ne se termine par <code>-2</code><small>La preuve définitive qu'aucun doublon n'est revenu.</small></label></li>
+      </ul>
+      <p class="progres" id="progres">0 sur 12 vérifié</p>
+    </div>
+  </div>
+</section>
+
+<section id="decisions">
+  <h2>Ce qui reste à trancher</h2>
+  <p>Trois choses que je ne peux pas décider à ta place, parce qu'elles touchent au contenu, pas à la technique. Aucune n'empêche la mise en route.</p>
+
+  <div class="decision">
+    <h3>Les trois ateliers sans page</h3>
+    <p><em>Activation de l'énergie sacrée</em>, <em>Atelier d'écriture spontanée</em> et <em>Core Energetics</em> sont annoncés dans deux départements mais n'ont pas de fiche.</p>
+    <ul class="options">
+      <li>Tu m'envoies leur contenu et je fabrique les trois fiches sur le modèle de celle du Dialogue Authentique.</li>
+      <li>Ou on retire les trois annonces jusqu'à ce que les dates soient fermes.</li>
+      <li>En attendant, les boutons mènent à la liste des ateliers : personne ne tombe sur une erreur.</li>
+    </ul>
+  </div>
+
+  <div class="decision">
+    <h3>Les quatre vidéos de visite virtuelle</h3>
+    <p>Elles ne vivent que sur le <code>/dev</code> actuel. Tant qu'il reste en ligne, les boutons marchent.</p>
+    <ul class="options">
+      <li>Le jour où tu retires <code>/dev</code>, il faut d'abord les téléverser dans <code>/dev2</code> et me le dire pour que je recâble les quatre boutons.</li>
+    </ul>
+  </div>
+
+  <div class="decision">
+    <h3>Contact dans le menu</h3>
+    <p>Le menu mène aux six départements et à soha·live. Contact et Première visite ne sont accessibles que par le pied de page et par les boutons dans les pages.</p>
+    <ul class="options">
+      <li>C'est défendable : le bouton <em>Réserver</em> occupe déjà le coin haut-droit, et un menu court se lit mieux au téléphone.</li>
+      <li>Si tu préfères l'ajouter, c'est <span class="chemin">Apparence → Menus</span> : deux clics, aucun risque.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="pied">
+  <p>Analyse fondée sur quatre sources : l'export réel <code>dev_2</code> du 9 septembre, le kit corrigé v04 du 7 septembre, le kit médias v04 et les quatre extensions maison. Les deux fichiers livrés passent les contrôles automatiques — tous les JSON du kit se relisent sans erreur, et l'extension passe <code>php -l</code>.</p>
+  <p style="margin-bottom:0">Le cap n'a pas changé : à chaque cycle, moins d'étapes à la main. Celui-ci en retire une grosse — le téléversement des médias disparaît de la procédure, et avec lui la moitié des ennuis.</p>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var cases = document.querySelectorAll('#verifs input[type="checkbox"]');
+  var sortie = document.getElementById('progres');
+  var CLE = 'soha-base-neuve-verifs';
+
+  function lire(){
+    try { return JSON.parse(localStorage.getItem(CLE) || '{}'); }
+    catch (e) { return {}; }
+  }
+  function ecrire(etat){
+    try { localStorage.setItem(CLE, JSON.stringify(etat)); }
+    catch (e) { /* navigation privée : on continue sans mémoire */ }
+  }
+  function compter(){
+    var n = 0;
+    cases.forEach(function(c){ if (c.checked) n++; });
+    sortie.textContent = n + ' sur ' + cases.length + ' vérifié' + (n > 1 ? 's' : '');
+  }
+
+  var etat = lire();
+  cases.forEach(function(c){
+    if (etat[c.id]) c.checked = true;
+    c.addEventListener('change', function(){
+      var e = lire();
+      e[c.id] = c.checked;
+      ecrire(e);
+      compter();
+    });
+  });
+  compter();
+})();
+</script>
