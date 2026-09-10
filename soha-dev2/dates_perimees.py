@@ -42,6 +42,11 @@ PROMESSES = ("session", "quand", "date", "dates", "atelier", "retraite", "inscri
              "inscrire", "avant le", "prochaine", "prochain", "rendez-vous", "cours",
              "dépôt", "remboursement", "tarif", "réservation")
 
+# Une archive porte des dates passées : c'est son travail. La signaler à chaque
+# passage, c'est apprendre à ignorer l'outil — et un outil qu'on ignore ne
+# protège plus de rien.
+ARCHIVES = ("archive-liste", "a-date", "class=\"archive")
+
 
 def titres_du_manifeste(dossier):
     """Les pages d'un kit sont des fichiers numérotés ; leurs noms sont ailleurs.
@@ -126,6 +131,8 @@ def perimees(dossier, le_jour):
                 continue
 
             for titre, brut in source:
+                if any(marque in brut for marque in ARCHIVES):
+                    continue
                 texte = nettoyer(brut)
                 for m in MOTIF.finditer(texte):
                     jour = int(m.group(1))
@@ -138,7 +145,12 @@ def perimees(dossier, le_jour):
                     if quand >= le_jour:
                         continue
                     autour = texte[max(0, m.start() - 70):m.end() + 45].lower()
-                    if not any(mot in autour for mot in PROMESSES):
+                    # Une pastille qui ne contient qu'une date EST une annonce :
+                    # « 12 – 13 septembre 2026 », seul, en haut d'une page
+                    # d'atelier. Aucun mot alentour ne le dira, parce qu'il n'y a
+                    # rien alentour.
+                    seul = len(texte) <= 60 and len(m.group(0)) >= len(texte) / 2
+                    if not seul and not any(mot in autour for mot in PROMESSES):
                         continue
                     trouvailles.append((
                         quand,

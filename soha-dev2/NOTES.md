@@ -1027,3 +1027,72 @@ outil plutôt qu'au canon.
 Elle reste juste, exacte, bien orthographiée — et fausse à partir d'un certain
 jour. Toute page qui promet une date a besoin d'une vérification qui connaît la
 date d'aujourd'hui.
+
+---
+
+# Cycle 16 · Les dates retirées — et 84 liens qui menaient nulle part
+
+## Les dates
+Mala : « on retire les dates partout, je te les redonnerai. » Treize passages
+neutralisés. La page « Se ressourcer » avait déjà sa formule d'attente sur un
+cours sans date — « Niveau 1 · prochaine session à venir » — alors on l'a
+adoptée plutôt que d'en inventer une deuxième. Deux façons de dire la même chose
+sur la même page, c'est déjà une incohérence.
+
+Trois choses ont été **gardées**, et « partout » ne les couvrait pas :
+- **12 – 13 septembre 2026** : c'est dans deux jours, et c'est la seule date
+  encore vraie. Sur trois pages, dont « Introduction au Dialogue Authentique ».
+- **La liste d'archives de « Se transformer »** : une archive dont on retire les
+  dates ne raconte plus rien.
+- **Quatre lignes déjà neutres** sur « Se ressourcer » (« toute l'année »,
+  « dates variées », « annoncé sur la page de réservation ») — le script
+  vérifie qu'elles sont toujours là après son passage.
+
+Sur Core Energetics, les échéances commerciales périmées sont renvoyées à
+l'organisateur : « avant la date limite annoncée par l'organisateur ». C'est son
+atelier et son barème ; la page dit déjà « pour s'inscrire : auprès de
+l'organisateur·rice, pas auprès du Centre ». Réécrire sa politique de
+remboursement à sa place aurait été pire que de la laisser vide.
+
+`dates_perimees.py` a été affûté deux fois par ce cycle :
+- il **ignore les archives** (`archive-liste`, `a-date`) — un outil qui crie au
+  loup à chaque passage finit muet ;
+- il **voit les pastilles nues**. « 12 – 13 septembre 2026 », seul dans un
+  `<span>` en haut de page, est une annonce ; aucun mot alentour ne le dira,
+  parce qu'il n'y a rien alentour. C'est ainsi qu'une troisième page portant
+  cette date est apparue.
+
+## Le défaut qui aurait tout cassé à l'import
+**Les 84 liens internes du kit pointaient vers `/dev2/`**, alors que le
+manifeste déclare `https://centresoha.com/dev` et que les 80 adresses d'images
+vivent sous `/dev/wp-content/uploads/`. Importé tel quel, chaque lien interne du
+site — menu compris — menait à une page introuvable.
+
+Deux raisons pour lesquelles ça ne s'était jamais vu :
+1. **Le site statique le masquait.** `build_site.py` traduit ces adresses en
+   fichiers locaux ; le site HTML fonctionnait parfaitement, et l'audit des 107
+   liens du cycle 1 les avait tous vus valides. C'est WordPress, et lui seul,
+   qui trébuche.
+2. **L'import ne le corrige pas.** Elementor réécrit l'origine des adresses
+   *absolues* au moment d'importer. Une adresse qui commence par une barre
+   oblique n'a pas d'origine à réécrire : elle passe telle quelle.
+
+`kit_liens.py` lit le préfixe **dans le manifeste** plutôt que de le deviner, le
+pose partout, et relit pour vérifier qu'il n'en reste aucun autre. Un
+`--prefixe` permet d'en changer en une commande si le site déménage vers
+`/dev2`, et `--verifier` regarde sans écrire.
+
+**Hypothèse posée, à confirmer par Mala** : le site s'installe à `/dev`, parce
+que c'est ce que le kit déclare lui-même et là où sont ses images. Si c'est
+`/dev2`, une commande suffit.
+
+## Livré
+`soha_kitdev_20260910_v15.zip`, `soha_site-html_20260910_v11.zip`. Porte du
+regard : 29 pages, rien.
+
+## Leçon
+**Un traducteur bienveillant cache le défaut qu'il traduit.** Le générateur
+statique remettait les liens d'aplomb à chaque passage, si bien que la mesure
+disait « 107 liens, 0 cassé » sur un kit dont aucun lien ne fonctionnait dans sa
+vraie destination. Vérifier une chose dans un environnement qui la répare, c'est
+vérifier la réparation.
