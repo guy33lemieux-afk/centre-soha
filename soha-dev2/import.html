@@ -166,11 +166,18 @@ strong{font-weight:600}
   <h2><em>Phase 1</em> Cloudflare se met de côté <span class="duree">5 min</span></h2>
   <p>Cloudflare met tes pages en cache. Pendant tout ce qui suit, tu dois voir ton vrai site — pas une photo de ton site prise il y a une heure.</p>
 
+  <div class="attention">
+    <p class="titre">D'abord : entre dans le domaine</p>
+    <p>Le menu que tu vois en arrivant est celui du <strong>compte</strong> — Enquêter, Analytique, Calculer, IA. Rien de ce qui suit n'y est. Clique <strong>Domaines</strong>, puis <strong>centresoha.com</strong> : un second menu apparaît, celui du site, et c'est là que tout se passe.</p>
+    <p>Cloudflare a réorganisé ce menu récemment et les libellés bougent. Le chemin le plus sûr est la <strong>barre de recherche en haut du tableau de bord</strong> : tape « Rocket Loader », « Development Mode », « Purge » — elle t'amène directement au réglage. Utilise-la si un chemin ci-dessous ne correspond pas à ce que tu vois.</p>
+  </div>
+
   <ol class="gestes">
-    <li><label><input type="checkbox"><span class="quoi"><b>Mode développement : activé</b><span>Cloudflare cesse de mettre en cache pendant trois heures, puis se rallume tout seul. <span class="ou">Cloudflare → Caching → Configuration → Development Mode</span></span></span></label></li>
-    <li><label><input type="checkbox"><span class="quoi"><b>Rocket Loader : désactivé</b><span>Il diffère et réordonne les scripts de tes pages. C'est lui qu'on a vu dans ton onglet Réseau. <span class="ou">Cloudflare → Speed → Optimization → Content Optimization → Rocket Loader</span></span></span></label></li>
-    <li><label><input type="checkbox"><span class="quoi"><b>Regarde le nuage, onglet DNS</b><span><strong>Orange</strong> = tout passe par Cloudflare, et ta politique le dit maintenant. <strong>Gris</strong> = rien ne transite — dis-le-moi, je retire le paragraphe.</span></span></label></li>
-    <li><label><input type="checkbox"><span class="quoi"><b>Mode SSL : Full (strict)</b><span>Si tu lis « Flexible », change-le. Flexible fabrique des boucles de redirection et du contenu mixte, et le symptôme ressemble à tout sauf à sa cause. <span class="ou">Cloudflare → SSL/TLS → Overview</span></span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Ouvre le domaine</b><span><span class="ou">Domaines → centresoha.com</span> Tout ce qui suit vit à l'intérieur.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Mode développement : activé</b><span>Cloudflare cesse de mettre en cache pendant trois heures, puis se rallume tout seul. <span class="ou">Mise en cache → Configuration → Mode développement</span> ou cherche « Development Mode ».</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Rocket Loader : désactivé</b><span>Il diffère et réordonne les scripts de tes pages. C'est lui qu'on a vu dans ton onglet Réseau. <span class="ou">Paramètres → Optimisation → Rocket Loader</span> ou cherche « Rocket Loader ».</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Regarde le nuage, onglet DNS</b><span><span class="ou">DNS → Enregistrements</span> <strong>Orange</strong> = tout passe par Cloudflare, et ta politique le dit maintenant. <strong>Gris</strong> = rien ne transite — dis-le-moi, je retire le paragraphe.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Mode SSL : complet (strict)</b><span>Si tu lis « Flexible », change-le. Flexible fabrique des boucles de redirection et du contenu mixte, et le symptôme ressemble à tout sauf à sa cause. <span class="ou">SSL/TLS → Vue d'ensemble</span></span></span></label></li>
   </ol>
 
   <div class="attention">
@@ -248,7 +255,7 @@ strong{font-weight:600}
 
   <ol class="gestes">
     <li><label><input type="checkbox"><span class="quoi"><b>Vide le cache de Hummingbird</b><span><span class="ou">Hummingbird → Cache → Vider le cache</span> Sinon tes visiteurs continuent de recevoir les anciennes pages.</span></span></label></li>
-    <li><label><input type="checkbox"><span class="quoi"><b>Purge le cache Cloudflare</b><span><span class="ou">Cloudflare → Caching → Configuration → Purge Everything</span></span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Purge le cache Cloudflare</b><span><span class="ou">centresoha.com → Mise en cache → Configuration → Purger tout</span></span></span></label></li>
     <li><label><input type="checkbox"><span class="quoi"><b>Coupe le mode développement</b><span>Ou laisse-le expirer tout seul dans trois heures. Mais ne l'oublie pas allumé une semaine : ton site serait lent pour rien.</span></span></label></li>
     <li><label><input type="checkbox"><span class="quoi"><b>Une deuxième sauvegarde</b><span>Celle-ci contient un site qui marche. C'est celle vers laquelle tu voudras revenir la prochaine fois.</span></span></label></li>
     <li><label><input type="checkbox"><span class="quoi"><b>Ouvre les accès du CRM</b><span><span class="ou">CRM Soha → Accès</span> Toi, Dominique, Cassandra, Fred.</span></span></label></li>
