@@ -272,15 +272,17 @@ section > h2 + p{margin-top:16px}
 
 <section id="etat">
   <h2>Les liens, les boutons, les trois vues</h2>
-  <p>J'ai relevé <strong>107 liens et boutons</strong> dans les douze pages, l'en-tête et le pied de page, puis vérifié chaque ancre, chaque cible interne et chaque fichier appelé. Voici tout ce qui n'allait pas — et son état après correction.</p>
+  <p>J'ai relevé <strong>107 liens et boutons</strong> dans les douze pages, l'en-tête et le pied de page, puis vérifié chaque ancre, chaque cible interne et chaque fichier appelé. Dans le kit livré, <strong>aucun ne mène plus dans le vide</strong> — 107 sur 107. Voici ce qui n'allait pas, et ce qu'il en reste.</p>
 
   <ul class="constats">
-    <li><span class="etat repare">Réparé</span><div><b>Le bouton « Voir la semaine » ne descendait nulle part</b><span>Sur <em>Se ressourcer</em>, le bouton principal du haut de page visait <code>#horaire</code> — une ancre qui n'existe sur aucune page. La grille de la semaine s'appelle <code>#soha-semaine</code>. Corrigé dans le kit v05.</span></div></li>
-    <li><span class="etat repare">Réparé</span><div><b>Cinq boutons menaient à des pages inexistantes</b><span>« Voir le détail » et « Voir l'atelier » pointaient vers <code>activation-de-lenergie-sacree</code>, <code>atelier-decriture-spontanee</code> et <code>core-energetics-coeur-et-bassin</code> : trois pages absentes du kit. Les cinq mènent maintenant à la section <em>Ce qui vient</em> de <em>Se transformer</em>, qui existe. Plus aucune erreur 404.</span></div></li>
+    <li><span class="etat repare">Réparé</span><div><b>Le bouton « Voir la semaine » ne descendait nulle part</b><span>Sur <em>Se ressourcer</em>, le bouton principal du haut de page visait <code>#horaire</code> — une ancre qui n'existe sur aucune page. La grille de la semaine s'appelle <code>#soha-semaine</code>. Corrigé dans le kit v06.</span></div></li>
+    <li><span class="etat repare">Réparé</span><div><b>Cinq boutons d'atelier menaient dans le vide</b><span>« Voir le détail » et « Voir l'atelier » visaient trois pages absentes du kit. Ces trois ateliers ne sont pas des pages : ce sont des <strong>événements du site de production</strong>, et ils existent bel et bien. Les cinq boutons pointent maintenant vers leur vraie adresse — <code>centresoha.com/event/…</code> — et s'ouvrent dans un nouvel onglet, pour que le visiteur ne perde pas sa place.</span></div></li>
     <li><span class="etat repare">Réparé</span><div><b>Le bouton final de l'estimateur tombait dans le vide</b><span>L'extension pointait vers <code>/reservation/</code>, une page qui n'existe nulle part sur le site. Elle vise désormais le formulaire de demande réel, <code>#demande</code>, sur la page des espaces — et l'adresse se recalcule toute seule, quel que soit le dossier d'installation.</span></div></li>
     <li><span class="etat repare">Réparé</span><div><b>Un conteneur vide traînait dans l'en-tête</b><span>Un second bloc de premier niveau, sans aucun contenu, hérité des allers-retours. Retiré.</span></div></li>
     <li><span class="etat avoir">À décider</span><div><b>Quatre « Visite virtuelle » pointent vers des vidéos hors du kit</b><span>Les quatre fichiers <code>.mp4</code> vivent dans <code>uploads/2026/06/</code> sur le <code>/dev</code> actuel et ne sont pas dans le kit médias. Ils continueront de fonctionner tant que <code>/dev</code> reste en ligne. À rapatrier avant de le retirer.</span></div></li>
     <li><span class="etat avoir">À décider</span><div><b>Contact et Première visite ne sont pas dans le menu</b><span>Le menu compte six entrées plus <em>soha·live ↗</em>. Contact n'est joignable que par le pied de page et par les boutons dans les pages. Ce n'est pas cassé — c'est un choix à confirmer.</span></div></li>
+    <li><span class="etat sain">Sain</span><div><b>La structure des titres du kit est juste</b><span>Exactement <strong>un seul H1 par page</strong>, sur les douze, et toujours le bon : « Pose ta pratique ici. », « Ta voix mérite un vrai studio. ». Les trois pages que tu m'as envoyées en HTML sauvegardé montrent une <em>autre</em> génération du /dev, et celle-là est défectueuse : aucun H1 du tout sur <em>Les Espaces</em> et <em>Prendre soin de soi</em>, et sur le Studio trois H1 qui sont… les trois prix. Le kit a déjà corrigé tout ça.</span></div></li>
+    <li><span class="etat avoir">À décider</span><div><b>Une section a disparu en chemin</b><span>L'ancienne page des Espaces portait un bloc <em>« Ils nous font confiance — nos partenaires le vivent »</em> que le kit n'a plus. Les témoignages, eux, ont survécu (reformulés en « Ce qu'en disent celles et ceux qui y travaillent »). À remettre ou à laisser : c'est un choix éditorial.</span></div></li>
     <li><span class="etat sain">Sain</span><div><b>Le reste des liens tient</b><span>Les vingt ancres restantes trouvent leur cible. Les liens de réservation GoRendezvous, la carte, le téléphone et les courriels sont bien formés. Le pied de page rattrape les dix départements.</span></div></li>
   </ul>
 
@@ -331,7 +333,7 @@ section > h2 + p{margin-top:16px}
   <h2>Les deux fichiers à utiliser</h2>
   <p>Ils remplacent les versions précédentes. Tout le reste de ce que tu m'as envoyé sert de source ou de filet, pas d'ingrédient.</p>
   <ul class="fichiers">
-    <li><span class="nom">soha_kitdev_20260910_v05.zip</span><span class="quoi">Le kit du site. Reprend le kit corrigé v04 et y applique quatre correctifs : l'ancre morte, les cinq boutons sans page, le conteneur vide de l'en-tête, et les 73 liens de page recâblés vers la nouvelle adresse. Les 65 adresses d'images restent volontairement pointées sur le <code>/dev</code> actuel — c'est de là que l'import ira les chercher.</span></li>
+    <li><span class="nom">soha_kitdev_20260910_v06.zip</span><span class="quoi">Le kit du site. Reprend le kit corrigé v04 et y applique quatre correctifs : l'ancre morte, les cinq boutons sans page, le conteneur vide de l'en-tête, et les 73 liens de page recâblés vers la nouvelle adresse. Les 65 adresses d'images restent volontairement pointées sur le <code>/dev</code> actuel — c'est de là que l'import ira les chercher.</span></li>
     <li><span class="nom">soha_extensionestimateur_20260910_v201.zip</span><span class="quoi">L'estimateur, corrigé. Même grille de 24 tarifs, même affichage ; seul le bouton final change de destination et devient indépendant du dossier d'installation.</span></li>
   </ul>
   <p style="font-size:.94rem;color:var(--texte-doux)"><strong>Le kit médias ne sert pas</strong> à cette installation — garde-le comme sauvegarde des 74 photos d'origine. Sur les quatre extensions maison, deux seulement changent quelque chose à l'écran : l'estimateur et la Finition. Les extensions <em>Praticien·nes (CMS)</em> et <em>Centre (shortcodes)</em> déclarent huit raccourcis dont <strong>aucun n'apparaît dans les pages du kit</strong> : les installer ne casse rien, mais ne rend rien visible non plus. Elles attendent un usage futur.</p>
@@ -400,7 +402,7 @@ section > h2 + p{margin-top:16px}
       <span class="duree">environ 15 minutes, l'import est long</span>
       <ol>
         <li><span class="chemin">Elementor → Outils → Importer / Exporter</span> → <strong>Importer un kit</strong>.</li>
-        <li>Choisis <code>soha_kitdev_20260910_v05.zip</code>.</li>
+        <li>Choisis <code>soha_kitdev_20260910_v06.zip</code>.</li>
         <li>À l'écran de sélection, laisse <strong>tout coché</strong> : réglages du site, contenu, gabarits, extensions.</li>
         <li>Lance l'import et <strong>ne ferme pas l'onglet</strong>. Il télécharge 65 images depuis <code>/dev</code> : c'est ce qui prend le temps.</li>
       </ol>
@@ -448,12 +450,12 @@ section > h2 + p{margin-top:16px}
         <li><input type="checkbox" id="v1"><label for="v1">Sur téléphone, les six pages du menu s'ouvrent, et rien ne déborde sur le côté<small>Aucune page ne doit se faire glisser horizontalement.</small></label></li>
         <li><input type="checkbox" id="v2"><label for="v2">Sur téléphone, l'en-tête collant ne mange pas la moitié de l'écran<small>Le logo s'empile au-dessus du menu : c'est le point à juger.</small></label></li>
         <li><input type="checkbox" id="v3"><label for="v3">Sur tablette, le bouton hamburger s'ouvre, se ferme, et les liens se touchent au doigt sans effort</label></li>
-        <li><input type="checkbox" id="v4"><label for="v4">Le bouton « Voir la semaine » descend bien jusqu'à la grille des cours<small>C'est le lien réparé — la preuve que le kit v05 est bien celui qui est en place.</small></label></li>
+        <li><input type="checkbox" id="v4"><label for="v4">Le bouton « Voir la semaine » descend bien jusqu'à la grille des cours<small>C'est le lien réparé — la preuve que le kit v06 est bien celui qui est en place.</small></label></li>
         <li><input type="checkbox" id="v5"><label for="v5">Sur Espaces professionnels, l'estimateur s'affiche et calcule<small>Change de salle, de moment : le prix doit changer.</small></label></li>
         <li><input type="checkbox" id="v6"><label for="v6">Le bouton « Demander cette réservation » descend jusqu'au formulaire de la même page<small>Il ne doit plus mener à une page introuvable.</small></label></li>
         <li><input type="checkbox" id="v7"><label for="v7">Les dix-sept photos du studio s'affichent toutes<small>C'est la page qui portait le problème d'images : si elle est bonne, tout l'est.</small></label></li>
         <li><input type="checkbox" id="v8"><label for="v8">Sur Prendre soin, les neuf portraits sont là et chaque « Prendre rendez-vous » ouvre GoRendezvous</label></li>
-        <li><input type="checkbox" id="v9"><label for="v9">Sur Se transformer, plus aucun « Voir le détail » ne mène à une erreur</label></li>
+        <li><input type="checkbox" id="v9"><label for="v9">Sur Se transformer, chaque « Voir le détail » ouvre la fiche de l'atelier dans un nouvel onglet<small>Trois ateliers, trois adresses réelles sur le site de production.</small></label></li>
         <li><input type="checkbox" id="v10"><label for="v10">Le pied de page mène aux dix destinations, et le logo du haut ramène à l'accueil</label></li>
         <li><input type="checkbox" id="v11"><label for="v11">Le Journal affiche ses treize articles, chacun avec sa photo<small>C'est le seul endroit où il restait un doute sur les images.</small></label></li>
         <li><input type="checkbox" id="v12"><label for="v12">Nulle part une adresse ne se termine par <code>-2</code><small>La preuve définitive qu'aucun doublon n'est revenu.</small></label></li>
@@ -468,12 +470,20 @@ section > h2 + p{margin-top:16px}
   <p>Trois choses que je ne peux pas décider à ta place, parce qu'elles touchent au contenu, pas à la technique. Aucune n'empêche la mise en route.</p>
 
   <div class="decision">
-    <h3>Les trois ateliers sans page</h3>
-    <p><em>Activation de l'énergie sacrée</em>, <em>Atelier d'écriture spontanée</em> et <em>Core Energetics</em> sont annoncés dans deux départements mais n'ont pas de fiche.</p>
+    <h3>La section des partenaires</h3>
+    <p>L'ancienne page des Espaces affichait un bloc de partenaires que le kit ne reprend pas.</p>
     <ul class="options">
-      <li>Tu m'envoies leur contenu et je fabrique les trois fiches sur le modèle de celle du Dialogue Authentique.</li>
-      <li>Ou on retire les trois annonces jusqu'à ce que les dates soient fermes.</li>
-      <li>En attendant, les boutons mènent à la liste des ateliers : personne ne tombe sur une erreur.</li>
+      <li>Tu me dis quels logos ou quels noms y figurent, et je rebâtis le bloc dans le style du kit.</li>
+      <li>Ou on laisse la page comme elle est : les témoignages portent déjà la preuve sociale.</li>
+    </ul>
+  </div>
+
+  <div class="decision">
+    <h3>Les polices : il en manque deux</h3>
+    <p>Le zip <code>schibstedgroteskv7latin</code> couvre la police du corps de texte — mais pas les deux autres. Le kit demande <strong>Fraunces</strong> (tous les titres, surtout en graisse 600, utilisée 128 fois) et <strong>DM Mono</strong> (les étiquettes et les prix).</p>
+    <ul class="options">
+      <li>Je n'ai <strong>pas</strong> installé Schibsted seul, et c'est volontaire : tant que Fraunces vient encore de Google, la police serait chargée deux fois — plus lent, pas plus rapide.</li>
+      <li>Envoie-moi <strong>Fraunces</strong> (300, 400, 500, 600, 700 + italique) et <strong>DM Mono</strong> (400, 500) en <code>.woff2</code>, de la même source. Je câble les trois d'un coup dans l'extension Finition : plus aucun appel à Google, premier affichage plus rapide, et la Loi 25 satisfaite.</li>
     </ul>
   </div>
 
@@ -496,7 +506,7 @@ section > h2 + p{margin-top:16px}
 </section>
 
 <footer class="pied">
-  <p>Analyse fondée sur quatre sources : l'export réel <code>dev_2</code> du 9 septembre, le kit corrigé v04 du 7 septembre, le kit médias v04 et les quatre extensions maison. Les deux fichiers livrés passent les contrôles automatiques — tous les JSON du kit se relisent sans erreur, et l'extension passe <code>php -l</code>.</p>
+  <p>Analyse fondée sur neuf sources : l'export réel <code>dev_2</code> du 9 septembre, le kit corrigé v04 du 7 septembre, le kit médias v04, les quatre extensions maison, les quatre fiches d'atelier du site de production, trois pages du /dev sauvegardées en HTML, et le jeu de polices Schibsted Grotesk. Les deux fichiers livrés passent les contrôles automatiques — les 45 fichiers du kit se relisent sans erreur, et l'extension passe <code>php -l</code>.</p>
   <p style="margin-bottom:0">Le cap n'a pas changé : à chaque cycle, moins d'étapes à la main. Celui-ci en retire une grosse — le téléversement des médias disparaît de la procédure, et avec lui la moitié des ennuis.</p>
 </footer>
 

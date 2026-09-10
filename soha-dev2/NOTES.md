@@ -1,7 +1,7 @@
 # Centre Soha — cycle du 10 septembre 2026
 
 ## Ce qui a été livré
-- `soha_kitdev_20260910_v05.zip` — kit Elementor corrigé (base : kit v04 du 7 sept).
+- `soha_kitdev_20260910_v06.zip` — kit Elementor corrigé (base : kit v04 du 7 sept).
 - `soha_extensionestimateur_20260910_v201.zip` — estimateur, bouton final recâblé.
 - `base-neuve.html` — analyse + marche à suivre en 7 étapes.
 
@@ -24,7 +24,7 @@ chercher les images sur le `/dev` qui reste en ligne.
 | Correctif | Nombre |
 |---|---|
 | Liens de page recâblés `/dev/` → `/dev2/` | 73 |
-| Boutons sans page cible, repointés vers `#evenements` | 5 |
+| Boutons d'atelier recâblés vers leur vrai événement | 5 |
 | Ancre morte `#horaire` → `#soha-semaine` | 1 |
 | Conteneur vide retiré de l'en-tête | 1 |
 | Adresses d'images laissées sur `/dev` (source de l'import) | 65 |
@@ -56,3 +56,61 @@ Avant toute procédure d'installation, **comparer deux exports successifs**. C'e
 comparaison — pas la lecture d'un seul export — qui a désigné le geste fautif en une
 ligne. Et un correctif ne vaut que s'il supprime une étape manuelle : ce cycle retire
 le téléversement des médias.
+
+
+---
+
+# Complément du 10 septembre — cinq fichiers de plus
+
+Reçus après la première livraison : `soha_event.zip`, trois pages du /dev
+sauvegardées en HTML, et le jeu de polices Schibsted Grotesk v7.
+
+## Les trois « pages manquantes » n'en étaient pas
+`soha_event.zip` contient les quatre fiches d'atelier. Ce sont des **événements
+du site de production**, pas des pages de /dev :
+
+| slug attendu par le kit | vraie adresse |
+|---|---|
+| `activation-de-lenergie-sacree` | `centresoha.com/event/activation-energie-sacree-kundalini/` |
+| `atelier-decriture-spontanee` | `centresoha.com/event/atelier-decriture-spontanee/` |
+| `core-energetics-coeur-et-bassin` | `centresoha.com/event/atelier-core-energetics-sexualite-union-coeur-bassin/` |
+
+→ Kit **v06** : les 5 boutons pointent vers ces adresses réelles, en nouvel
+onglet (`is_external: on`). Le repli vers `#evenements` du v05 est retiré.
+**107 liens relevés, 0 cassé.**
+
+## Les trois pages HTML sont une AUTRE génération du /dev
+IDs 884–1015, slugs `le-studio-podcast`, `les-espaces`, `prendre-soin-de-soi` —
+distincts du kit (7319–7388) et de l'export dev_2 (208–317). Trois générations
+coexistent donc dans l'historique du /dev.
+
+Défauts de cette génération, que le kit a déjà corrigés :
+- **aucun H1** sur *Les Espaces* et *Prendre soin de soi* (le héros est un h2) ;
+- **trois H1 sur le Studio**, et ce sont les trois prix (`300 $`, `360 $`, `420 $`) ;
+- 21 éléments masqués par `elementor-hidden-tablet` / `-mobile` (en-tête/pied) ;
+- images sans `width`/`height` (10/20 sur Espaces) → risque de CLS ;
+- 10 images sans attribut `alt` du tout sur Espaces.
+
+Contrôle du kit v06 : **un seul H1 par page, sur les douze**, texte juste à
+chaque fois. Ordre des titres propre (h6 surtitre → h1 → h2 → h3).
+
+Seule perte de contenu réelle : le bloc **partenaires** (« Ils nous font
+confiance ») de l'ancienne page Espaces. Les témoignages ont survécu, reformulés.
+
+## Polices : le zip ne couvre qu'un tiers du besoin
+Familles demandées par le kit : **Schibsted Grotesk** ×395 (300/400/500/600/700/800),
+**Fraunces** ×151 (300/400/500/**600 ×128**/700 + italique), **DM Mono** ×32 (400/500).
+
+Le zip fourni ne contient que Schibsted (400/500/600/700/italique).
+**Rien n'a été câblé, volontairement** : héberger Schibsted seul pendant que
+Fraunces vient encore de Google ferait charger la police deux fois — plus lent,
+et zéro gain Loi 25 puisque l'appel à Google subsiste.
+
+À demander : Fraunces (300/400/500/600/700 + italique) et DM Mono (400/500) en
+`.woff2`. Les trois se câblent alors d'un coup dans l'extension Finition.
+
+## Leçon du complément
+Un lien « mort » n'est pas toujours une page manquante : vérifier le **type de
+contenu** avant de conclure. Trois fiches d'atelier existaient depuis le début,
+sous `/event/`. Et avant de livrer un demi-correctif (une police sur trois),
+mesurer s'il ne dégrade pas ce qu'il prétend améliorer.
