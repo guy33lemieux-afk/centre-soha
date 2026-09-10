@@ -24,6 +24,18 @@ class Faux_Mailchimp {
     public static $panne = false;      // simule un service qui ne répond pas
     public static $refus = null;       // force un refus : array(statut, detail)
 
+    /**
+     * Comment répondre à un PUT sur une adresse déjà désabonnée.
+     *
+     * Les deux formes existent dans la nature et je ne sais pas laquelle Mala
+     * rencontrera : Mailchimp peut refuser avec un 400 « Member In Compliance
+     * State », ou accepter par un 200 en renvoyant simplement
+     * « status: unsubscribed » — puisque notre corps n'envoie jamais `status`,
+     * il n'y a rien à refuser. Le banc essaie donc les deux, et l'extension doit
+     * faire la même chose dans les deux cas : redresser la fiche.
+     */
+    public static $desabonnee = 'conformite';   // 'conformite' | 'silencieux'
+
     public static function brancher() {
         add_filter('pre_http_request', array(__CLASS__, 'repondre'), 10, 3);
     }
@@ -33,6 +45,7 @@ class Faux_Mailchimp {
         self::$membres = array();
         self::$panne = false;
         self::$refus = null;
+        self::$desabonnee = 'conformite';
     }
 
     private static function json($statut, $corps) {
@@ -115,6 +128,12 @@ class Faux_Mailchimp {
                 /* Le vrai Mailchimp refuse de réinscrire quelqu'un qui s'est
                    désabonné : c'est le cas d'erreur qui compte le plus ici. */
                 if ($existe && 'unsubscribed' === self::$membres[$hash]['status']) {
+                    if ('silencieux' === self::$desabonnee) {
+                        /* 200, et c'est tout : l'adresse reste désabonnée et
+                           rien dans le code de réponse ne le dit. C'est le cas
+                           traître — celui où un client naïf croit avoir réussi. */
+                        return self::json(200, self::$membres[$hash]);
+                    }
                     return self::json(400, array(
                         'title' => 'Member In Compliance State', 'status' => 400,
                         'detail' => 'This contact was permanently deleted or unsubscribed and cannot be re-imported.',

@@ -176,6 +176,33 @@ function soha_crm_ecran_infolettre() {
                 ?></p></div>
             <?php endif; ?>
 
+            <?php $refus = (array) get_option(SOHA_CRM_INFO_REFUS, array());
+            if ($refus) : ?>
+                <h3><?php esc_html_e('Des fiches que Mailchimp a corrigées', 'soha-crm'); ?></h3>
+                <p style="max-width:74ch"><?php esc_html_e(
+                    "Ces personnes étaient marquées abonnées dans le CRM ; Mailchimp nous a appris qu'elles s'étaient désabonnées chez lui. La fiche a été redressée toute seule — sans quoi tu aurais vu « abonnée » sur une personne qui ne reçoit plus rien. Si l'une d'elles veut revenir, elle doit se réinscrire elle-même : ni toi ni moi ne pouvons le faire à sa place, et c'est ainsi que ça doit être.",
+                    'soha-crm'
+                ); ?></p>
+                <table class="widefat striped" style="max-width:720px">
+                    <thead><tr>
+                        <th><?php esc_html_e('Adresse', 'soha-crm'); ?></th>
+                        <th><?php esc_html_e('Ce que Mailchimp a dit', 'soha-crm'); ?></th>
+                        <th><?php esc_html_e('Quand', 'soha-crm'); ?></th>
+                    </tr></thead>
+                    <tbody>
+                    <?php foreach ($refus as $x) : ?>
+                        <tr>
+                            <td class="code"><?php echo esc_html($x['courriel']); ?></td>
+                            <td><?php echo esc_html($x['raison']); ?></td>
+                            <td><?php echo esc_html(date_i18n(
+                                get_option('date_format'), (int) $x['quand']
+                            )); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+
             <?php if (!empty($journal['quand'])) : ?>
                 <p style="color:#646970"><?php printf(
                     /* translators: 1 : date, 2 : envoyées, 3 : restantes. */

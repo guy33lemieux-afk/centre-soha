@@ -498,15 +498,54 @@ $m = Faux_Mailchimp::membre($courriel_test);
 dit("décocher désabonne chez Mailchimp", $m && 'unsubscribed' === $m['status'], $m ? $m['status'] : '');
 
 /* --- et Mailchimp refuse de la réinscrire, ce qui est son droit ----------- */
-$reg2 = json_decode(soha_crm_registre_lire()['valeur'], true);
-$reg2['contacts'][$i]['infolettre']['abonne'] = true;
-soha_crm_registre_ecrire(wp_json_encode($reg2));
-soha_crm_info_vider_la_file();
-$restante = (array) get_option(SOHA_CRM_INFO_FILE, array());
-dit("un refus de réinscription est gardé et expliqué",
-    isset($restante[$courriel_test]) && 1 === (int) $restante[$courriel_test]['essais']
-    && false !== strpos($restante[$courriel_test]['erreur'], 'unsubscribed'),
-    isset($restante[$courriel_test]) ? substr($restante[$courriel_test]['erreur'], 0, 48) : 'file vide');
+/* Ce qui compte ici n'est pas le refus : c'est que la fiche cesse de mentir.
+   Avant, le CRM affichait « abonnée » pendant que Mailchimp ne lui écrivait
+   plus — la même erreur que le crochet de retour corrige dans l'autre sens.
+   Et les deux formes de refus sont essayées, parce que je ne sais pas laquelle
+   Mala rencontrera. */
+foreach (array('conformite', 'silencieux') as $forme) {
+    Faux_Mailchimp::$desabonnee = $forme;
+    update_option(SOHA_CRM_INFO_REFUS, array(), false);
+
+    /* On remet la fiche à « abonnée » comme si Mala recochait la case, et on
+       efface le désabonnement pour que la comparaison voie un changement. */
+    $reg2 = json_decode(soha_crm_registre_lire()['valeur'], true);
+    $reg2['contacts'][$i]['infolettre']['abonne'] = true;
+    $reg2['contacts'][$i]['infolettre']['desabonne'] = false;
+    soha_crm_registre_ecrire(wp_json_encode($reg2));
+    dit("[$forme] recocher la case remet l'adresse en file",
+        isset(((array) get_option(SOHA_CRM_INFO_FILE, array()))[$courriel_test]));
+
+    soha_crm_info_vider_la_file();
+
+    $restante = (array) get_option(SOHA_CRM_INFO_FILE, array());
+    dit("[$forme] on n'insiste pas cinq fois pour rien",
+        !isset($restante[$courriel_test]),
+        isset($restante[$courriel_test]) ? $restante[$courriel_test]['essais'] . ' essais' : 'file vidée');
+
+    $reg3 = json_decode(soha_crm_registre_lire()['valeur'], true);
+    $info = $reg3['contacts'][$i]['infolettre'];
+    dit("[$forme] la fiche est redressée : non abonnée",
+        !empty($info['desabonne']) && empty($info['abonne']),
+        'abonne=' . var_export(!empty($info['abonne']), true)
+        . ' desabonne=' . var_export(!empty($info['desabonne']), true));
+
+    $refus = (array) get_option(SOHA_CRM_INFO_REFUS, array());
+    dit("[$forme] la correction est dite à l'écran, pas faite en cachette",
+        1 === count($refus) && $courriel_test === $refus[0]['courriel'],
+        count($refus) . ' entrée(s)');
+
+    /* Et la correction ne repart pas en boucle chez Mailchimp. */
+    dit("[$forme] la correction ne renvoie rien à Mailchimp",
+        0 === count((array) get_option(SOHA_CRM_INFO_FILE, array())));
+
+    /* Pour la forme suivante : Mailchimp la tient toujours désabonnée. */
+    $m = Faux_Mailchimp::membre($courriel_test);
+    dit("[$forme] Mailchimp la tient toujours désabonnée",
+        $m && 'unsubscribed' === $m['status'], $m ? $m['status'] : 'absente');
+}
+Faux_Mailchimp::$desabonnee = 'conformite';
+update_option(SOHA_CRM_INFO_REFUS, array(), false);
 
 /* --- un service qui ne répond pas ---------------------------------------- */
 update_option(SOHA_CRM_INFO_FILE, array(), false);
@@ -661,6 +700,153 @@ dit("le compteur monte", 2 === soha_crm_courriels_rates()['combien']);
 delete_option(SOHA_CRM_COURRIELS);
 dit("il se remet à zéro", 0 === soha_crm_courriels_rates()['combien']);
 remove_all_filters('pre_wp_mail');
+
+
+/* ========================================================================== */
+/*  La preuve du consentement — ce qui doit rester quand le reste s'efface     */
+/* ========================================================================== */
+/* Avec Mailchimp, le registre de preuve n'est pas chez eux : ils gardent une
+   adresse, pas la page qui l'a recueillie ni le jour où la case a été cochée.
+   C'est donc le répertoire du 961 qui doit la porter — et la purge ne doit pas
+   l'effacer tant qu'on s'en sert pour écrire à quelqu'un. */
+
+update_option(SOHA_CRM_INFO_FILE, array(), false);
+
+/* --- une fiche qui existe déjà et qui consent plus tard -------------------- */
+envoi('Contact', array(
+    'n' => array('title' => 'Nom',      'type' => 'text',     'value' => 'Noëlle Brochu'),
+    'c' => array('title' => 'Courriel', 'type' => 'email',    'value' => 'noelle@exemple.test'),
+    'm' => array('title' => 'Message',  'type' => 'textarea', 'value' => 'Première fois, sans cocher.'),
+));
+$pr = get_posts(array('post_type' => 'soha_demande', 'posts_per_page' => 1, 'orderby' => 'ID', 'order' => 'DESC'));
+soha_crm_verser_au_repertoire($pr[0]->ID);
+
+function soha_banc_fiche($courriel) {
+    $reg = json_decode(soha_crm_registre_lire()['valeur'], true);
+    foreach ((array) $reg['contacts'] as $c) {
+        if (!empty($c['courriel']) && 0 === strcasecmp(trim($c['courriel']), $courriel)) {
+            return $c;
+        }
+    }
+    return null;
+}
+
+$f = soha_banc_fiche('noelle@exemple.test');
+dit("une première demande sans case cochée n'abonne pas",
+    $f && empty($f['infolettre']['abonne']) && '' === (string) $f['infolettre']['consentement']);
+
+envoi('Contact', array(
+    'n' => array('title' => 'Nom',      'type' => 'text',     'value' => 'Noëlle Brochu'),
+    'c' => array('title' => 'Courriel', 'type' => 'email',    'value' => 'noelle@exemple.test'),
+    'i' => array('title' => "Je consens à recevoir l'infolettre", 'type' => 'acceptance', 'value' => 'on'),
+    'm' => array('title' => 'Message',  'type' => 'textarea', 'value' => 'Cette fois je coche.'),
+));
+$pr = get_posts(array('post_type' => 'soha_demande', 'posts_per_page' => 1, 'orderby' => 'ID', 'order' => 'DESC'));
+$rf = soha_crm_verser_au_repertoire($pr[0]->ID);
+dit("la deuxième demande fusionne, sans doublon",
+    !is_wp_error($rf) && 'fusionnee' === $rf['geste'],
+    is_wp_error($rf) ? $rf->get_error_message() : $rf['geste']);
+
+$f = soha_banc_fiche('noelle@exemple.test');
+dit("le consentement est inscrit sur la fiche qui existait déjà",
+    $f && !empty($f['infolettre']['abonne']) && '' !== (string) $f['infolettre']['consentement'],
+    $f ? 'abonne=' . var_export(!empty($f['infolettre']['abonne']), true)
+         . ' date=' . $f['infolettre']['consentement'] : 'fiche absente');
+dit("la source dit d'où il vient", $f && 'formulaire' === $f['infolettre']['source'],
+    $f ? $f['infolettre']['source'] : '');
+dit("et l'adresse part chez Mailchimp",
+    isset(((array) get_option(SOHA_CRM_INFO_FILE, array()))['noelle@exemple.test']));
+
+/* --- une case non cochée n'est pas un retrait ------------------------------ */
+$date_consentement = $f['infolettre']['consentement'];
+envoi('Location', array(
+    'n' => array('title' => 'Nom',      'type' => 'text',     'value' => 'Noëlle Brochu'),
+    'c' => array('title' => 'Courriel', 'type' => 'email',    'value' => 'noelle@exemple.test'),
+    'm' => array('title' => 'Message',  'type' => 'textarea', 'value' => 'Je loue une salle.'),
+));
+$pr = get_posts(array('post_type' => 'soha_demande', 'posts_per_page' => 1, 'orderby' => 'ID', 'order' => 'DESC'));
+soha_crm_verser_au_repertoire($pr[0]->ID);
+$f = soha_banc_fiche('noelle@exemple.test');
+dit("un formulaire rempli sans cocher ne désabonne personne",
+    $f && !empty($f['infolettre']['abonne']) && $date_consentement === $f['infolettre']['consentement'],
+    $f ? $f['infolettre']['consentement'] : '');
+
+/* --- re-consentir après s'être désabonnée --------------------------------- */
+$reg = json_decode(soha_crm_registre_lire()['valeur'], true);
+foreach ($reg['contacts'] as $k => $c) {
+    if (!empty($c['courriel']) && 0 === strcasecmp($c['courriel'], 'noelle@exemple.test')) {
+        $reg['contacts'][$k]['infolettre']['abonne'] = false;
+        $reg['contacts'][$k]['infolettre']['desabonne'] = true;
+    }
+}
+soha_crm_registre_ecrire(wp_json_encode($reg));
+update_option(SOHA_CRM_INFO_FILE, array(), false);
+
+envoi('Contact', array(
+    'n' => array('title' => 'Nom',      'type' => 'text',     'value' => 'Noëlle Brochu'),
+    'c' => array('title' => 'Courriel', 'type' => 'email',    'value' => 'noelle@exemple.test'),
+    'i' => array('title' => "Je consens à recevoir l'infolettre", 'type' => 'acceptance', 'value' => 'on'),
+    'm' => array('title' => 'Message',  'type' => 'textarea', 'value' => 'Je veux revenir.'),
+));
+$pr = get_posts(array('post_type' => 'soha_demande', 'posts_per_page' => 1, 'orderby' => 'ID', 'order' => 'DESC'));
+soha_crm_verser_au_repertoire($pr[0]->ID);
+$f = soha_banc_fiche('noelle@exemple.test');
+dit("un nouveau consentement après désabonnement est daté",
+    $f && !empty($f['infolettre']['reconsentement']),
+    $f && isset($f['infolettre']['reconsentement']) ? $f['infolettre']['reconsentement'] : 'absent');
+dit("mais il ne la réabonne pas de force",
+    $f && empty($f['infolettre']['abonne']) && !empty($f['infolettre']['desabonne']));
+
+/* --- la purge ne détruit pas la seule preuve ------------------------------ */
+function soha_banc_vieille_demande($titre, $courriel, $consent) {
+    $id = wp_insert_post(array(
+        'post_type' => 'soha_demande', 'post_status' => 'publish', 'post_title' => $titre,
+        'post_date' => gmdate('Y-m-d H:i:s', strtotime('-26 months')),
+        'post_date_gmt' => gmdate('Y-m-d H:i:s', strtotime('-26 months')),
+    ));
+    update_post_meta($id, '_soha_courriel', $courriel);
+    update_post_meta($id, '_soha_consentement', $consent ? 1 : 0);
+    return $id;
+}
+
+$sans_preuve  = soha_banc_vieille_demande('Consentement orphelin', 'orpheline@exemple.test', true);
+$avec_fiche   = soha_banc_vieille_demande('Consentement au répertoire', 'noelle@exemple.test', true);
+$sans_consent = soha_banc_vieille_demande('Aucun consentement', 'passante@exemple.test', false);
+$sans_adresse = soha_banc_vieille_demande('Consentement sans adresse', '', true);
+
+soha_crm_purger();
+$p = get_option('soha_crm_derniere_purge');
+
+dit("une demande dont le consentement n'est nulle part ailleurs est gardée",
+    (bool) get_post($sans_preuve));
+dit("elle est nommée, pas gardée en silence",
+    in_array($sans_preuve, (array) $p['retenues'], true),
+    count((array) $p['retenues']) . ' retenue(s)');
+dit("une demande dont la fiche porte la preuve est effacée",
+    !get_post($avec_fiche));
+dit("une demande sans consentement est effacée comme avant",
+    !get_post($sans_consent));
+dit("un consentement sans adresse ne retient rien",
+    !get_post($sans_adresse));
+
+/* Et le geste qui la libère : verser la demande, ou désabonner la personne. */
+$reg = json_decode(soha_crm_registre_lire()['valeur'], true);
+array_unshift($reg['contacts'], array(
+    'id' => wp_generate_uuid4(), 'nom' => 'Orpheline', 'type' => 'prospect', 'ecole' => '',
+    'courriel' => 'orpheline@exemple.test', 'telephone' => '', 'statut' => 'Nouveau',
+    'etiquettes' => array(), 'note' => '', 'interactions' => array(), 'ajoute' => '2024-01-01',
+    'infolettre' => array('abonne' => true, 'consentement' => '2024-01-01',
+                          'source' => 'formulaire', 'desabonne' => false),
+));
+soha_crm_registre_ecrire(wp_json_encode($reg));
+soha_crm_purger();
+dit("une fois la preuve au répertoire, la demande s'efface d'elle-même",
+    !get_post($sans_preuve));
+$p = get_option('soha_crm_derniere_purge');
+dit("et plus rien n'est retenu", 0 === count((array) $p['retenues']),
+    count((array) $p['retenues']) . ' retenue(s)');
+
+update_option(SOHA_CRM_INFO_FILE, array(), false);
 
 
 /* --- désactivation --------------------------------------------------------- */

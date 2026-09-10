@@ -1,4 +1,4 @@
-# Centre Soha — CRM · extension WordPress v1.4.0
+# Centre Soha — CRM · extension WordPress v1.5.0
 
 ## Ce que c'est
 
@@ -94,8 +94,21 @@ télécharger, le remettre, et un état d'avant conservé pour défaire une fois
   C'est là qu'il faudra le retrouver si on le demande, et un compte chez un
   tiers n'est pas un registre de preuve.
 - **Un désabonnement n'est jamais annulé.** Si Mailchimp refuse de réinscrire
-  quelqu'un qui s'était désabonné, c'est son droit et on ne force pas : le refus
-  est affiché en clair dans l'écran « Infolettre ».
+  quelqu'un qui s'était désabonné, c'est son droit et on ne force pas. Et la
+  fiche cesse de mentir : elle repasse à « non abonnée » d'elle-même, et l'écran
+  « Infolettre » nomme les fiches ainsi corrigées. Avant, le CRM affichait
+  « abonnée » sur quelqu'un qui ne recevait plus rien — deux vérités pour une
+  même personne, et c'est la fiche qui avait tort.
+- **Un consentement donné plus tard est inscrit quand même.** Une personne déjà
+  au répertoire qui coche l'infolettre sur un formulaire voit sa fiche porter la
+  date et la source. Sans ça, elle recevait l'infolettre pendant que sa fiche la
+  disait non abonnée, et la seule preuve dormait dans la demande — qui s'efface
+  à 24 mois.
+- **La purge n'efface jamais la dernière preuve.** Une demande de plus de 24 mois
+  qui porte un consentement dont le répertoire ne garde aucune trace n'est pas
+  effacée : ce serait écrire à quelqu'un sans pouvoir dire pourquoi. Elle est
+  retenue **et annoncée** sur l'écran « Demandes », avec les deux gestes qui la
+  libèrent — la verser au répertoire, ou désabonner la personne.
 - **Rien n'est deviné.** Une date que le formulaire n'a pas su donner reste
   vide et part dans la note. L'heure de début et de fin reste vide : elle se
   convient au téléphone. Une réservation arrive toujours en **devis**, jamais

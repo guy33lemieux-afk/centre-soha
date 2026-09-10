@@ -202,17 +202,83 @@ function soha_crm_purger() {
         'no_found_rows'  => true,
     ));
 
+    $comptes = soha_crm_consentements_au_repertoire();
+    $effacees = 0;
+    $retenues = array();
+
     foreach ($vieilles as $id) {
+        if (soha_crm_seule_preuve_du_consentement($id, $comptes)) {
+            $retenues[] = $id;
+            continue;
+        }
         wp_delete_post($id, true);        // sans corbeille : effacer veut dire effacer
+        $effacees++;
     }
 
     update_option('soha_crm_derniere_purge', array(
         'quand'    => time(),
-        'effacees' => count($vieilles),
+        'effacees' => $effacees,
+        'retenues' => $retenues,
         'mois'     => $mois,
     ), false);
 
-    return count($vieilles);
+    return $effacees;
+}
+
+/**
+ * Les adresses dont le répertoire rend compte, côté infolettre.
+ *
+ * « Rendre compte » veut dire : la fiche porte une date de consentement, ou
+ * elle porte un désabonnement. Dans les deux cas le répertoire sait où en est
+ * la personne, et la demande d'origine n'est plus la seule à le savoir.
+ *
+ * @return array courriel en minuscules => true
+ */
+function soha_crm_consentements_au_repertoire() {
+    $etat = soha_crm_registre_lire();
+    $reg  = $etat['valeur'] ? json_decode($etat['valeur'], true) : null;
+    if (!is_array($reg) || empty($reg['contacts'])) {
+        return array();
+    }
+    $out = array();
+    foreach ((array) $reg['contacts'] as $c) {
+        if (empty($c['courriel'])) {
+            continue;
+        }
+        $i = isset($c['infolettre']) && is_array($c['infolettre']) ? $c['infolettre'] : array();
+        $rend_compte = ('' !== (string) (isset($i['consentement']) ? $i['consentement'] : ''))
+            || !empty($i['desabonne']);
+        if ($rend_compte) {
+            $out[strtolower(trim((string) $c['courriel']))] = true;
+        }
+    }
+    return $out;
+}
+
+/**
+ * Cette demande est-elle la seule trace d'un consentement encore en vigueur ?
+ *
+ * Si oui, la purge ne l'efface pas. La politique de confidentialité promet que
+ * les demandes sont conservées 24 mois — et la loi demande de pouvoir prouver
+ * un consentement aussi longtemps qu'on s'en sert pour écrire à quelqu'un. Les
+ * deux promesses ne se contredisent qu'en apparence : une poignée de demandes
+ * retenues parce qu'elles sont la seule preuve d'un envoi qu'on fait encore,
+ * c'est tenir la seconde sans trahir la première.
+ *
+ * Et surtout : la demande est retenue **visiblement**, annoncée sur l'écran
+ * Demandes, avec le geste qui la libère — la verser au répertoire, ou
+ * désabonner la personne. Le silence aurait été le vrai défaut : effacer la
+ * preuve, ou tout garder pour toujours, sans que personne ne le sache.
+ */
+function soha_crm_seule_preuve_du_consentement($id_demande, $comptes) {
+    if (!get_post_meta($id_demande, '_soha_consentement', true)) {
+        return false;                     // aucun consentement : rien à prouver
+    }
+    $courriel = strtolower(trim((string) get_post_meta($id_demande, '_soha_courriel', true)));
+    if ('' === $courriel) {
+        return false;                     // sans adresse, la preuve ne sert à rien
+    }
+    return empty($comptes[$courriel]);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -234,6 +300,49 @@ function soha_crm_purger() {
  * @return array|WP_Error ('cree'|'fusionnee', nom du contact, résumé éventuel
  *                        de la réservation)
  */
+/**
+ * Inscrit sur une fiche qui existe déjà un consentement donné par formulaire.
+ *
+ * Le trou que ceci bouche : une personne déjà au répertoire qui cochait
+ * l'infolettre était bien envoyée au service d'envoi par le crochet
+ * `soha_crm_demande_archivee`, mais sa fiche n'en gardait aucune trace. Elle
+ * recevait l'infolettre pendant que le CRM la disait non abonnée, et la seule
+ * preuve du consentement dormait dans la demande — qui s'efface à 24 mois.
+ *
+ * Tant que le service d'envoi n'est pas notre registre de preuve — et celui de
+ * Mailchimp ne l'est pas : il garde une adresse, pas la page qui l'a recueillie —
+ * c'est le répertoire qui doit porter la date, la source et le texte consenti.
+ *
+ * Une case non cochée n'est pas un retrait : un formulaire de location rempli
+ * sans cocher l'infolettre ne désabonne personne.
+ */
+function soha_crm_consentement_fusionner($info, $consent, $jour) {
+    $info = is_array($info) ? $info : array();
+    $info += array('abonne' => false, 'consentement' => '', 'source' => '', 'desabonne' => false);
+
+    if (!$consent) {
+        return $info;
+    }
+
+    if (!empty($info['desabonne'])) {
+        /* Elle s'était désabonnée et elle re-consent aujourd'hui. On note la
+           date sans la réabonner d'office : un service d'envoi refuse de
+           réinscrire par interface quelqu'un qui s'est désabonné, et il a
+           raison. C'est à la personne de le faire ; Mala voit la date et sait
+           quoi lui écrire. */
+        $info['reconsentement'] = $jour;
+        return $info;
+    }
+
+    $info['abonne'] = true;
+    if ('' === (string) $info['consentement']) {
+        /* La première date fait foi : c'est celle sur laquelle on s'appuie. */
+        $info['consentement'] = $jour;
+        $info['source'] = 'formulaire';
+    }
+    return $info;
+}
+
 function soha_crm_verser_au_repertoire($id_demande) {
     $demande = get_post($id_demande);
     if (!$demande || SOHA_CRM_DEMANDE !== $demande->post_type) {
@@ -294,6 +403,11 @@ function soha_crm_verser_au_repertoire($id_demande) {
             $contact['interactions'] = array();
         }
         array_unshift($contact['interactions'], $echange);
+        $contact['infolettre'] = soha_crm_consentement_fusionner(
+            isset($contact['infolettre']) ? $contact['infolettre'] : array(),
+            $consent,
+            $jour
+        );
         $reg['contacts'][$indice] = $contact;
         $geste = 'fusionnee';
         $qui   = isset($contact['nom']) ? $contact['nom'] : $nom;
@@ -329,7 +443,7 @@ function soha_crm_verser_au_repertoire($id_demande) {
 
     /* Phase 2 : si la demande parle d'un espace, elle porte aussi une
        réservation. On la crée en devis, rattachée à la fiche. */
-    $champs = (array) get_post_meta($id_demande, '_soha_champs', true);
+    $champs = soha_crm_champs_de($id_demande);
     $resume_resa = '';
     $reservation = soha_crm_reservation_depuis(
         $champs,
@@ -355,9 +469,46 @@ function soha_crm_verser_au_repertoire($id_demande) {
     return array('geste' => $geste, 'nom' => $qui, 'reservation' => $resume_resa);
 }
 
+/**
+ * Les champs d'une demande, en forme sûre.
+ *
+ * Le banc a fait tomber l'écran des demandes avec une demande dont les champs
+ * avaient disparu : `(array) ''` donne `array('')`, et lire `'…'['etiquette']`
+ * est une erreur fatale en PHP 8. Une seule ligne abîmée — un import partiel,
+ * une restauration, une retouche en base — et c'est tout l'écran qui s'éteint,
+ * les cinquante demandes intactes en dessous avec lui.
+ *
+ * Mieux vaut une cellule vide qu'un écran blanc. C'est aussi pourquoi la purge
+ * garde maintenant certaines demandes plus longtemps : plus elles vivent, plus
+ * elles ont le temps de s'abîmer.
+ */
+function soha_crm_champs_de($id_demande) {
+    $champs = get_post_meta($id_demande, '_soha_champs', true);
+    if (!is_array($champs)) {
+        return array();
+    }
+    $sains = array();
+    foreach ($champs as $c) {
+        if (!is_array($c)) {
+            continue;
+        }
+        $sains[] = array(
+            /* `id` compte autant que le reste : c'est par lui que les champs du
+               formulaire de location sont retrouvés (`espace`, `date`, `tarif`).
+               L'oublier ici vidait les réservations — le banc l'a dit tout de
+               suite, et c'est exactement pourquoi il existe. */
+            'id'        => isset($c['id']) ? (string) $c['id'] : '',
+            'etiquette' => isset($c['etiquette']) ? (string) $c['etiquette'] : '',
+            'type'      => isset($c['type']) ? (string) $c['type'] : '',
+            'valeur'    => isset($c['valeur']) ? (string) $c['valeur'] : '',
+        );
+    }
+    return $sains;
+}
+
 /** Un résumé court d'une demande, pour l'inscrire dans l'historique du contact. */
 function soha_crm_resumer($id_demande, $limite = 220) {
-    $champs = (array) get_post_meta($id_demande, '_soha_champs', true);
+    $champs = soha_crm_champs_de($id_demande);
     $bouts  = array();
     foreach ($champs as $c) {
         if (empty($c['etiquette']) || empty($c['valeur'])) {

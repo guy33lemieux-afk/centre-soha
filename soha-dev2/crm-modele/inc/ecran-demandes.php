@@ -96,6 +96,38 @@ function soha_crm_ecran_demandes() {
             </div>
         <?php endif; ?>
 
+        <?php $retenues = isset($purge['retenues']) ? (array) $purge['retenues'] : array();
+        if ($retenues) : ?>
+            <div class="notice notice-info">
+                <p><strong><?php printf(
+                    /* translators: %d : nombre de demandes retenues par la purge. */
+                    esc_html(_n('%d demande de plus de 24 mois n\'a pas été effacée.',
+                                '%d demandes de plus de 24 mois n\'ont pas été effacées.',
+                                count($retenues), 'soha-crm')),
+                    count($retenues)
+                ); ?></strong>
+                <?php esc_html_e(
+                    "Chacune porte un consentement à l'infolettre dont le répertoire ne garde aucune trace : c'est donc la seule preuve qu'on ait du droit de continuer à écrire à cette personne. L'effacer serait envoyer des courriels sans pouvoir dire pourquoi.",
+                    'soha-crm'
+                ); ?></p>
+                <p><?php esc_html_e(
+                    "Pour la libérer, un des deux gestes : la verser au répertoire — la fiche gardera la date du consentement — ou désabonner la personne. Au passage suivant, la demande s'effacera d'elle-même.",
+                    'soha-crm'
+                ); ?></p>
+                <p><?php foreach ($retenues as $id_r) :
+                    $t = get_the_title($id_r);
+                    if ('' === $t) { continue; } ?>
+                    <span class="dashicons dashicons-email-alt" style="color:#19A7DB"></span>
+                    <?php echo esc_html($t); ?>
+                    <em style="opacity:.7"><?php echo esc_html(get_the_date(get_option('date_format'), $id_r)); ?></em><br>
+                <?php endforeach; ?></p>
+                <p><a href="<?php echo esc_url(add_query_arg(
+                    array('page' => 'soha-crm-demandes', 'etat' => 'toutes'),
+                    admin_url('admin.php')
+                )); ?>"><?php esc_html_e('Voir toutes les demandes, les plus anciennes comprises', 'soha-crm'); ?></a></p>
+            </div>
+        <?php endif; ?>
+
         <p style="max-width:74ch">
             <?php esc_html_e(
                 "Chaque envoi de formulaire du site est écrit ici avant que le courriel ne parte. Si un courriel se perd, la demande, elle, est restée.",
@@ -182,7 +214,7 @@ function soha_crm_ecran_demandes() {
                             <details>
                                 <summary style="cursor:pointer"><?php echo esc_html(soha_crm_resumer($id, 90)); ?></summary>
                                 <table style="margin-top:8px">
-                                    <?php foreach ((array) get_post_meta($id, '_soha_champs', true) as $c) : ?>
+                                    <?php foreach (soha_crm_champs_de($id) as $c) : ?>
                                         <tr>
                                             <th style="text-align:left;padding:2px 12px 2px 0;vertical-align:top;font-weight:600">
                                                 <?php echo esc_html($c['etiquette']); ?></th>

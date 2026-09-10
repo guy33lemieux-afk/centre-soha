@@ -1327,3 +1327,80 @@ console, une image absente laisse un trou, une page introuvable affiche 404. Un
 s'en va. C'est le défaut le plus cher du lot, et le seul qu'aucune mesure
 automatique ne signalait — il a fallu ouvrir la page sans JavaScript pour le
 voir.
+
+---
+
+# Cycle 21 · Mailchimp confirmé — et la preuve qui s'efface
+
+Mala tranche : « ok on est avec mailchimp ». Rien à reconstruire, le module de
+la phase 3 est déjà un client Mailchimp. Mais une décision change ce qui porte
+le poids : Cyberimpact aurait tenu le registre de consentement à notre place.
+Mailchimp non — il garde une adresse, pas la page qui l'a recueillie ni le jour
+où la case a été cochée. La preuve est donc **entièrement** à nous. J'ai relu le
+code sous cet angle, et il ne tenait pas.
+
+## Trois trous, tous de la même forme
+
+Le même défaut trois fois : **deux vérités pour une même personne, et personne
+pour le dire.**
+
+1. **Un consentement donné par quelqu'un qu'on connaît déjà n'était écrit nulle
+   part.** La branche « fiche déjà au répertoire » de `verser_au_repertoire`
+   fusionnait le téléphone et l'historique, jamais l'infolettre. La personne
+   partait bien chez Mailchimp (le crochet `soha_crm_demande_archivee` fait son
+   travail), mais sa fiche continuait de la dire non abonnée — et la seule preuve
+   dormait dans la demande, qui s'efface à 24 mois.
+
+2. **La purge pouvait effacer la dernière preuve d'un envoi qu'on fait encore.**
+   Une demande jamais versée, passé 24 mois, disparaissait avec son
+   consentement, pendant que l'adresse restait sur la liste d'envoi. Écrire à
+   quelqu'un sans pouvoir dire pourquoi.
+
+3. **Le CRM affichait « abonnée » sur quelqu'un que Mailchimp ne servait plus.**
+   `status_if_new` ne réabonne pas de force — c'est voulu, un désabonnement ne
+   s'annule pas. Mais la conséquence ne l'était pas : Mailchimp répond, la fiche
+   ne change pas, et Mala voit une abonnée qui n'en est plus une. Le crochet de
+   retour corrigeait déjà ce mensonge dans l'autre sens ; il manquait celui-ci.
+
+## Ce que je ne savais pas, et comment j'ai fait avec
+
+Je ne sais pas laquelle des deux réponses Mailchimp donne à un `PUT` sur une
+adresse désabonnée : un **400 « Member In Compliance State »**, ou un **200 qui
+renvoie tranquillement `status: unsubscribed`**. Les deux sont plausibles —
+notre corps n'envoie jamais `status`, donc il n'y a rien à refuser. Plutôt que
+de parier, l'extension traite les deux, et le faux Mailchimp du banc sait
+répondre des deux façons (`Faux_Mailchimp::$desabonnee`). Douze vérifications de
+plus, six par forme.
+
+Le détecteur de refus s'appuie sur du texte anglais, ce qui est fragile. Assumé,
+parce que la dégradation est sans danger : si la formulation change, on retombe
+sur l'ancien comportement — cinq essais, puis l'adresse apparaît dans les
+bloquées, **sous les yeux de Mala**. Jamais sur du silence.
+
+## Le banc a fait tomber l'écran
+
+Ma demande d'essai n'avait pas de champs enregistrés. `(array) ''` donne
+`array('')`, et lire `'…'['etiquette']` est une erreur fatale en PHP 8 : tout
+l'écran Demandes éteint, les cinquante demandes intactes en dessous avec lui.
+Un import partiel, une restauration, une retouche en base suffiraient. Corrigé
+par `soha_crm_champs_de()` — mieux vaut une cellule vide qu'un écran blanc.
+
+Et ce correctif a lui-même cassé cinq essais : en normalisant les champs
+j'avais laissé tomber la clé `id`, celle par laquelle le formulaire de location
+retrouve `espace`, `date` et `tarif`. Les réservations arrivaient vides. Le banc
+l'a dit dans la minute. C'est exactement ce pour quoi il existe — et la preuve
+qu'un correctif de robustesse mérite le même examen qu'une fonction neuve.
+
+## Livré
+`soha_extensioncrm_20260910_v150.zip`. **225 vérifications, 0 échec**
+(146 comportement · 53 écrans · 26 navigateur). La procédure d'import nomme la
+v1.5.0.
+
+## Leçon
+**Une donnée qui prouve quelque chose ne se purge pas comme les autres.** La
+politique promet 24 mois ; la loi demande de pouvoir justifier un envoi tant
+qu'on le fait. Les deux ne se contredisent qu'en apparence — ce qui les
+réconcilie, ce n'est pas de choisir, c'est de rendre l'exception **visible** :
+une poignée de demandes retenues, nommées à l'écran, avec le geste qui les
+libère. Le vrai défaut aurait été le silence, dans un sens comme dans l'autre :
+effacer la preuve sans le dire, ou tout garder pour toujours sans le dire.

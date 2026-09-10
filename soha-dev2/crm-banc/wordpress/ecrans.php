@@ -133,6 +133,43 @@ dit("la ligne concernée porte sa marque", false !== strpos($html, 'avis non par
 dit("et un bouton pour remettre à zéro", false !== strpos($html, 'geste_courriels'));
 delete_option(SOHA_CRM_COURRIELS);
 
+/* --- la bannière des demandes que la purge a retenues ---------------------- */
+/* Une rétention muette serait pire que l'effacement : Mala garderait des
+   données sans le savoir. L'écran doit nommer chaque demande et dire le geste
+   qui la libère. */
+$retenue = wp_insert_post(array(
+    'post_type' => 'soha_demande', 'post_status' => 'publish',
+    'post_title' => 'Consentement orphelin — Noémie Lachance',
+    'post_date' => gmdate('Y-m-d H:i:s', strtotime('-26 months')),
+    'post_date_gmt' => gmdate('Y-m-d H:i:s', strtotime('-26 months')),
+));
+update_post_meta($retenue, '_soha_courriel', 'noemie@exemple.test');
+update_post_meta($retenue, '_soha_consentement', 1);
+soha_crm_purger();
+
+$_GET['etat'] = 'toutes';
+ob_start(); soha_crm_ecran_demandes(); $html = ob_get_clean();
+unset($_GET['etat']);
+dit("la demande retenue n'a pas été effacée", (bool) get_post($retenue));
+dit("l'écran annonce qu'elle a été retenue",
+    propre($html) && false !== strpos($html, 'de plus de 24 mois')
+    && false !== strpos($html, 'pas été effacée'));
+dit("il dit pourquoi : c'est la seule preuve",
+    false !== strpos($html, 'seule preuve'));
+dit("il nomme la demande concernée",
+    false !== strpos($html, 'Noémie Lachance'));
+dit("et il donne les deux gestes qui la libèrent",
+    false !== strpos($html, 'verser au répertoire') && false !== strpos($html, 'désabonner'));
+/* Cette demande-là n'a aucun champ enregistré — comme une demande abîmée par un
+   import partiel. Avant, lire ses champs éteignait tout l'écran, y compris les
+   demandes intactes en dessous. */
+dit("une demande sans champs n'abat pas l'écran",
+    false !== strpos($html, 'noemie@exemple.test')
+    && false === stripos($html, 'Fatal error')
+    && false !== strpos($html, '</table>'));
+wp_delete_post($retenue, true);
+delete_option('soha_crm_derniere_purge');
+
 /* --- l'infolettre ---------------------------------------------------------- */
 Faux_Mailchimp::brancher();
 
@@ -157,6 +194,18 @@ dit("branché, il liste les audiences du compte",
 dit("il masque la clé au lieu de la montrer",
     false === strpos($html, 'bonne-cle-us21') && false !== strpos($html, '••••'));
 dit("il montre ce qui attend de partir", false !== strpos($html, 'attente@exemple.test'));
+
+/* --- les fiches que Mailchimp a contredites -------------------------------- */
+update_option(SOHA_CRM_INFO_REFUS, array(array(
+    'courriel' => 'revenue@exemple.test', 'raison' => 'compliance', 'quand' => time(),
+)), false);
+ob_start(); soha_crm_ecran_infolettre(); $html = ob_get_clean();
+dit("il dit quelles fiches Mailchimp a corrigées",
+    propre($html) && false !== strpos($html, 'revenue@exemple.test'));
+dit("et que la personne doit se réinscrire elle-même",
+    false !== strpos($html, 'elle doit se réinscrire elle-même'));
+delete_option(SOHA_CRM_INFO_REFUS);
+ob_start(); soha_crm_ecran_infolettre(); $html = ob_get_clean();
 dit("il donne l'adresse de retour pour les désabonnements",
     false !== strpos($html, 'infolettre/retour'));
 dit("l'adresse de retour porte le secret",

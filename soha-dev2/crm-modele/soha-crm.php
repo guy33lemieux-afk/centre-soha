@@ -3,7 +3,7 @@
  * Plugin Name:       Centre Soha — CRM
  * Plugin URI:        https://centresoha.com/
  * Description:       Le CRM du Centre Soha : l'interface React de Mala adossée à la base de données de WordPress, l'archivage de chaque demande reçue par formulaire, sa transformation en fiche et en réservation, la liaison de l'infolettre avec Mailchimp, et la gestion nominative des accès.
- * Version:           1.4.0
+ * Version:           1.5.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Centre Soha

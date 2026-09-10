@@ -38,6 +38,7 @@ define('SOHA_CRM_INFO_DOUBLE', 'soha_crm_infolettre_double');  // double opt-in 
 define('SOHA_CRM_INFO_FILE',   'soha_crm_infolettre_file');    // la file d'attente
 define('SOHA_CRM_INFO_JJ',     'soha_crm_infolettre_journal'); // le dernier passage
 define('SOHA_CRM_INFO_SECRET', 'soha_crm_infolettre_secret');  // pour le retour de Mailchimp
+define('SOHA_CRM_INFO_REFUS',  'soha_crm_infolettre_refus');    // les fiches que Mailchimp a contredites
 
 /** Combien d'adresses par passage : assez pour avancer, assez peu pour ne pas expirer. */
 define('SOHA_CRM_INFO_LOT', 25);
@@ -328,6 +329,28 @@ function soha_crm_info_vider_la_file() {
     return $faits;
 }
 
+/**
+ * Ce refus veut-il dire « elle s'est désabonnée », plutôt que « ça n'a pas marché » ?
+ *
+ * Mailchimp n'a pas de code machine pour ça : il met un titre en anglais,
+ * « Member In Compliance State ». On s'appuie donc sur du texte, ce qui est
+ * fragile — et c'est assumé, parce que la dégradation est sans danger : si un
+ * jour la formulation change, on retombe sur l'ancien comportement (cinq essais,
+ * puis l'adresse apparaît dans les bloquées, sous les yeux de Mala). Jamais sur
+ * du silence.
+ */
+function soha_crm_info_refus_de_conformite($reponse) {
+    if (is_wp_error($reponse) || !isset($reponse['corps'])) {
+        return false;
+    }
+    $c = (array) $reponse['corps'];
+    $titre  = isset($c['title']) ? (string) $c['title'] : '';
+    $detail = isset($c['detail']) ? (string) $c['detail'] : '';
+    return false !== stripos($titre, 'compliance')
+        || false !== stripos($detail, 'compliance')
+        || false !== stripos($detail, 'cannot be re-imported');
+}
+
 /** Une adresse, chez Mailchimp. @return true|WP_Error */
 function soha_crm_info_envoyer($item) {
     if ((int) $item['essais'] >= SOHA_CRM_INFO_ESSAIS) {
@@ -371,7 +394,31 @@ function soha_crm_info_envoyer($item) {
         return $r;
     }
     if ($r['statut'] < 200 || $r['statut'] >= 300) {
+        /* Le refus qui n'est pas une panne : « cette personne s'est désabonnée,
+           je ne la réinscrirai pas ». Insister cinq fois n'y changera rien, et
+           la laisser dans les adresses bloquées laisserait la fiche mentir. On
+           redresse la fiche et on considère le travail fait. */
+        if (soha_crm_info_refus_de_conformite($r)) {
+            soha_crm_info_noter_desabonnement($item['courriel'], 'compliance');
+            return true;
+        }
         return new WP_Error('soha_crm_info', soha_crm_info_pourquoi($r));
+    }
+
+    /* L'appel a réussi — mais réussi ne veut pas dire abonnée.
+     *
+     * `status_if_new` ne s'applique qu'aux nouvelles adresses, et c'est voulu :
+     * on ne réabonne pas de force quelqu'un qui s'est désabonné. La conséquence,
+     * elle, ne l'était pas : Mailchimp répond 200 en nous renvoyant
+     * « unsubscribed », et le CRM continuait d'afficher « abonnée ». Deux
+     * vérités pour une même personne, et cette fois c'est la fiche qui a tort —
+     * le même défaut que le crochet de retour corrige dans l'autre sens.
+     *
+     * La réponse contient déjà l'état réel. On la croit, et on redresse la fiche. */
+    $chez_eux = isset($r['corps']['status']) ? (string) $r['corps']['status'] : '';
+    if ('unsubscribed' === $chez_eux || 'cleaned' === $chez_eux) {
+        soha_crm_info_noter_desabonnement($item['courriel'], $chez_eux);
+        return true;                  // l'envoi a fait son travail ; le registre est corrigé
     }
 
     /* Les étiquettes : utiles pour segmenter, jamais bloquantes. */
@@ -456,10 +503,37 @@ function soha_crm_info_retour(WP_REST_Request $r) {
         return new WP_REST_Response(array('ignore' => 'courriel'), 200);
     }
 
+    $touche = soha_crm_info_noter_desabonnement($courriel, $type);
+
+    return new WP_REST_Response(array('mis_a_jour' => $touche), 200);
+}
+
+/**
+ * Écrit sur la fiche que la personne n'est plus abonnée — point de passage unique.
+ *
+ * Deux chemins y mènent, et c'est pour ça qu'il n'y en a qu'un ici : le crochet
+ * de retour, quand quelqu'un clique « se désabonner » dans un courriel ; et la
+ * réponse à un abonnement, quand Mailchimp nous apprend que cette adresse s'était
+ * déjà désabonnée chez lui. Dans les deux cas le service d'envoi en sait plus que
+ * nous, et dans les deux cas il faut que la fiche le dise.
+ *
+ * On n'appelle pas la synchronisation en retour (`$synchroniser = false`) :
+ * l'information vient de là-bas, la lui renvoyer serait tourner en rond.
+ *
+ * @param string $courriel
+ * @param string $raison   « unsubscribe », « cleaned », « unsubscribed »…
+ * @return bool Une fiche a-t-elle changé ?
+ */
+function soha_crm_info_noter_desabonnement($courriel, $raison = '') {
+    $courriel = strtolower(trim((string) $courriel));
+    if (!is_email($courriel)) {
+        return false;
+    }
+
     $etat = soha_crm_registre_lire();
     $reg  = $etat['valeur'] ? json_decode($etat['valeur'], true) : null;
     if (!is_array($reg) || empty($reg['contacts'])) {
-        return new WP_REST_Response(array('inconnu' => true), 200);
+        return false;
     }
 
     $touche = false;
@@ -473,18 +547,32 @@ function soha_crm_info_retour(WP_REST_Request $r) {
         }
         $info['desabonne'] = true;
         $info['abonne'] = false;
+        if ('' !== (string) $raison) {
+            $info['refus'] = (string) $raison;
+        }
         $reg['contacts'][$i]['infolettre'] = $info;
         $touche = true;
         break;
     }
 
-    if ($touche) {
-        /* Sans re-synchroniser : l'information vient de Mailchimp, la lui
-           renvoyer serait tourner en rond. */
-        soha_crm_registre_ecrire(wp_json_encode($reg), 0, false);
+    if (!$touche) {
+        return false;
     }
 
-    return new WP_REST_Response(array('mis_a_jour' => $touche), 200);
+    soha_crm_registre_ecrire(wp_json_encode($reg), 0, false);
+
+    /* Une correction silencieuse serait une fiche qui change sous les yeux de
+       Mala sans qu'elle sache pourquoi. On garde les vingt dernières pour
+       l'écran de l'infolettre. */
+    $journal = (array) get_option(SOHA_CRM_INFO_REFUS, array());
+    array_unshift($journal, array(
+        'courriel' => $courriel,
+        'raison'   => (string) $raison,
+        'quand'    => time(),
+    ));
+    update_option(SOHA_CRM_INFO_REFUS, array_slice($journal, 0, 20), false);
+
+    return true;
 }
 
 /* -------------------------------------------------------------------------- */
