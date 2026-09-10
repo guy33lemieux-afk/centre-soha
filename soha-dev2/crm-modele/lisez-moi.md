@@ -1,4 +1,4 @@
-# Centre Soha — CRM · extension WordPress v1.2.0
+# Centre Soha — CRM · extension WordPress v1.3.0
 
 ## Ce que c'est
 
@@ -18,6 +18,11 @@ personne y est déjà — et **si c'est une location, la réservation est créé
 même temps**, avec l'espace, la date et le tarif que la personne avait sous les
 yeux dans l'estimateur.
 
+**L'infolettre.** Quand une personne coche l'infolettre — sur un formulaire du
+site, ou sur sa fiche dans le CRM — son adresse part chez Mailchimp toute seule.
+Quand elle se désabonne depuis un courriel, sa fiche le note. Plus personne ne
+recopie une adresse à la main, et les deux côtés disent la même chose.
+
 **La sauvegarde.** Le registre entier tient dans une option : c'est ce qui le
 rend simple, et c'est un seul endroit où tout perdre. Un écran pour le
 télécharger, le remettre, et un état d'avant conservé pour défaire une fois.
@@ -30,8 +35,8 @@ télécharger, le remettre, et un état d'avant conservé pour défaire une fois
 1. Extensions → Ajouter → Téléverser une extension → ce fichier `.zip` → Installer.
 2. Activer.
 3. Un menu **CRM Soha** apparaît dans la colonne de gauche, en troisième
-   position, avec quatre entrées : **Répertoire**, **Demandes**, **Sauvegarde**
-   et **Accès**.
+   position, avec cinq entrées : **Répertoire**, **Demandes**, **Infolettre**,
+   **Sauvegarde** et **Accès**.
 
 ## Le premier jour, dans cet ordre
 
@@ -44,7 +49,15 @@ télécharger, le remettre, et un état d'avant conservé pour défaire une fois
    l'estimateur. Regarde « Demandes » : elle doit y être. Clique **Verser au
    répertoire** — tu dois obtenir la fiche *et* la réservation en devis, avec le
    bon espace, la bonne date et le montant que tu avais vu à l'écran.
-4. **Télécharge une première sauvegarde** depuis l'écran « Sauvegarde », et
+4. **Branche l'infolettre** : écran « Infolettre », colle la clé d'API de
+   Mailchimp, clique *Tester la liaison*, choisis l'audience, enregistre. Puis
+   copie l'adresse de retour donnée en bas de l'écran dans Mailchimp
+   (`Audience → Settings → Webhooks → Create New Webhook`, coche *Unsubscribes*)
+   — sans ça, un désabonnement ne reviendrait jamais marquer la fiche.
+5. **Ajoute le paragraphe** que l'écran te donne à ta politique de
+   confidentialité. Mailchimp est américain : c'est une obligation, pas une
+   politesse.
+6. **Télécharge une première sauvegarde** depuis l'écran « Sauvegarde », et
    range-la ailleurs que sur le serveur.
 
 > **Les cinq artisanes déjà présentes ne sont pas des données d'exemple.**
@@ -65,6 +78,18 @@ télécharger, le remettre, et un état d'avant conservé pour défaire une fois
   SÖHA · Salle 4 · Salles 1·2·3**. Le CRM parle maintenant la même langue —
   deux vocabulaires pour un même lieu, c'est une réservation mal saisie par mois
   et un revenu qu'on ne sait plus attribuer.
+- **Aucun script Mailchimp sur le site.** Leurs formulaires embarqués posent un
+  traceur sur chaque page qui les affiche. Ici, tout passe par le serveur : le
+  visiteur ne parle jamais à Mailchimp, seul WordPress le fait. La promesse
+  « zéro appel externe » du site reste vraie.
+- **La preuve du consentement reste au 961.** Mailchimp reçoit une adresse et un
+  prénom, rien d'autre. La date du consentement, le formulaire qui l'a
+  recueilli, le téléphone, les notes : tout ça demeure dans la base du site.
+  C'est là qu'il faudra le retrouver si on le demande, et un compte chez un
+  tiers n'est pas un registre de preuve.
+- **Un désabonnement n'est jamais annulé.** Si Mailchimp refuse de réinscrire
+  quelqu'un qui s'était désabonné, c'est son droit et on ne force pas : le refus
+  est affiché en clair dans l'écran « Infolettre ».
 - **Rien n'est deviné.** Une date que le formulaire n'a pas su donner reste
   vide et part dans la note. L'heure de début et de fin reste vide : elle se
   convient au téléphone. Une réservation arrive toujours en **devis**, jamais
@@ -90,6 +115,8 @@ télécharger, le remettre, et un état d'avant conservé pour défaire une fois
     inc/demandes.php                  la capture, la purge, le versement
     inc/locations.php                 la demande de location devient réservation
     inc/ecran-demandes.php            l'écran des demandes et l'export CSV
+    inc/infolettre.php                la liaison Mailchimp, la file, le retour
+    inc/ecran-infolettre.php          l'écran, et le paragraphe pour la politique
     inc/sauvegarde.php                télécharger, remettre, défaire une fois
     uninstall.php                     l'effacement, à la suppression seulement
     assets/adaptateur.js              `window.storage`, adossé à la base
@@ -104,6 +131,11 @@ télécharger, le remettre, et un état d'avant conservé pour défaire une fois
 - La durée de conservation : `add_filter('soha_crm_conservation_mois', fn() => 12);`
 - Les espaces du 961, si un cinquième s'ouvre : `add_filter('soha_crm_espaces', …)`
   — la table associe le libellé du formulaire au nom court du CRM.
+- La synchronisation de l'infolettre se décide en un seul endroit :
+  `soha_crm_registre_ecrire()` compare l'ancien et le nouveau registre. Tout
+  chemin — formulaire, versement, case cochée à la main — finit par une écriture
+  du registre, donc aucun n'est oublié. Deux appels passent `$synchroniser` à
+  `false` : la restauration d'une sauvegarde et le retour de Mailchimp.
 - Après l'archivage d'une demande : `do_action('soha_crm_demande_archivee', $id, $champs)`.
 - Le registre est une option, `soha_crm_etat`, jamais chargée automatiquement,
   plafonnée à 5 Mo, avec un compteur de révisions qui refuse une écriture

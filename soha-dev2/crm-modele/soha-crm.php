@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Centre Soha — CRM
  * Plugin URI:        https://centresoha.com/
- * Description:       Le CRM du Centre Soha : l'interface React de Mala adossée à la base de données de WordPress, l'archivage de chaque demande reçue par formulaire, sa transformation en fiche et en réservation, et la gestion nominative des accès.
- * Version:           1.2.0
+ * Description:       Le CRM du Centre Soha : l'interface React de Mala adossée à la base de données de WordPress, l'archivage de chaque demande reçue par formulaire, sa transformation en fiche et en réservation, la liaison de l'infolettre avec Mailchimp, et la gestion nominative des accès.
+ * Version:           1.3.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Centre Soha
@@ -36,6 +36,11 @@
  *                        demande crée donc aussi la réservation, en devis. Rien
  *                        n'est inventé : ce qui n'a pas été demandé reste vide.
  *
+ *  `inc/infolettre.php`— le consentement coché quelque part inscrit la personne
+ *                        chez Mailchimp, et son désabonnement revient marquer sa
+ *                        fiche. Aucun script Mailchimp sur le site : tout passe
+ *                        par le serveur, le visiteur ne leur parle jamais.
+ *
  *  `inc/sauvegarde.php`— le registre entier tient dans une option : c'est ce qui
  *                        le rend simple, et c'est un seul endroit où tout
  *                        perdre. Un fichier qu'on télécharge, qu'on remet, et un
@@ -59,7 +64,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('SOHA_CRM_VERSION', '1.2.0');
+define('SOHA_CRM_VERSION', '1.3.0');
 
 /** L'option qui porte l'état du registre (jamais en autoload). */
 define('SOHA_CRM_OPTION', 'soha_crm_etat');
@@ -78,6 +83,8 @@ require_once plugin_dir_path(__FILE__) . 'inc/registre.php';
 require_once plugin_dir_path(__FILE__) . 'inc/locations.php';
 require_once plugin_dir_path(__FILE__) . 'inc/demandes.php';
 require_once plugin_dir_path(__FILE__) . 'inc/ecran-demandes.php';
+require_once plugin_dir_path(__FILE__) . 'inc/infolettre.php';
+require_once plugin_dir_path(__FILE__) . 'inc/ecran-infolettre.php';
 require_once plugin_dir_path(__FILE__) . 'inc/sauvegarde.php';
 
 /* -------------------------------------------------------------------------- */
@@ -161,6 +168,11 @@ function soha_crm_activer() {
     if (!wp_next_scheduled('soha_crm_purge')) {
         wp_schedule_event(time() + HOUR_IN_SECONDS, 'daily', 'soha_crm_purge');
     }
+    /* Le filet de la file d'infolettre : si un envoi immédiat a échoué et que
+       personne ne repasse, cette reprise horaire finit par le rattraper. */
+    if (!wp_next_scheduled('soha_crm_infolettre_reprise')) {
+        wp_schedule_event(time() + 15 * MINUTE_IN_SECONDS, 'hourly', 'soha_crm_infolettre_reprise');
+    }
 }
 
 register_deactivation_hook(__FILE__, function () {
@@ -168,8 +180,10 @@ register_deactivation_hook(__FILE__, function () {
        registre parce qu'on a décoché une case. L'effacement est dans
        `uninstall.php`, et il faut vraiment supprimer l'extension pour
        l'atteindre. */
-    $prochaine = wp_next_scheduled('soha_crm_purge');
-    if ($prochaine) {
-        wp_unschedule_event($prochaine, 'soha_crm_purge');
+    foreach (array('soha_crm_purge', 'soha_crm_infolettre_reprise', 'soha_crm_infolettre_traiter') as $tache) {
+        $prochaine = wp_next_scheduled($tache);
+        if ($prochaine) {
+            wp_unschedule_event($prochaine, $tache);
+        }
     }
 });

@@ -733,3 +733,92 @@ Deux erreurs d'essai instructives, corrigées :
 directement le tableau brut à la fonction interne donnait un joli faux vert au
 premier abord, puis un faux rouge — dans les deux cas, il ne disait rien du
 comportement réel. Entrer par la porte, toujours : le formulaire, puis le clic.
+
+---
+
+# Cycle 12 · CRM v1.3.0 — phase 3 : l'infolettre, et Mailchimp
+
+Mala : *« je crois que l'on fonctionnera avec mailchimp »*. C'est donc Mailchimp
+et non l'extension Newsletter. Ça change deux choses de fond.
+
+## 1. Mailchimp est américain — ce n'est pas un détail de réglage
+Intuit, serveurs aux États-Unis. Inscrire quelqu'un, c'est communiquer une
+adresse et un prénom hors du Québec ; la Loi 25 demande que ce soit annoncé.
+L'écran ne se contente pas de le rappeler : il **donne le paragraphe** à coller
+dans la politique, en toutes lettres, dans un champ qu'on sélectionne d'un clic.
+Une obligation qu'on rappelle sans fournir le texte est une obligation qu'on ne
+remplit pas.
+
+Le paragraphe dit aussi ce qui **ne part pas** : la date du consentement, le
+formulaire qui l'a recueilli, le téléphone, les échanges. Mailchimp reçoit une
+adresse et un prénom. **La preuve du consentement reste au 961** — c'est ici
+qu'il faudra la retrouver, et un compte chez un tiers n'est pas un registre de
+preuve.
+
+## 2. Aucun script Mailchimp sur le site
+Leurs formulaires embarqués posent un traceur sur chaque page qui les affiche.
+Tout passe donc par le serveur : le visiteur ne parle jamais à Mailchimp, seul
+WordPress le fait. La promesse « zéro appel externe » du site tient toujours,
+et elle reste mesurée à zéro dans le banc navigateur.
+
+## Un seul point de passage
+La synchronisation se décide dans `soha_crm_registre_ecrire()`, qui compare
+l'ancien et le nouveau registre. Que le consentement vienne d'un formulaire,
+d'un versement, ou d'une case cochée à la main dans le CRM, il finit toujours
+par une écriture du registre — donc aucun chemin n'est oublié. Deux appels
+passent `$synchroniser` à `false`, et chacun pour une raison nommée :
+la restauration d'une sauvegarde (qui réinscrirait tout un registre d'un coup)
+et le retour de Mailchimp (qui lui renverrait ce qu'il vient de nous dire).
+
+## Ce qui ne part jamais en direct
+Une écriture dans le CRM ne doit pas attendre un serveur à l'autre bout du
+continent. Les changements entrent dans une file, une tâche planifiée les
+envoie, ce qui échoue est réessayé cinq fois avec le refus de Mailchimp gardé en
+clair, puis **dit à l'écran** plutôt qu'oublié. Une reprise horaire rattrape ce
+qu'un envoi immédiat aurait manqué.
+
+## Deux respects codés en dur
+- **On désabonne, on ne supprime pas.** Effacer quelqu'un de Mailchimp
+  effacerait la trace de son désabonnement, et un import pourrait le
+  réinscrire.
+- **On ne réabonne jamais d'office.** Le statut n'est envoyé que pour une
+  nouvelle inscription (`status_if_new`). Si Mailchimp refuse de réinscrire une
+  personne désabonnée, c'est son droit : le refus est affiché, pas contourné.
+- Et une fiche supprimée du CRM n'est **pas** un désabonnement : la personne
+  n'a rien demandé, on ne touche pas à Mailchimp.
+
+## Le retour des désabonnements
+Sans lui, quelqu'un qui se désabonne depuis un courriel resterait « abonnée »
+sur sa fiche : deux vérités pour une même personne, et c'est la fiche qui aurait
+tort. Une route REST reçoit le webhook de Mailchimp. Mailchimp ne signe pas ses
+appels — le seul contrôle possible est un secret dans l'adresse, comparé en
+temps constant, et un refus qui ne dit rien de plus.
+
+## Le banc : 179 vérifications, 0 échec (113 + 40 + 26)
+Nouveauté : `crm-banc/wordpress/faux-mailchimp.php`, qui intercepte les appels
+sortants de WordPress et répond comme l'API v3 — mêmes chemins, même
+authentification Basic, mêmes formes d'erreur, y compris le refus
+« Member In Compliance State » qu'on ne peut pas provoquer autrement.
+
+**Ce que le banc prouve** : que l'extension frappe la bonne adresse, avec la
+bonne authentification et le bon corps, et qu'elle comprend les réponses
+documentées. **Ce qu'il ne prouve pas** : que Mailchimp accepte. Seule la vraie
+clé de Mala le dira — c'est à ça que sert le bouton « Tester la liaison », qui
+affiche le nom du compte au bout de la clé.
+
+## Un défaut trouvé au banc
+L'adresse de retour sortait en `rest_route=%2Fsoha-crm%2Fv1%2F…` :
+`add_query_arg` réencode les paramètres déjà présents. Ça fonctionne, mais Mala
+doit pouvoir reconnaître ce qu'elle colle dans Mailchimp. Assemblée à la main
+désormais.
+
+## Décisions attendues
+1. Le service de relais de WP Mail SMTP — `Outils → Santé du site → Infos →
+   WP Mail SMTP`, ligne *Mailer*.
+2. Où sont les serveurs de l'hébergeur.
+
+## Leçon
+**Brancher un service tiers n'est pas un réglage, c'est une décision de
+confidentialité.** Le code aurait pu se contenter d'un champ « clé d'API ». Le
+vrai livrable, ici, c'est le paragraphe que Mala doit ajouter à sa politique —
+et le fait qu'aucun script Mailchimp ne touche le site.

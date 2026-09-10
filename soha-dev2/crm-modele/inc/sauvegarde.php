@@ -179,7 +179,7 @@ function soha_crm_traiter_restauration() {
             return array('genre' => 'error', 'texte' => __("Il n'y a pas d'état conservé.", 'soha-crm'));
         }
         $courant = soha_crm_registre_lire();
-        $r = soha_crm_registre_ecrire($avant['valeur']);
+        $r = soha_crm_registre_ecrire($avant['valeur'], 0, false);
         if (is_wp_error($r)) {
             return array('genre' => 'error', 'texte' => $r->get_error_message());
         }
@@ -218,7 +218,9 @@ function soha_crm_traiter_restauration() {
     $courant = soha_crm_registre_lire();
     update_option(SOHA_CRM_AVANT, array('valeur' => $courant['valeur'], 'quand' => time()), false);
 
-    $r = soha_crm_registre_ecrire($valeur);
+    /* Sans synchroniser : remettre une sauvegarde n'est pas un consentement
+       nouveau, et cela réinscrirait tout un registre d'un coup chez Mailchimp. */
+    $r = soha_crm_registre_ecrire($valeur, 0, false);
     if (is_wp_error($r)) {
         return array('genre' => 'error', 'texte' => $r->get_error_message());
     }

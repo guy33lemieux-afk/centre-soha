@@ -24,8 +24,23 @@ function soha_crm_registre_lire() {
  * Renvoie la nouvelle révision, ou un `WP_Error` si la base a refusé. Le cas
  * « rien n'a changé » n'est pas une erreur : `update_option` renvoie `false`
  * aussi bien pour une écriture identique que pour un échec, alors on relit.
+ *
+ * `$synchroniser` : toute écriture est aussi le moment où l'on regarde si un
+ * consentement à l'infolettre a changé. C'est le seul point de passage — que le
+ * changement vienne d'un formulaire, d'un versement ou d'une case cochée à la
+ * main, il finit toujours ici. Deux exceptions, à `false` : une restauration de
+ * sauvegarde (qui réinscrirait tout un registre d'un coup) et un retour de
+ * Mailchimp (qui renverrait à Mailchimp ce qu'il vient de nous dire).
  */
-function soha_crm_registre_ecrire($valeur, $qui = 0) {
+function soha_crm_registre_ecrire($valeur, $qui = 0, $synchroniser = true) {
+    if ($synchroniser && function_exists('soha_crm_info_comparer')) {
+        $avant = json_decode((string) get_option(SOHA_CRM_OPTION, ''), true);
+        $apres = json_decode((string) $valeur, true);
+        if (is_array($avant) && is_array($apres)) {
+            soha_crm_info_comparer($avant, $apres);
+        }
+    }
+
     $ecrit = update_option(SOHA_CRM_OPTION, $valeur, false);
     if (!$ecrit && (string) get_option(SOHA_CRM_OPTION, '') !== $valeur) {
         return new WP_Error('soha_crm_ecriture', __("La base de données a refusé l'enregistrement.", 'soha-crm'));

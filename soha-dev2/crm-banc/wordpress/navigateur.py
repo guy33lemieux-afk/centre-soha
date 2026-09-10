@@ -157,6 +157,20 @@ try:
             "%d fiches · %d réservations" % (len(contenu["registre"]["contacts"]),
                                              len(contenu["registre"]["reservations"])))
 
+        # --- l'écran de l'infolettre
+        #     Non branché : pas de faux Mailchimp ici, le navigateur parle au
+        #     vrai PHP. On vérifie donc ce qui ne demande aucun réseau — et
+        #     c'est justement le plus important : l'avertissement Loi 25.
+        page.goto(BASE + "/wp-admin/admin.php?page=soha-crm-infolettre", wait_until="domcontentloaded")
+        texte_info = page.locator(".wrap").inner_text()
+        dit("l'écran de l'infolettre s'ouvre", "Infolettre" in page.locator(".wrap h1").inner_text())
+        dit("il prévient que Mailchimp est américain",
+            "Intuit" in texte_info and "États-Unis" in texte_info)
+        dit("le paragraphe pour la politique est prêt à copier",
+            "demeure au Québec" in page.locator("#soha-para").input_value())
+        dit("la clé se saisit sans jamais s'afficher",
+            page.locator("#cle").get_attribute("type") == "password")
+
         # --- l'écran des accès
         page.goto(BASE + "/wp-admin/admin.php?page=soha-crm-acces", wait_until="domcontentloaded")
         dit("l'écran des accès s'ouvre", "Qui a accès" in page.locator(".wrap h1").inner_text())

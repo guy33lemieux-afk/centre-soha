@@ -11,6 +11,7 @@ define('WP_ADMIN', true);
 require __DIR__ . '/wordpress/wp-load.php';
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 require_once ABSPATH . 'wp-admin/includes/user.php';
+require_once __DIR__ . '/faux-mailchimp.php';
 
 $ok = 0; $ko = 0;
 function dit($quoi, $vrai, $detail = '') {
@@ -413,6 +414,209 @@ dit("et revenir à l'état d'avant, intact",
     count($revenu['contacts']) === count($reg['contacts'])
     && count($revenu['reservations']) === count($reg['reservations']),
     count($revenu['contacts']) . ' fiches retrouvées');
+
+/* ========================================================================== */
+/*  Phase 3 — l'infolettre chez Mailchimp                                     */
+/* ========================================================================== */
+
+Faux_Mailchimp::brancher();
+
+/* --- la clé --------------------------------------------------------------- */
+dit("une clé sans centre de données est refusée",
+    is_wp_error(soha_crm_info_appel('GET', '', null, 'clesansdc')));
+dit("le centre de données se lit dans la clé",
+    'us21' === soha_crm_info_centre('bonne-cle-us21')
+    && '' === soha_crm_info_centre('nimportequoi'));
+dit("une mauvaise clé est refusée par Mailchimp",
+    is_wp_error(soha_crm_info_compte('mauvaise-cle-us21')));
+
+$compte = soha_crm_info_compte('bonne-cle-us21');
+dit("une bonne clé donne le nom du compte",
+    !is_wp_error($compte) && 'Centre Soha' === $compte['compte'],
+    is_wp_error($compte) ? $compte->get_error_message() : $compte['compte']);
+$dernier = end(Faux_Mailchimp::$appels);
+dit("l'authentification est bien du Basic",
+    0 === strpos($dernier['entetes']['Authorization'], 'Basic '));
+
+$auds = soha_crm_info_audiences('bonne-cle-us21');
+dit("les audiences se listent", !is_wp_error($auds) && 2 === count($auds)
+    && 'aud961' === $auds[0]['id'],
+    is_wp_error($auds) ? $auds->get_error_message() : count($auds) . ' audiences');
+
+/* --- rien ne part tant que ce n'est pas branché --------------------------- */
+dit("sans liaison, rien n'est actif", !soha_crm_info_active());
+$reg2 = json_decode(soha_crm_registre_lire()['valeur'], true);
+$reg2['contacts'][0]['infolettre'] = array('abonne' => true, 'consentement' => '2026-09-10',
+                                           'source' => 'manuel', 'desabonne' => false);
+soha_crm_registre_ecrire(wp_json_encode($reg2));
+dit("sans liaison, la file reste vide", 0 === count((array) get_option(SOHA_CRM_INFO_FILE, array())));
+
+update_option(SOHA_CRM_INFO_CLE, 'bonne-cle-us21', false);
+update_option(SOHA_CRM_INFO_LISTE, 'aud961', false);
+dit("la liaison est en place", soha_crm_info_active());
+
+/* --- cocher l'infolettre sur une fiche met en file ------------------------ */
+$reg2 = json_decode(soha_crm_registre_lire()['valeur'], true);
+$i = null;
+foreach ($reg2['contacts'] as $k => $c) {
+    if (!empty($c['courriel']) && empty($c['infolettre']['abonne'])) { $i = $k; break; }
+}
+$courriel_test = strtolower($reg2['contacts'][$i]['courriel']);
+$reg2['contacts'][$i]['infolettre'] = array('abonne' => true, 'consentement' => '2026-09-10',
+                                            'source' => 'manuel', 'desabonne' => false);
+soha_crm_registre_ecrire(wp_json_encode($reg2));
+$file = (array) get_option(SOHA_CRM_INFO_FILE, array());
+dit("cocher l'infolettre met l'adresse en file",
+    isset($file[$courriel_test]) && 'abonne' === $file[$courriel_test]['statut'],
+    $courriel_test);
+dit("un envoi est planifié, pas immédiat", false !== wp_next_scheduled('soha_crm_infolettre_traiter'));
+
+/* --- l'envoi -------------------------------------------------------------- */
+$attendues = count($file);
+$n = soha_crm_info_vider_la_file();
+dit("la file part chez Mailchimp", $attendues === $n, "$n envoyée(s)");
+$m = Faux_Mailchimp::membre($courriel_test);
+dit("la personne est inscrite", $m && 'subscribed' === $m['status'], $m ? $m['status'] : 'absente');
+dit("son prénom est passé, coupé au premier espace",
+    $m && '' !== $m['merge_fields']['FNAME'],
+    $m ? $m['merge_fields']['FNAME'] . ' / ' . $m['merge_fields']['LNAME'] : '');
+dit("son type et son école servent d'étiquettes", $m && !empty($m['tags']),
+    $m ? implode(', ', array_column($m['tags'], 'name')) : '');
+dit("la file est vidée", 0 === count((array) get_option(SOHA_CRM_INFO_FILE, array())));
+
+$noms = soha_crm_info_nom('Marie-Claude Tremblay Roy');
+dit("un nom composé se coupe une seule fois",
+    array('Marie-Claude', 'Tremblay Roy') === $noms, implode(' | ', $noms));
+dit("un prénom seul ne fabrique pas de nom", array('Camille', '') === soha_crm_info_nom('Camille'));
+
+/* --- décocher désabonne --------------------------------------------------- */
+$reg2 = json_decode(soha_crm_registre_lire()['valeur'], true);
+$reg2['contacts'][$i]['infolettre']['abonne'] = false;
+soha_crm_registre_ecrire(wp_json_encode($reg2));
+soha_crm_info_vider_la_file();
+$m = Faux_Mailchimp::membre($courriel_test);
+dit("décocher désabonne chez Mailchimp", $m && 'unsubscribed' === $m['status'], $m ? $m['status'] : '');
+
+/* --- et Mailchimp refuse de la réinscrire, ce qui est son droit ----------- */
+$reg2 = json_decode(soha_crm_registre_lire()['valeur'], true);
+$reg2['contacts'][$i]['infolettre']['abonne'] = true;
+soha_crm_registre_ecrire(wp_json_encode($reg2));
+soha_crm_info_vider_la_file();
+$restante = (array) get_option(SOHA_CRM_INFO_FILE, array());
+dit("un refus de réinscription est gardé et expliqué",
+    isset($restante[$courriel_test]) && 1 === (int) $restante[$courriel_test]['essais']
+    && false !== strpos($restante[$courriel_test]['erreur'], 'unsubscribed'),
+    isset($restante[$courriel_test]) ? substr($restante[$courriel_test]['erreur'], 0, 48) : 'file vide');
+
+/* --- un service qui ne répond pas ---------------------------------------- */
+update_option(SOHA_CRM_INFO_FILE, array(), false);
+soha_crm_info_enfiler('panne@exemple.test', 'abonne', 'Test Panne');
+Faux_Mailchimp::$panne = true;
+soha_crm_info_vider_la_file();
+$f = (array) get_option(SOHA_CRM_INFO_FILE, array());
+dit("une panne réseau ne perd pas l'adresse",
+    isset($f['panne@exemple.test']) && 1 === (int) $f['panne@exemple.test']['essais']);
+dit("le refus est conservé, en clair",
+    isset($f['panne@exemple.test']) && false !== strpos($f['panne@exemple.test']['erreur'], 'timed out'),
+    isset($f['panne@exemple.test']) ? substr($f['panne@exemple.test']['erreur'], 0, 44) : '');
+
+for ($k = 0; $k < 5; $k++) { soha_crm_info_vider_la_file(); }
+$f = (array) get_option(SOHA_CRM_INFO_FILE, array());
+dit("après cinq essais on cesse d'insister",
+    isset($f['panne@exemple.test']) && (int) $f['panne@exemple.test']['essais'] >= SOHA_CRM_INFO_ESSAIS,
+    isset($f['panne@exemple.test']) ? $f['panne@exemple.test']['essais'] . ' essais' : '');
+$j = (array) get_option(SOHA_CRM_INFO_JJ, array());
+dit("et l'écran saura le dire", 1 === (int) $j['bloques'], $j['bloques'] . ' bloquée(s)');
+Faux_Mailchimp::$panne = false;
+update_option(SOHA_CRM_INFO_FILE, array(), false);
+
+/* --- le formulaire inscrit sans attendre le versement ---------------------- */
+envoi('Contact', array(
+    'n' => array('title' => 'Nom',      'type' => 'text',       'value' => 'Ariane Dubé'),
+    'c' => array('title' => 'Courriel', 'type' => 'email',      'value' => 'ariane@exemple.test'),
+    'i' => array('title' => "Je consens à recevoir l'infolettre", 'type' => 'acceptance', 'value' => 'on'),
+    'm' => array('title' => 'Message',  'type' => 'textarea',   'value' => 'Bonjour.'),
+));
+$f = (array) get_option(SOHA_CRM_INFO_FILE, array());
+dit("cocher l'infolettre sur le formulaire inscrit tout de suite",
+    isset($f['ariane@exemple.test']), implode(', ', array_keys($f)));
+soha_crm_info_vider_la_file();
+dit("elle est chez Mailchimp sans que Mala ait rien fait",
+    (bool) Faux_Mailchimp::membre('ariane@exemple.test'));
+
+/* --- un formulaire sans consentement n'inscrit personne ------------------- */
+envoi('Contact', array(
+    'n' => array('title' => 'Nom',      'type' => 'text',     'value' => 'Hugo Sansconsentement'),
+    'c' => array('title' => 'Courriel', 'type' => 'email',    'value' => 'hugo@exemple.test'),
+    'm' => array('title' => 'Message',  'type' => 'textarea', 'value' => 'Bonjour.'),
+));
+soha_crm_info_vider_la_file();
+dit("sans case cochée, personne n'est inscrit",
+    null === Faux_Mailchimp::membre('hugo@exemple.test'));
+
+/* --- le retour de Mailchimp ------------------------------------------------ */
+$secret = soha_crm_info_secret();
+dit("l'adresse de retour porte un secret",
+    false !== strpos(soha_crm_info_adresse_retour(), $secret) && strlen($secret) >= 24);
+
+$req = new WP_REST_Request('POST', '/soha-crm/v1/infolettre/retour');
+$req->set_param('type', 'unsubscribe');
+$req->set_param('data', array('email' => 'ariane@exemple.test'));
+$rep = rest_do_request($req);
+dit("sans le secret, le retour est refusé", in_array($rep->get_status(), array(401, 403), true),
+    'statut ' . $rep->get_status());
+
+$req->set_param('cle', 'mauvais-secret');
+$rep = rest_do_request($req);
+dit("avec un mauvais secret aussi", in_array($rep->get_status(), array(401, 403), true),
+    'statut ' . $rep->get_status());
+
+$reg2 = json_decode(soha_crm_registre_lire()['valeur'], true);
+array_unshift($reg2['contacts'], array(
+    'id' => wp_generate_uuid4(), 'nom' => 'Ariane Dubé', 'type' => 'prospect', 'ecole' => '',
+    'courriel' => 'ariane@exemple.test', 'telephone' => '', 'statut' => 'Nouveau',
+    'etiquettes' => array(), 'note' => '', 'interactions' => array(), 'ajoute' => '2026-09-10',
+    'infolettre' => array('abonne' => true, 'consentement' => '2026-09-10',
+                          'source' => 'formulaire', 'desabonne' => false),
+));
+soha_crm_registre_ecrire(wp_json_encode($reg2), 0, false);
+$avant_file = count((array) get_option(SOHA_CRM_INFO_FILE, array()));
+
+$req->set_param('cle', $secret);
+$rep = rest_do_request($req);
+dit("avec le bon secret, le retour passe", 200 === $rep->get_status(), 'statut ' . $rep->get_status());
+$reg2 = json_decode(soha_crm_registre_lire()['valeur'], true);
+$ariane = null;
+foreach ($reg2['contacts'] as $c) {
+    if (!empty($c['courriel']) && 'ariane@exemple.test' === strtolower($c['courriel'])) { $ariane = $c; }
+}
+dit("le désabonnement revient marquer la fiche",
+    $ariane && !empty($ariane['infolettre']['desabonne']) && empty($ariane['infolettre']['abonne']));
+dit("et ne repart pas chez Mailchimp",
+    $avant_file === count((array) get_option(SOHA_CRM_INFO_FILE, array())));
+
+$req2 = new WP_REST_Request('POST', '/soha-crm/v1/infolettre/retour');
+$req2->set_param('cle', $secret);
+$req2->set_param('type', 'profile');
+$req2->set_param('data', array('email' => 'ariane@exemple.test'));
+dit("un autre type d'événement est ignoré poliment",
+    200 === rest_do_request($req2)->get_status());
+
+/* --- remettre une sauvegarde ne réinscrit pas tout le monde ---------------- */
+update_option(SOHA_CRM_INFO_FILE, array(), false);
+soha_crm_registre_ecrire(soha_crm_registre_lire()['valeur'], 0, false);
+dit("une restauration ne réinscrit personne",
+    0 === count((array) get_option(SOHA_CRM_INFO_FILE, array())));
+
+/* --- le paragraphe de la politique ---------------------------------------- */
+$para = soha_crm_info_paragraphe();
+dit("le paragraphe de la politique nomme Intuit et les États-Unis",
+    false !== strpos($para, 'Intuit') && false !== strpos($para, 'États-Unis'));
+dit("il dit ce qui NE part pas", false !== strpos($para, 'demeure au Québec'));
+
+Faux_Mailchimp::oublier();
+remove_filter('pre_http_request', array('Faux_Mailchimp', 'repondre'), 10);
+
 
 /* --- désactivation --------------------------------------------------------- */
 $avant_desactivation = count(get_posts(array('post_type' => 'soha_demande',

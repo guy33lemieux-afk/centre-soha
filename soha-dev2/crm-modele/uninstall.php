@@ -16,6 +16,12 @@ delete_option('soha_crm_revision');
 delete_option('soha_crm_dernier');
 delete_option('soha_crm_derniere_purge');
 delete_option('soha_crm_avant_restauration');
+delete_option('soha_crm_infolettre_cle');
+delete_option('soha_crm_infolettre_liste');
+delete_option('soha_crm_infolettre_double');
+delete_option('soha_crm_infolettre_file');
+delete_option('soha_crm_infolettre_journal');
+delete_option('soha_crm_infolettre_secret');
 
 /* Les demandes archivées. */
 $demandes = get_posts(array(
@@ -40,7 +46,9 @@ foreach (get_users(array('fields' => array('ID'))) as $u) {
     }
 }
 
-$prochaine = wp_next_scheduled('soha_crm_purge');
-if ($prochaine) {
-    wp_unschedule_event($prochaine, 'soha_crm_purge');
+foreach (array('soha_crm_purge', 'soha_crm_infolettre_reprise', 'soha_crm_infolettre_traiter') as $tache) {
+    $prochaine = wp_next_scheduled($tache);
+    if ($prochaine) {
+        wp_unschedule_event($prochaine, $tache);
+    }
 }

@@ -14,6 +14,7 @@ $_SERVER['REQUEST_METHOD'] = 'GET';
 define('WP_ADMIN', true);
 require __DIR__ . '/wordpress/wp-load.php';
 require_once ABSPATH . 'wp-admin/includes/admin.php';
+require_once __DIR__ . '/faux-mailchimp.php';
 /* Un écran courant, comme dans une vraie requête d'administration : sans lui,
    des crochets de WordPress lui-même tombent. */
 set_current_screen('toplevel_page_soha-crm');
@@ -111,6 +112,41 @@ dit("la demande versée affiche sa réservation",
 dit("elle en donne l'espace et le prix",
     false !== strpos($html, 'Salle 4') && false !== strpos($html, '160 $'));
 
+/* --- l'infolettre ---------------------------------------------------------- */
+Faux_Mailchimp::brancher();
+
+ob_start(); soha_crm_ecran_infolettre(); $html = ob_get_clean();
+dit("l'écran de l'infolettre se rend, non branché", propre($html));
+dit("il prévient que Mailchimp est américain",
+    false !== strpos($html, 'Intuit') && false !== strpos($html, 'États-Unis'));
+dit("il donne le paragraphe à coller dans la politique",
+    false !== strpos($html, 'demeure au Québec'));
+dit("il demande la clé sans jamais la réafficher",
+    false !== strpos($html, 'type="password"'));
+dit("tant que rien n'est branché, pas d'adresse de retour",
+    false === strpos($html, 'infolettre/retour'));
+
+update_option(SOHA_CRM_INFO_CLE, 'bonne-cle-us21', false);
+update_option(SOHA_CRM_INFO_LISTE, 'aud961', false);
+soha_crm_info_enfiler('attente@exemple.test', 'abonne', 'Qui Attend');
+
+ob_start(); soha_crm_ecran_infolettre(); $html = ob_get_clean();
+dit("branché, il liste les audiences du compte",
+    propre($html) && false !== strpos($html, 'Infolettre du Centre Soha'));
+dit("il masque la clé au lieu de la montrer",
+    false === strpos($html, 'bonne-cle-us21') && false !== strpos($html, '••••'));
+dit("il montre ce qui attend de partir", false !== strpos($html, 'attente@exemple.test'));
+dit("il donne l'adresse de retour pour les désabonnements",
+    false !== strpos($html, 'infolettre/retour'));
+dit("l'adresse de retour porte le secret",
+    false !== strpos($html, soha_crm_info_secret()));
+
+update_option(SOHA_CRM_INFO_FILE, array(), false);
+delete_option(SOHA_CRM_INFO_CLE);
+delete_option(SOHA_CRM_INFO_LISTE);
+Faux_Mailchimp::oublier();
+remove_filter('pre_http_request', array('Faux_Mailchimp', 'repondre'), 10);
+
 /* --- la sauvegarde --------------------------------------------------------- */
 ob_start(); soha_crm_ecran_sauvegarde(); $html = ob_get_clean();
 dit("l'écran de sauvegarde se rend", propre($html));
@@ -143,8 +179,9 @@ $GLOBALS['menu'] = array(); $GLOBALS['submenu'] = array();
 do_action('admin_menu');
 $pages = array();
 foreach ((array) $GLOBALS['submenu']['soha-crm'] as $e) { $pages[] = $e[2]; }
-dit("les quatre écrans sont au menu",
+dit("les cinq écrans sont au menu",
     in_array('soha-crm', $pages, true) && in_array('soha-crm-demandes', $pages, true)
+    && in_array('soha-crm-infolettre', $pages, true)
     && in_array('soha-crm-sauvegarde', $pages, true) && in_array('soha-crm-acces', $pages, true),
     implode(' · ', $pages));
 $avec_pastille = implode('', array_map(function ($e) { return $e[0]; }, $GLOBALS['submenu']['soha-crm']));
