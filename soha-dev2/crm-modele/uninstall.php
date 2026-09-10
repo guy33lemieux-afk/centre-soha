@@ -22,6 +22,7 @@ delete_option('soha_crm_infolettre_double');
 delete_option('soha_crm_infolettre_file');
 delete_option('soha_crm_infolettre_journal');
 delete_option('soha_crm_infolettre_secret');
+delete_option('soha_crm_courriels_rates');
 
 /* Les demandes archivées. */
 $demandes = get_posts(array(

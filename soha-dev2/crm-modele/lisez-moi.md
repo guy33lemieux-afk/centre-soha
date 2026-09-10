@@ -1,4 +1,4 @@
-# Centre Soha — CRM · extension WordPress v1.3.0
+# Centre Soha — CRM · extension WordPress v1.4.0
 
 ## Ce que c'est
 
@@ -12,7 +12,8 @@ enregistrer, rien n'était gardé. L'extension fournit cet objet. Le JSX d'origi
 est conservé tel quel dans `source/crm-interface-origine.jsx`.
 
 **Les demandes.** Chaque envoi de formulaire du site est écrit en base **avant**
-que le courriel parte. Le courriel devient l'avis ; la base devient la mémoire.
+que le courriel parte — et si l'avis par courriel n'arrive pas à partir, l'écran
+le dit, avec la ligne concernée marquée d'un point rouge. Le courriel devient l'avis ; la base devient la mémoire.
 Une demande se verse au répertoire en un clic, sans créer de doublon si la
 personne y est déjà — et **si c'est une location, la réservation est créée en
 même temps**, avec l'espace, la date et le tarif que la personne avait sous les
@@ -78,6 +79,11 @@ télécharger, le remettre, et un état d'avant conservé pour défaire une fois
   SÖHA · Salle 4 · Salles 1·2·3**. Le CRM parle maintenant la même langue —
   deux vocabulaires pour un même lieu, c'est une réservation mal saisie par mois
   et un revenu qu'on ne sait plus attribuer.
+- **Un avis qui ne part pas se voit.** Archiver la demande n'était que la moitié
+  du travail : un courriel qui échoue ne laisse aucune trace visible, et la
+  demande dormirait dans la base pendant qu'on croit n'avoir rien reçu. L'écran
+  compte les échecs, garde la cause en clair, et marque les lignes concernées.
+  Ce sont celles à rappeler à la main.
 - **Aucun script Mailchimp sur le site.** Leurs formulaires embarqués posent un
   traceur sur chaque page qui les affiche. Ici, tout passe par le serveur : le
   visiteur ne parle jamais à Mailchimp, seul WordPress le fait. La promesse

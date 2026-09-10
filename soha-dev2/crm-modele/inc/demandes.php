@@ -126,6 +126,10 @@ function soha_crm_capter_la_demande($record, $handler) {
     update_post_meta($id_poste, '_soha_consentement', $trouve['consentement'] ? 1 : 0);
     update_post_meta($id_poste, '_soha_traitee', 0);
 
+    /* À partir d'ici, le courriel d'avis part. S'il échoue, on saura à quelle
+       demande l'attribuer. */
+    $GLOBALS['soha_crm_demande_en_cours'] = $id_poste;
+
     /**
      * Après l'archivage d'une demande.
      *
@@ -369,4 +373,53 @@ function soha_crm_resumer($id_demande, $limite = 220) {
         return mb_substr($texte, 0, $limite - 1, 'UTF-8') . '…';
     }
     return $texte;
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Quand le courriel d'avis ne part pas                                       */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Archiver la demande était la moitié du travail.
+ *
+ * L'autre moitié : savoir que l'avis n'est pas arrivé. Un courriel qui échoue
+ * ne laisse aucune trace visible — WordPress lève un signal, personne ne
+ * l'écoute, et la demande dort dans la base pendant qu'on croit n'avoir rien
+ * reçu. C'est exactement la panne d'origine, déplacée d'un cran.
+ *
+ * Vérifié le 10 septembre 2026 : aucun service d'envoi n'est configuré sur le
+ * site, les courriels partent par la fonction d'envoi de PHP. C'est précisément
+ * la situation où un échec silencieux est le plus probable.
+ */
+add_action('wp_mail_failed', 'soha_crm_courriel_rate');
+
+function soha_crm_courriel_rate($erreur) {
+    $message = is_wp_error($erreur) ? $erreur->get_error_message() : '';
+    if ('' === $message) {
+        $message = __('Cause inconnue.', 'soha-crm');
+    }
+
+    /* Si l'échec survient pendant qu'on traite une demande, on l'attribue à
+       cette demande : c'est la ligne que Mala doit rappeler à la main. */
+    $id = isset($GLOBALS['soha_crm_demande_en_cours'])
+        ? (int) $GLOBALS['soha_crm_demande_en_cours'] : 0;
+    if ($id && get_post($id)) {
+        update_post_meta($id, '_soha_courriel_rate', sanitize_text_field($message));
+    }
+
+    $journal = (array) get_option(SOHA_CRM_COURRIELS, array());
+    $journal['combien'] = (isset($journal['combien']) ? (int) $journal['combien'] : 0) + 1;
+    $journal['quand']   = time();
+    $journal['dernier'] = sanitize_text_field($message);
+    update_option(SOHA_CRM_COURRIELS, $journal, false);
+}
+
+/** Combien d'avis ne sont pas partis depuis la dernière remise à zéro. */
+function soha_crm_courriels_rates() {
+    $j = (array) get_option(SOHA_CRM_COURRIELS, array());
+    return array(
+        'combien' => isset($j['combien']) ? (int) $j['combien'] : 0,
+        'quand'   => isset($j['quand']) ? (int) $j['quand'] : 0,
+        'dernier' => isset($j['dernier']) ? (string) $j['dernier'] : '',
+    );
 }

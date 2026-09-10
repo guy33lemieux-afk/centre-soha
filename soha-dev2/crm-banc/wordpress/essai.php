@@ -618,6 +618,51 @@ Faux_Mailchimp::oublier();
 remove_filter('pre_http_request', array('Faux_Mailchimp', 'repondre'), 10);
 
 
+/* ========================================================================== */
+/*  L'avis par courriel qui ne part pas                                       */
+/* ========================================================================== */
+
+/* Le site tourne aujourd'hui sans service d'envoi configuré : les courriels
+   partent par la fonction d'envoi de PHP. C'est la situation où un échec
+   silencieux est le plus probable — donc celle qu'il faut éprouver. */
+
+dit("au départ, aucun avis raté", 0 === soha_crm_courriels_rates()['combien']);
+
+/* On fait échouer l'envoi comme WordPress le fait vraiment : en refusant la
+   requête au niveau de PHPMailer, ce qui déclenche `wp_mail_failed`. */
+add_filter('pre_wp_mail', function () {
+    do_action('wp_mail_failed', new WP_Error('wp_mail_failed',
+        'Could not instantiate mail function.'));
+    return false;
+}, 10, 1);
+
+envoi('Demande de location', demande_de_location(array(
+    'courriel' => 'panne-avis@exemple.test', 'nom' => 'Avis Perdu')));
+$perdue = get_posts(array('post_type' => 'soha_demande', 'posts_per_page' => 1,
+                          'orderby' => 'ID', 'order' => 'DESC'));
+
+/* Elementor n'est pas là au banc : on déclenche l'envoi nous-mêmes, comme il
+   le ferait juste après l'archivage. */
+wp_mail('info@centresoha.com', 'Nouvelle demande', 'Corps du message');
+
+$rates = soha_crm_courriels_rates();
+dit("un avis qui ne part pas est compté", 1 === $rates['combien'], $rates['combien'] . ' raté(s)');
+dit("la cause est gardée en clair",
+    false !== strpos($rates['dernier'], 'Could not instantiate'), $rates['dernier']);
+dit("l'échec est attribué à la demande en cours",
+    '' !== (string) get_post_meta($perdue[0]->ID, '_soha_courriel_rate', true),
+    (string) get_post_meta($perdue[0]->ID, '_soha_courriel_rate', true));
+dit("mais la demande, elle, est bien là",
+    'Avis Perdu' === get_post_meta($perdue[0]->ID, '_soha_nom', true));
+
+wp_mail('info@centresoha.com', 'Une autre', 'Corps');
+dit("le compteur monte", 2 === soha_crm_courriels_rates()['combien']);
+
+delete_option(SOHA_CRM_COURRIELS);
+dit("il se remet à zéro", 0 === soha_crm_courriels_rates()['combien']);
+remove_all_filters('pre_wp_mail');
+
+
 /* --- désactivation --------------------------------------------------------- */
 $avant_desactivation = count(get_posts(array('post_type' => 'soha_demande',
                                              'posts_per_page' => -1, 'post_status' => 'any')));

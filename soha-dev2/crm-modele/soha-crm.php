@@ -3,7 +3,7 @@
  * Plugin Name:       Centre Soha — CRM
  * Plugin URI:        https://centresoha.com/
  * Description:       Le CRM du Centre Soha : l'interface React de Mala adossée à la base de données de WordPress, l'archivage de chaque demande reçue par formulaire, sa transformation en fiche et en réservation, la liaison de l'infolettre avec Mailchimp, et la gestion nominative des accès.
- * Version:           1.3.0
+ * Version:           1.4.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Centre Soha
@@ -64,7 +64,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('SOHA_CRM_VERSION', '1.3.0');
+define('SOHA_CRM_VERSION', '1.4.0');
 
 /** L'option qui porte l'état du registre (jamais en autoload). */
 define('SOHA_CRM_OPTION', 'soha_crm_etat');
@@ -74,6 +74,9 @@ define('SOHA_CRM_REVISION', 'soha_crm_revision');
 
 /** Qui a écrit en dernier, et quand — pour que le conflit ait un visage. */
 define('SOHA_CRM_DERNIER', 'soha_crm_dernier');
+
+/** Les avis par courriel qui ne sont pas partis. */
+define('SOHA_CRM_COURRIELS', 'soha_crm_courriels_rates');
 
 /** 5 Mo — large pour le registre, étroit pour un accident. */
 define('SOHA_CRM_TAILLE_MAX', 5 * 1024 * 1024);

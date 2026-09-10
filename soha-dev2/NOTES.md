@@ -900,3 +900,62 @@ supplémentaire de la politique. Coût : un cycle pour l'adaptateur.
 « neuf hero invisibles » étaient vrais en même temps. Tant qu'une vérification
 lit les fichiers qu'on vient d'écrire plutôt que la page qu'un visiteur reçoit,
 elle mesure le travail, pas le résultat.
+
+---
+
+# Cycle 14 · Aucun service d'envoi n'est configuré — et l'avis non parti se voit
+
+## Le constat, capture d'écran à l'appui
+Dans WP Mail SMTP : **« Service d'envoi actuel : Par défaut (aucun) »**. Rien
+n'est configuré. Les courriels de formulaire partent par la fonction d'envoi de
+PHP, c'est-à-dire par le serveur de messagerie de l'hébergeur — celui de
+Toronto, déjà nommé dans la politique.
+
+Ça éclaire rétrospectivement le cycle 2 : quatre formulaires sans destinataire,
+et derrière, une chaîne d'envoi que personne n'avait jamais configurée. Les
+demandes de location pouvaient échouer à deux endroits d'affilée, en silence.
+
+## La politique dit maintenant vrai
+Elle annonçait « le message transite par le service de messagerie configuré ».
+Pas faux au sens strict, creux en pratique : ça laissait croire qu'un service
+tiers avait été choisi et vérifié. La phrase nomme désormais la réalité, et
+c'est la plus rassurante des trois possibles — **aucun tiers ne voit passer le
+message**. Le nom d'une extension a aussi quitté la politique : une personne qui
+la lit n'a pas à connaître nos extensions.
+
+## L'autre moitié de « ne plus rien perdre »
+Archiver la demande protégeait contre la perte. Ça ne protégeait pas contre
+l'ignorance : un courriel qui échoue ne laisse aucune trace visible, et la
+demande dort dans la base pendant qu'on croit n'avoir rien reçu. C'est la panne
+d'origine, déplacée d'un cran.
+
+L'extension écoute donc `wp_mail_failed`, compte les échecs, garde la cause en
+clair, et **attribue l'échec à la demande en cours** — parce que la question
+utile n'est pas « combien », c'est « qui rappeler ». L'écran affiche un avertissement
+avec la cause, et marque d'un point rouge les lignes concernées.
+
+Éprouvé au banc en faisant échouer l'envoi comme WordPress le fait vraiment
+(`pre_wp_mail` qui déclenche `wp_mail_failed`), pas en appelant nos fonctions.
+
+## Livré
+- `soha_extensioncrm_20260910_v140.zip`
+- `soha_kitdev_20260910_v14.zip`, `soha_site-html_20260910_v10.zip`
+- Banc : **191 vérifications, 0 échec** (120 + 45 + 26), plus la porte du
+  regard sur 29 pages.
+
+## Ce que je recommande pour l'envoi
+« Autre SMTP » avec la boîte `info@centresoha.com` chez l'hébergeur déjà en
+place. Aucun tiers de plus, aucun paragraphe de plus dans la politique, et
+l'expéditeur devient enfin l'adresse que le site affiche 32 fois — au lieu de
+`admin@centresoha.com`. Puis vérifier SPF et DKIM chez l'hébergeur, et faire un
+envoi d'essai depuis `WP Mail SMTP → Outils → Test d'e-mail`.
+
+## Mailchimp : toujours rien de choisi, et la recommandation tient
+Cyberimpact. Québécois, serveurs au Canada, et le CRM v02 contient déjà un
+import Cyberimpact.
+
+## Leçon
+**Une phrase creuse dans une politique est un mensonge lent.** « Le service de
+messagerie configuré » n'était contredit par rien, ne déclenchait aucune alerte,
+et décrivait une chose qui n'existait pas. Les textes de conformité se
+vérifient comme du code : en allant regarder l'écran de réglages.

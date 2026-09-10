@@ -68,6 +68,34 @@ function soha_crm_ecran_demandes() {
             </div>
         <?php endif; ?>
 
+        <?php $rates = soha_crm_courriels_rates();
+        if ($rates['combien']) : ?>
+            <div class="notice notice-warning">
+                <p><strong><?php printf(
+                    /* translators: %d : nombre d'avis non partis. */
+                    esc_html(_n('%d avis par courriel n\'a pas pu partir.',
+                                '%d avis par courriel ne sont pas partis.',
+                                $rates['combien'], 'soha-crm')),
+                    (int) $rates['combien']
+                ); ?></strong>
+                <?php esc_html_e(
+                    "Les demandes sont ici quand même — c'est précisément à ça que sert cet écran. Mais personne n'a été prévenu : relis la liste ci-dessous, les lignes marquées d'un point rouge sont celles-là.",
+                    'soha-crm'
+                ); ?></p>
+                <p><em><?php printf(
+                    /* translators: 1 : date, 2 : message d'erreur. */
+                    esc_html__('Dernier échec le %1$s : %2$s', 'soha-crm'),
+                    esc_html(date_i18n(get_option('date_format') . ' à ' . get_option('time_format'), $rates['quand'])),
+                    esc_html($rates['dernier'])
+                ); ?></em></p>
+                <form method="post" style="margin-bottom:10px">
+                    <?php wp_nonce_field('soha_crm_courriels', 'soha_crm_courriels_jeton'); ?>
+                    <button class="button button-small" name="geste_courriels" value="oublier">
+                        <?php esc_html_e("C'est réglé, remets le compteur à zéro", 'soha-crm'); ?></button>
+                </form>
+            </div>
+        <?php endif; ?>
+
         <p style="max-width:74ch">
             <?php esc_html_e(
                 "Chaque envoi de formulaire du site est écrit ici avant que le courriel ne parte. Si un courriel se perd, la demande, elle, est restée.",
@@ -136,7 +164,12 @@ function soha_crm_ecran_demandes() {
                     ?>
                     <tr>
                         <td><?php echo esc_html(get_the_date('j M Y')); ?><br>
-                            <span style="color:#646970"><?php echo esc_html(get_the_date('H:i')); ?></span></td>
+                            <span style="color:#646970"><?php echo esc_html(get_the_date('H:i')); ?></span>
+                            <?php $rate = (string) get_post_meta($id, '_soha_courriel_rate', true);
+                            if ($rate) : ?>
+                                <br><span style="color:#d63638" title="<?php echo esc_attr($rate); ?>">
+                                    ● <?php esc_html_e('avis non parti', 'soha-crm'); ?></span>
+                            <?php endif; ?></td>
                         <td><?php echo esc_html(get_post_meta($id, '_soha_formulaire', true)); ?></td>
                         <td>
                             <strong><?php echo esc_html($nom ? $nom : '—'); ?></strong><br>
@@ -213,6 +246,18 @@ function soha_crm_ecran_demandes() {
 
 /** Le geste demandé par le formulaire de la ligne, s'il y en a un. */
 function soha_crm_traiter_le_geste() {
+    if (!empty($_POST['geste_courriels'])) {
+        check_admin_referer('soha_crm_courriels', 'soha_crm_courriels_jeton');
+        if (!current_user_can(soha_crm_capacite())) {
+            return array('genre' => 'error', 'texte' => __('Droits insuffisants.', 'soha-crm'));
+        }
+        delete_option(SOHA_CRM_COURRIELS);
+        return array('genre' => 'success', 'texte' => __(
+            "Compteur remis à zéro. Il remontera au prochain courriel qui n'arrive pas à partir.",
+            'soha-crm'
+        ));
+    }
+
     if (empty($_POST['geste']) || empty($_POST['demande'])) {
         return null;
     }

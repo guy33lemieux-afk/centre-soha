@@ -112,6 +112,27 @@ dit("la demande versée affiche sa réservation",
 dit("elle en donne l'espace et le prix",
     false !== strpos($html, 'Salle 4') && false !== strpos($html, '160 $'));
 
+/* --- l'avis non parti se voit à l'écran ------------------------------------ */
+update_option(SOHA_CRM_COURRIELS, array('combien' => 3, 'quand' => time(),
+                                        'dernier' => 'Could not instantiate mail function.'), false);
+$d = get_posts(array('post_type' => 'soha_demande', 'posts_per_page' => 1, 'orderby' => 'ID', 'order' => 'DESC'));
+update_post_meta($d[0]->ID, '_soha_courriel_rate', 'Could not instantiate mail function.');
+
+$_GET['etat'] = 'toutes';
+ob_start(); soha_crm_ecran_demandes(); $html = ob_get_clean();
+unset($_GET['etat']);
+dit("l'écran annonce les avis qui ne sont pas partis",
+    propre($html) && false !== strpos($html, 'ne sont pas partis'));
+/* Les apostrophes sortent échappées en `&#039;` : on cherche un morceau qui
+   n'en contient pas, sinon on teste l'échappement au lieu du texte. */
+dit("il dit que les demandes sont là quand même",
+    false !== strpos($html, 'Les demandes sont ici quand même'));
+dit("il donne la cause du dernier échec",
+    false !== strpos($html, 'Could not instantiate'));
+dit("la ligne concernée porte sa marque", false !== strpos($html, 'avis non parti'));
+dit("et un bouton pour remettre à zéro", false !== strpos($html, 'geste_courriels'));
+delete_option(SOHA_CRM_COURRIELS);
+
 /* --- l'infolettre ---------------------------------------------------------- */
 Faux_Mailchimp::brancher();
 
