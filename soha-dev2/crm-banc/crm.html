@@ -1,0 +1,26 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<title>Banc — CRM Soha</title>
+<link rel="stylesheet" href="/assets/polices.css">
+<style>body{margin:0;background:#f0f0f1;font:14px system-ui}#banc-admin{padding:32px 20px}</style>
+</head><body class="wp-admin wp-core-ui">
+<!-- Deux classes de wp-admin sur le body : si le CSS du CRM n'était pas
+     cloisonné, c'est ici qu'on verrait la collision. -->
+<div id="banc-admin"><div class="wrap" style="margin:0;padding:0">
+  <div id="soha-crm-racine"></div>
+</div></div>
+<script src="/vendor/react.development.js"></script>
+<script src="/vendor/react-dom.development.js"></script>
+<script>
+  /* `wp.element` tel que WordPress l'expose : React et ReactDOM réunis. */
+  window.wp = { element: Object.assign({}, React, {
+    createRoot: ReactDOM.createRoot,
+    render: ReactDOM.render
+  })};
+  window.SOHA_CRM = { racine: "/wp-json/soha-crm/v1/etat", jeton: "jeton-de-banc" };
+  window.__erreurs = [];
+  window.addEventListener("error", function (e) { window.__erreurs.push(String(e.message)); });
+  window.addEventListener("unhandledrejection", function (e) { window.__erreurs.push("promesse: " + e.reason); });
+</script>
+<script src="/assets/adaptateur.js"></script>
+<script src="/assets/crm.js"></script>
+</body></html>

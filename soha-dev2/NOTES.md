@@ -482,3 +482,89 @@ Testé au navigateur : `?espace=soha&jour=fds&plage=demi&tarif=400` donne
 **Un `try/catch` vide transforme une panne en illusion.** Le CRM avait l'air de
 fonctionner parce que l'échec d'écriture était avalé. Avant de croire qu'un
 stockage marche, l'ouvrir, écrire, recharger, relire.
+
+---
+
+# Cycle 9 · L'extension CRM v1.0.0 — l'interface de Mala, branchée sur WordPress
+
+Décision prise : *« garde mon interface React et branche-la sur WordPress »*. Les
+897 lignes du v02 ne sont donc pas réécrites. Ce qui change, c'est le sol : au
+lieu d'appeler un `window.storage` qui n'existe pas, elles appellent un
+`window.storage` que l'extension fournit, adossé à `wp_options`.
+
+## Ce qui est livré
+`soha_extensioncrm_20260910_v100.zip` — 23 fichiers, 284 Ko.
+
+    soha-crm.php                      l'écran d'administration, deux routes REST
+    uninstall.php                     l'effacement, à la suppression seulement
+    assets/adaptateur.js              `window.storage` → la base
+    assets/crm.js                     l'interface compilée, 64 Ko
+    assets/polices.css + polices/     les 3 familles du canon, 12 fontes
+    source/crm-interface-origine.jsx  le JSX d'origine, intact
+    lisez-moi.md                      l'installation et les 5 choses à savoir
+
+Dans le dépôt : `build_crm.py` (la fabrique), `crm-modele/` (tout ce qui est
+écrit à la main), `crm-banc/` (le banc d'essai).
+
+## Les quatre soins de l'adaptateur
+1. **Plus rien ne se perd en silence.** Le CRM n'attend jamais `set()` : un échec
+   resterait invisible. L'adaptateur affiche une bande rouge et ne se taît pas.
+2. **Écritures groupées sur 800 ms**, vidées quand l'onglet passe en arrière-plan
+   et par `sendBeacon` à la fermeture. Mesuré : créer un contact = 1 écriture.
+3. **Garde de révision.** Deux personnes à la fois : celle qui enregistre sur un
+   état périmé reçoit un 409 et une bande ambre, au lieu d'écraser l'autre.
+4. **Rien ne sort.** Polices servies par l'extension, aucun CDN. Mesuré à zéro
+   requête extérieure.
+
+## Trois défauts trouvés, dont un grave
+1. **Grave — toute la mise en page pour petits écrans était morte.** Le
+   cloisonnement du CSS préfixait l'en-tête `@media (max-width:860px)` comme un
+   sélecteur : `#soha-crm-racine @media (…)`. Un navigateur jette une règle comme
+   celle-là *sans rien dire*. Le test `@` se faisait à la position exacte du
+   curseur, où il n'y a qu'un saut de ligne et deux espaces. Corrigé, et
+   `build_crm.py` refuse désormais de fabriquer une extension où cela
+   réapparaîtrait. 136 sélecteurs cloisonnés avant, 148 après : les 12 manquants
+   étaient tous ceux de la `@media`.
+2. **L'interface annonçait « Données gardées dans ton navigateur. »** C'était
+   vrai du prototype, et c'était le défaut lui-même. Corrigé à la fabrication :
+   « Données gardées dans la base du site, sauvegardées avec elle. » Le JSX
+   d'origine reste intact dans `source/`.
+3. **Le PHP et l'adaptateur ne vivaient que dans le dossier de sortie**, et une
+   reconstruction les avait effacés. Tout ce qui est écrit à la main est
+   maintenant dans `crm-modele/`, recopié par la fabrique en dernier.
+
+## Mesuré au navigateur (13 points, banc d'essai sur vrai HTTP)
+Montage 63 nœuds · GET au chargement · écriture du semis · un contact créé par
+l'interface retrouvé en base · survit au rechargement · bande de conflit sur 409 ·
+bande de panne quand le serveur tombe · 0 requête extérieure · 0 erreur console ·
+`.card`, `.badge`, `.btn`, `.soha h2` restent nus hors de la racine · aucun
+débordement horizontal de 1440 px à 390 px, gouttière wp-admin comprise (ce qui
+dépasse est *dans* la barre latérale, qui défile de son propre aveu).
+
+## Choix assumés
+- **Pas de purge automatique.** Les 24 mois portent sur les demandes reçues par
+  formulaire, pas sur le registre des personnes du centre. Supprimer d'office la
+  fiche de quelqu'un qui vient depuis trois ans serait une faute, pas une
+  conformité.
+- **Pas de table dédiée.** Une option suffit à quelques centaines de fiches ;
+  `autoload` à `false` et plafond de 5 Mo. La table viendra avec la phase 2,
+  quand il faudra chercher et recouper côté serveur.
+- **`edit_pages` comme droit d'accès**, filtrable par `soha_crm_capacite`.
+
+## Avant d'y mettre de vraies personnes — les 3 préconditions tiennent
+1. 2FA posée, et les **deux gestionnaires de fichiers retirés** (`fileorganizer`,
+   `wp-file-manager`).
+2. UpdraftPlus vérifié, avec une destination **hors serveur**.
+3. Les 5 fiches d'exemple du prototype supprimées.
+
+## Décisions toujours attendues
+1. Qui accède au CRM — Mala seule, Dominique aussi, la réception ?
+2. Le service de relais de WP Mail SMTP (bloque la section 4 de la politique).
+3. Où sont les serveurs de l'hébergeur (même section).
+
+## Leçon
+**Une règle CSS invalide ne lève aucune erreur.** `php -l`, `node --check` et
+esbuild ont tous dit oui à un fichier dont un tiers de la mise en page était
+inerte. Le compteur de sélecteurs aussi disait 136 sans broncher. Seul l'œil
+posé sur l'écran à 390 px l'a vu. Ce qui se mesure, on le mesure ; ce qui ne se
+mesure pas encore, on écrit le garde-fou avant de passer à la suite.
