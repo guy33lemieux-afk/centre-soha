@@ -328,3 +328,49 @@ kit médias.
 une seule URL Google — et pourtant deux requêtes sortaient encore, par un chemin
 que je n'avais pas couvert. Écouter le trafic réel du navigateur, pas seulement
 relire le code.
+
+---
+
+# Complément 6 du 10 septembre — la politique de confidentialité bouclée
+
+Faits fournis par Mala : **WP Mail SMTP** pour les formulaires, **Newsletter**
+pour l'infolettre, **24 mois** de conservation.
+
+## Deux politiques existaient — la bonne n'était pas celle qu'on croyait
+`soha_confidentialite_20260903_v01.html` (fichier isolé) nomme **Cyberimpact**
+comme plateforme d'envoi et laisse le responsable en `[Nom du·de la responsable]`.
+La page **7386 du kit** — celle qui est réellement publiée — est bien meilleure :
+elle nomme Dominique Mennessier, couvre les formulaires ET l'infolettre, et
+signale honnêtement ses trois points en suspens.
+
+→ Le fichier isolé du 3 septembre est **périmé**. C'est la page du kit qui vit.
+   Et sa mention de Cyberimpact contredisait la réalité : à corriger si ce
+   fichier resurgit.
+
+## Une phrase que le travail d'aujourd'hui a rendue fausse
+La politique disait : *« Une seule ressource est chargée depuis l'extérieur :
+les polices Google Fonts, qui reçoivent de ce fait votre adresse IP. »*
+Depuis l'auto-hébergement des polices, c'est faux. Réécrit en : **aucune
+ressource n'est chargée depuis l'extérieur**, avec la date du changement.
+
+*Un correctif technique peut périmer un texte juridique. Vérifier les deux.*
+
+## Kit v10 — les quatre blocs réécrits
+1. Préambule : les « trois précisions à fixer » sont fixées, l'encadré disparaît.
+2. Polices : plus aucun appel externe.
+3. Fournisseurs nommés : l'hébergeur ; **WP Mail SMTP** (achemine les
+   formulaires) ; **l'extension Newsletter** (envoie l'infolettre, et tourne sur
+   le serveur du site — la liste ne part pas chez un tiers).
+4. Conservation : **24 mois** après le dernier échange pour les formulaires ;
+   jusqu'à désinscription pour l'infolettre, avec la trace minimale du retrait.
+
+Les deux encadrés « À compléter » sont retirés. Date portée au 10 septembre 2026.
+Vérifié sur la page publiée : 0 « À compléter », 0 « Google Fonts ».
+
+## La question qui reste, et elle est réelle
+WP Mail SMTP n'envoie rien par lui-même : il **relaie** vers un service
+configuré (Gmail, SendGrid, Mailgun, un SMTP d'hébergeur…). La Loi 25 demande
+de nommer qui traite les renseignements **et de dire s'ils sortent du Québec**.
+Il faut donc savoir : (a) quel service est configuré dans WP Mail SMTP, (b) où
+sont les serveurs de l'hébergeur. Sans ces deux réponses, la section 4 nomme le
+mécanisme mais pas la destination finale.
