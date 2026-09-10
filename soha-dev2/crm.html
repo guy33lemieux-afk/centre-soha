@@ -164,7 +164,7 @@ section>h2+p{margin-top:15px}
   <div class="sceau" aria-hidden="true"><i></i><b></b><u></u></div>
   <p class="kicker">Centre Soha · 961 Rachel Est · 10 septembre 2026</p>
   <h1>Le CRM du 961</h1>
-  <p class="sous">Ton CRM v02 avait un défaut qu'on ne voyait pas à l'usage : il ne gardait rien. C'est réparé — ton interface est intacte, c'est le sol sous ses pieds qui a changé. Voici ce que j'ai mesuré, l'extension à installer, et la marche à suivre.</p>
+  <p class="sous">Ton CRM v02 avait un défaut qu'on ne voyait pas à l'usage : il ne gardait rien. C'est réparé — ton interface est intacte, c'est le sol sous ses pieds qui a changé. Et depuis, il garde aussi chaque demande reçue par formulaire. Voici l'extension, la marche à suivre, et ce qui a été mesuré.</p>
 </header>
 
 <section id="constat" style="margin-top:0">
@@ -267,8 +267,14 @@ section>h2+p{margin-top:15px}
     <li><div><b>Active-la</b><span>Le bouton <em>Activer l'extension</em> apparaît tout de suite après. Un menu <strong>CRM Soha</strong> s'ajoute dans la colonne de gauche, en troisième position, sous Tableau de bord.</span></div></li>
     <li><div><b>Ouvre-le et crée un contact pour de vrai</b><span>Répertoire → <em>+ Nouveau contact</em> → un nom, un courriel → Enregistrer.</span></div></li>
     <li><div><b>Recharge la page (F5)</b><span>C'est l'étape qui compte. Le contact doit être encore là. S'il y est, le CRM garde — ce qu'il ne faisait pas avant. S'il n'y est pas, une bande rouge te l'aura dit : envoie-moi ce qu'elle raconte.</span></div></li>
-    <li><div><b>Supprime les cinq fiches d'exemple</b><span>Elles viennent du prototype. Ce sont les seules données fictives ; tout le reste sera le tien.</span></div></li>
+    <li><div><b>Ouvre « Accès » et coche les quatre</b><span>Toi, Dominique, Cassandra et Fred. Les comptes administrateurs y sont d'office — leur ligne est grisée, et c'est en retirant le rôle qu'on retire le CRM.</span></div></li>
+    <li><div><b>Envoie un formulaire depuis le site</b><span>Une demande de location, par exemple. Elle doit apparaître dans « Demandes », avec le courriel de la personne. À partir de là, plus une seule ne se perd.</span></div></li>
   </ol>
+
+  <div class="preuve">
+    <p class="titre">Rectificatif — ne supprime pas les cinq fiches</p>
+    <p>Je t'avais écrit que les cinq fiches présentes au premier chargement étaient des données d'exemple à effacer. <strong>C'est faux, et j'aurais dû ouvrir le fichier avant de le dire.</strong> Ce sont Dominique Mennessier, Ève Morin, Jeimy Oviedo, Julie Habart et Marjolaine Blouin, avec leurs matricules A·002 à A·011 : de vraies artisanes du 961. Garde-les, complète-les.</p>
+  </div>
 
   <div class="avertis">
     <p class="titre">Avant d'y entrer de vraies personnes</p>
@@ -280,18 +286,22 @@ section>h2+p{margin-top:15px}
     </ul>
   </div>
 
-  <h3 style="margin-top:36px">Ce qui a été mesuré, au navigateur</h3>
-  <p>Treize points, sur un vrai serveur HTTP qui imite les routes de l'extension — pas une simulation : les requêtes partent pour de bon.</p>
+  <h3 style="margin-top:36px">Ce qui a été mesuré</h3>
+  <p>Pas sur une imitation : sur un <strong>WordPress 6.8.3 complet</strong>, monté pour l'occasion, où l'extension est installée et activée comme elle le sera chez toi. Trois séries d'épreuves, chacune repartant d'une base vierge — une épreuve qui hérite de la veille ne prouve rien.</p>
   <div class="mesures">
-    <div><p>L'interface se monte dans l'écran de WordPress</p><em>63 nœuds</em></div>
-    <div><p>Un contact créé à la main se retrouve dans la base</p><em>oui</em></div>
-    <div><p>Il est encore là après un rechargement</p><em>oui</em></div>
+    <div><p>Vérifications passées, en tout</p><em>87 sur 87</em></div>
+    <div><p>Chromium se connecte, ouvre le CRM, crée un contact</p><em>écrit en base</em></div>
+    <div><p>Le contact est encore là après rechargement</p><em>oui</em></div>
+    <div><p>Un envoi de formulaire est archivé, nom et courriel repérés</p><em>oui</em></div>
+    <div><p>Le même courriel une deuxième fois</p><em>0 doublon</em></div>
+    <div><p>La purge efface 25 mois et épargne 23</p><em>oui</em></div>
+    <div><p>Un abonné WordPress qui tente d'entrer</p><em>refusé</em></div>
+    <div><p>Un visiteur non connecté sur la route REST</p><em>401</em></div>
+    <div><p>Écriture périmée, illisible, ou trop grosse</p><em>409 · 400 · 413</em></div>
+    <div><p>Un nom contenant du HTML, réaffiché</p><em>échappé</em></div>
+    <div><p>Désactiver l'extension</p><em>ne perd rien</em></div>
     <div><p>Créer un contact, frappe par frappe, coûte</p><em>1 écriture</em></div>
-    <div><p>Si quelqu'un d'autre a enregistré entre-temps</p><em>bande ambre</em></div>
-    <div><p>Si le serveur ne répond plus</p><em>bande rouge</em></div>
-    <div><p>Requêtes vers l'extérieur — ni Google, ni CDN</p><em>0</em></div>
-    <div><p>Erreurs dans la console du navigateur</p><em>0</em></div>
-    <div><p>Le CSS du CRM déborde-t-il sur l'administration ?</p><em>non</em></div>
+    <div><p>Requêtes de l'extension vers l'extérieur</p><em>0</em></div>
     <div><p>Débordement horizontal, de 1440 px à 390 px</p><em>aucun</em></div>
   </div>
 
@@ -307,12 +317,42 @@ section>h2+p{margin-top:15px}
   <p><strong>Qui y a accès :</strong> pour l'instant, toute personne qui peut modifier les pages — toi, et les éditeurs. C'est la question 02 ci-dessous ; dès que tu réponds, je resserre en une ligne.</p>
 </section>
 
+<section id="demandes">
+  <h2>Plus une seule demande ne se perd</h2>
+  <p>C'était la phase 1 du plan : elle est faite. Jusqu'ici, une demande de location arrivait par courriel et n'existait nulle part ailleurs. Si le courriel se perdait, se classait mal, ou partait dans une boîte que personne ne regardait — <em>ce qui est arrivé pendant des mois, faute de destinataire défini</em> — la demande n'avait jamais eu lieu.</p>
+  <p>Désormais, chaque envoi de formulaire est écrit dans la base <strong>avant</strong> que le courriel parte. Le courriel devient l'avis ; la base devient la mémoire.</p>
+
+  <div class="chaine">
+    <div class="maillon existe"><span class="quoi">Demandes</span><div><b>Un écran qui compte ce qui attend</b><span>Une pastille sur le menu, comme pour les commentaires. Filtre « en attente » ou « toutes », le détail de chaque champ en dépliant la ligne, et un export CSV de tout.</span></div></div>
+    <div class="maillon existe"><span class="quoi">Un clic</span><div><b>« Verser au répertoire »</b><span>La demande devient une fiche contact : type <code>prospect</code>, statut <code>Nouveau</code>, consentement infolettre daté si la case était cochée, et la demande inscrite dans son historique.</span></div></div>
+    <div class="maillon existe"><span class="quoi">Sans doublon</span><div><b>Si le courriel est déjà connu</b><span>Pas de deuxième fiche : l'échange s'ajoute à celle qui existe. C'est exactement le doublon qui a coûté cher sur les images de ce site ; on ne le refait pas ici.</span></div></div>
+    <div class="maillon batir"><span class="quoi">24 mois</span><div><b>L'effacement automatique</b><span>Une fois par jour, les demandes de plus de 24 mois sont effacées, comme l'annonce ta politique. L'écran affiche la date du dernier passage. Le répertoire, lui, n'est jamais purgé.</span></div></div>
+  </div>
+
+  <div class="avertis">
+    <p class="titre">Ce qui n'est pas gardé, et c'est voulu</p>
+    <p>Ni adresse IP, ni empreinte de navigateur. On garde ce que la personne a écrit, rien de ce qu'elle n'a pas choisi de dire. <em>Une remarque au passage :</em> l'administration de WordPress, elle, appelle <code>secure.gravatar.com</code> pour afficher les avatars — six requêtes par page. Ce n'est pas l'extension, ça ne concerne que vos quatre comptes et pas les visiteurs, et <code>Réglages → Discussion</code> permet de les couper.</p>
+  </div>
+</section>
+
+<section id="quatre">
+  <h2>Vous êtes quatre</h2>
+  <p>Toi, Dominique, Cassandra et Fred. Ça change deux choses dans le code, pas seulement une case à cocher.</p>
+
+  <ol class="defauts">
+    <li><span class="n">01</span><div><b>Une permission à part, pas un effet de bord</b><span>Le CRM ne s'ouvre plus à « qui peut modifier une page ». Il a sa propre permission, <code>soha_acceder_crm</code>, donnée à des personnes nommées sur l'écran « Accès ». Le répertoire tient les coordonnées de gens réels : y entrer ne doit pas être la conséquence accidentelle d'un autre droit.</span></div></li>
+    <li><span class="n">02</span><div><b>Le conflit a un visage</b><span>À quatre, « quelqu'un d'autre a enregistré » ne suffit pas — il faut savoir à qui aller parler. Le serveur retient qui a écrit en dernier, et la bande ambre le nomme : « Dominique a enregistré pendant que tu travaillais. »</span></div></li>
+  </ol>
+
+  <p class="doux" style="color:var(--doux);font-size:.95rem">Un détail à connaître : une permission accordée n'apparaît qu'au chargement de page suivant. Si tu coches quelqu'un et qu'il ne voit rien, il lui suffit de recharger.</p>
+</section>
+
 <section id="montage">
   <h2>Le montage</h2>
-  <p>L'extension livrée aujourd'hui est le socle : le registre garde, et il est sauvegardé. Ce qui suit reste à bâtir, en trois temps. Chacun est utile seul : si on s'arrête après le premier, tu as déjà gagné quelque chose.</p>
+  <p>Le socle est posé et la première phase est faite. Restent les deux autres.</p>
 
   <ol class="phases">
-    <li><span class="n">1</span><div><b>Ne plus rien perdre</b><span>Archiver chaque envoi de formulaire dans la base, avec sa date, son consentement et son estimation. Un écran simple pour les lire et les marquer traitées. Purge automatique à 24 mois, comme la politique l'annonce.<span class="duree">Un cycle · utile dès le premier jour</span></span></div></li>
+    <li><span class="n">1</span><div><b>Ne plus rien perdre</b><span>Fait. Chaque envoi de formulaire est archivé avec sa date et son consentement, un écran pour les lire et les marquer traitées, la purge à 24 mois, et le versement au répertoire en un clic.<span class="duree" style="color:var(--cultiver)">Livré le 10 septembre 2026</span></span></div></li>
     <li><span class="n">2</span><div><b>Les contacts et les réservations</b><span>Les trois types de contenu, la fiche contact avec son historique, la réservation avec son statut de paiement. Reprise du modèle de ton v02, et du vocabulaire réel des quatre espaces. Import de ce que tu as déjà, par le fichier JSON que ton CRM sait exporter.<span class="duree">Un à deux cycles</span></span></div></li>
     <li><span class="n">3</span><div><b>Le tableau de bord et l'infolettre</b><span>Les vues de synthèse, et la jonction avec l'extension Newsletter — le consentement coché sur le formulaire inscrit la personne, sans double saisie et sans export à trimballer.<span class="duree">Un cycle</span></span></div></li>
   </ol>
@@ -320,16 +360,16 @@ section>h2+p{margin-top:15px}
 
 <section id="decisions">
   <h2>Ce que j'ai besoin de savoir</h2>
-  <p>La première question est tranchée : le CRM vit dans WordPress, et ton interface est restée la tienne. Il en reste deux.</p>
+  <p>Deux questions sont tranchées : le CRM vit dans WordPress avec ton interface, et vous êtes quatre à y avoir accès. Il en reste deux, toutes les deux sur la politique de confidentialité.</p>
 
   <ol class="defauts">
-    <li><span class="n">01</span><div><b>Qui doit y avoir accès ?</b><span>Toi seule, ou Dominique aussi ? Une personne à la réception ? WordPress sait faire des rôles ; il faut juste savoir lesquels.</span></div></li>
-    <li><span class="n">02</span><div><b>Le service de relais de WP Mail SMTP</b><span>Toujours en suspens. Il ne bloque pas le CRM, mais il bloque la section 4 de ta politique. C'est dans <code>WP Mail SMTP → Réglages → Programme de messagerie</code>, la rangée de logos.</span></div></li>
+    <li><span class="n">01</span><div><b>Où sont les serveurs de ton hébergeur ?</b><span>La section 4 de ta politique doit dire où dorment les données. C'est une question à poser à l'hébergeur, en une phrase : « Dans quel pays sont hébergées les données de mon site ? »</span></div></li>
+    <li><span class="n">02</span><div><b>Le service de relais de WP Mail SMTP</b><span>Toujours en suspens, et c'est la même section 4. C'est dans <code>WP Mail SMTP → Réglages → Programme de messagerie</code>, la rangée de logos : dis-moi lequel est sélectionné.</span></div></li>
   </ol>
 </section>
 
 <footer class="pied">
-  <p>Diagnostic établi en lisant les 897 lignes de <code>soha_crm_20260903_v02.jsx</code> et en mesurant le comportement réel de son stockage dans Chromium. L'extension <code>v1.0.0</code> est livrée, vérifiée par <code>php -l</code>, <code>node --check</code>, et treize mesures au navigateur. Le pont entre l'estimateur et le formulaire est livré et testé.</p>
+  <p>Diagnostic établi en lisant les 897 lignes de <code>soha_crm_20260903_v02.jsx</code> et en mesurant le comportement réel de son stockage dans Chromium. L'extension <code>v1.1.0</code> est livrée, éprouvée sur un WordPress 6.8.3 complet monté pour l'occasion : 87 vérifications, aucun échec. Le pont entre l'estimateur et le formulaire est livré et testé.</p>
   <p style="margin-bottom:0">Périmètre : Centre Soha, 961 Rachel Est. Le pôle soha.live n'est pas concerné.</p>
 </footer>
 
