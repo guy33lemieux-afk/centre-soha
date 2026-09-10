@@ -568,3 +568,90 @@ esbuild ont tous dit oui à un fichier dont un tiers de la mise en page était
 inerte. Le compteur de sélecteurs aussi disait 136 sans broncher. Seul l'œil
 posé sur l'écran à 390 px l'a vu. Ce qui se mesure, on le mesure ; ce qui ne se
 mesure pas encore, on écrit le garde-fou avant de passer à la suite.
+
+---
+
+# Cycle 10 · CRM v1.1.0 — quatre personnes, et plus rien qui se perd
+
+Réponse de Mala : **Mala, Dominique, Cassandra et Fred**. Quatre accès.
+
+## Correction d'une erreur du cycle 9
+J'avais écrit, dans le lisez-moi et dans le document, que les cinq fiches
+présentes au premier chargement étaient « les seules données fictives » et
+qu'il fallait les supprimer. **C'est faux.** Le `seed()` du v02 contient
+Dominique Mennessier, Ève Morin, Jeimy Oviedo, Julie Habart et Marjolaine
+Blouin, avec leurs matricules A·002 à A·011 : ce sont de vraies artisanes du
+961, et Dominique est la co-associée que Mala vient de nommer pour l'accès.
+Suivre mon instruction aurait détruit de vraies données. Corrigé partout.
+
+## Ce que le cycle ajoute
+**Les accès.** Une permission à part, `soha_acceder_crm`, plutôt que
+`edit_pages`. Le CRM tient des coordonnées de personnes réelles : y entrer ne
+doit pas être l'effet de bord du droit de corriger une page. Les administrateurs
+l'ont par leur rôle ; les autres la reçoivent nominativement, sur un écran
+« Accès » réservé à `promote_users`.
+
+**Le conflit a un visage.** Ils sont quatre : « quelqu'un d'autre a enregistré »
+ne suffit plus, il faut savoir à qui aller parler. Le serveur retient qui a écrit
+en dernier et le renvoie avec le 409 ; la bande ambre le nomme.
+
+**Phase 1 — ne plus rien perdre.** Chaque envoi de formulaire est écrit en base
+*avant* que le courriel parte, sur `elementor_pro/forms/new_record` en priorité 5.
+Le courriel devient l'avis, la base devient la mémoire. Un écran « Demandes »
+avec pastille de compte, filtre en attente / toutes, détail dépliable, export CSV.
+Purge automatique à 24 mois, une fois par jour, avec la date du dernier passage
+affichée. Ni adresse IP, ni empreinte de navigateur : on garde ce que la personne
+a écrit, rien de ce qu'elle n'a pas choisi de dire.
+
+**Le pont entre les deux.** « Verser au répertoire » transforme une demande en
+fiche contact — type `prospect`, statut `Nouveau`, consentement infolettre daté
+si la case était cochée, et la demande inscrite dans l'historique. Si le courriel
+est déjà connu, **pas de deuxième fiche** : l'échange s'ajoute à celle qui
+existe. C'est exactement le doublon qui a coûté cher sur les médias de ce site ;
+on ne le refait pas ici.
+
+## Un vrai WordPress au banc
+WordPress 6.8.3 complet sur SQLite (`crm-banc/wordpress/`), monté depuis GitHub
+— wordpress.org est bloqué par le mandataire. Trois suites, chacune sur une base
+fraîche, **87 vérifications, 0 échec** :
+
+- `essai.php` (52) : activation, permission donnée et retirée, registre,
+  autoload à `off`, routes 200/400/409/413/401, capture d'un envoi Elementor,
+  versement, absence de doublon (casse du courriel comprise), demande sans
+  courriel, purge à 24 mois qui épargne 23, désactivation qui ne perd rien.
+- `ecrans.php` (20) : les trois écrans rendus avec `WP_DEBUG` allumé — toute
+  notice sortirait dans la page ; échappement d'un nom contenant `<b>` ; rien
+  ne se charge sur les autres écrans de l'administration.
+- `navigateur.py` (15) : Chromium se connecte comme Mala, ouvre le CRM, crée
+  un contact, et on relit la base en PHP pour vérifier qu'il y est. Puis on
+  recharge.
+
+Plus l'ancien banc sans WordPress (12 + 6) : groupement des écritures, bande de
+conflit **nommée**, bande de panne, étanchéité du CSS, débordement horizontal.
+
+## Une observation à passer à Mala
+L'administration de WordPress appelle `secure.gravatar.com` pour les avatars —
+six requêtes par page. Ce n'est pas l'extension, et ça ne concerne que les
+comptes du personnel, pas les visiteurs. Réglages → Discussion permet de les
+couper si le centre le souhaite.
+
+## Trois pièges rencontrés, tous instructifs
+1. `wp_set_current_user` sort immédiatement si l'identifiant ne change pas :
+   l'objet en mémoire garde les anciennes capacités. D'où le fait qu'une
+   permission accordée ne soit visible qu'au chargement suivant.
+2. Activer et vérifier dans la même exécution donne un faux résultat : `init`
+   est déjà passé, donc le type de contenu n'est jamais enregistré et on croit
+   qu'il manque. L'activation a maintenant son propre processus, comme dans la
+   vraie vie.
+3. WordPress 6.8 a remplacé `autoload = yes/no` par `on/off/auto-…`. L'essai
+   teste le sens, pas le mot.
+
+## Décisions toujours attendues
+1. Le service de relais de WP Mail SMTP (bloque la section 4 de la politique).
+2. Où sont les serveurs de l'hébergeur (même section).
+
+## Leçon
+**Une donnée d'exemple n'est une donnée d'exemple que si on l'a lue.** J'avais
+appelé « fictives » cinq fiches qui portaient des noms et des matricules réels,
+et demandé leur suppression. Le code était sous mes yeux : `seed()` tenait la
+liste. Avant de dire à quelqu'un d'effacer quelque chose, ouvrir la chose.

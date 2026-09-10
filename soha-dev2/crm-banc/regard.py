@@ -81,13 +81,15 @@ try:
         page.wait_for_timeout(2000)
         avis = page.locator("#soha-crm-avis")
         resultats["9. bannière de conflit"] = (avis.count() > 0 and avis.is_visible())
-        resultats["10. texte"] = (avis.inner_text()[:78] if avis.count() else "")
+        texte = avis.inner_text() if avis.count() else ""
+        resultats["10. la bande nomme la personne"] = texte.startswith("Dominique a enregistré")
+        resultats["11. texte"] = texte[:74]
 
         # 5 · la panne : le serveur ne répond plus
         srv.terminate(); srv.wait()
         nouveau("Contact de la panne", "panne@centresoha.com")
         page.wait_for_timeout(2500)
-        resultats["11. bannière de panne"] = (avis.inner_text()[:78] if avis.count() else "")
+        resultats["12. bannière de panne"] = (avis.inner_text()[:78] if avis.count() else "")
 
         resultats["erreurs console"] = [e for e in erreurs_console if "Failed to load resource" not in e][:4]
         resultats["erreurs page"] = page.evaluate("window.__erreurs")

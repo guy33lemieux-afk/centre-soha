@@ -16,9 +16,9 @@
  *     pour ne pas marteler le serveur, et on vide la file avant la fermeture
  *     de l'onglet — sinon les dernières secondes de travail seraient perdues.
  *
- *  3. Deux personnes peuvent avoir le CRM ouvert. Le serveur refuse une
- *     écriture fondée sur une révision périmée ; on le dit clairement plutôt
- *     que d'écraser le travail de l'autre en silence.
+ *  3. Ils sont quatre à pouvoir ouvrir le CRM. Le serveur refuse une écriture
+ *     fondée sur une révision périmée ; on nomme la personne qui a enregistré,
+ *     plutôt que d'écraser son travail en silence.
  * ========================================================================== */
 (function () {
   "use strict";
@@ -102,8 +102,12 @@
       enVol = false;
 
       if (rep.statut === 409) {
+        /* Ils sont quatre à pouvoir ouvrir le CRM : « quelqu'un d'autre » ne
+           suffit pas, il faut savoir à qui aller parler. Le serveur renvoie le
+           nom quand il le connaît. */
+        var qui = (rep.corps && rep.corps.qui) ? rep.corps.qui : "Quelqu'un d'autre";
         banniere(
-          "Quelqu'un d'autre a enregistré pendant que tu travaillais. " +
+          qui + " a enregistré pendant que tu travaillais. " +
           "Recharge la page avant de continuer — sinon l'un des deux travaux sera perdu.",
           "conflit"
         );

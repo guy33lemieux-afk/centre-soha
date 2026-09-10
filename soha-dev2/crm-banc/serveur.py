@@ -75,7 +75,10 @@ class H(BaseHTTPRequestHandler):
             envoyee = int(corps.get("revision", ETAT["revision"]))
             if envoyee != ETAT["revision"]:
                 JOURNAL.append(["POST", 409, 0])
+                # `qui` : le vrai serveur nomme la personne qui a écrit. On le
+                # renvoie aussi ici, sinon on ne testerait que le repli.
                 return self._json(409, {"code": "revision", "message": "révision périmée",
+                                        "qui": "Dominique",
                                         "valeur": ETAT["valeur"], "revision": ETAT["revision"]})
             ETAT["valeur"] = corps["valeur"]
             ETAT["revision"] += 1
