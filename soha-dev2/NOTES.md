@@ -508,7 +508,7 @@ Dans le dépôt : `build_crm.py` (la fabrique), `crm-modele/` (tout ce qui est
 
 ## Les quatre soins de l'adaptateur
 1. **Plus rien ne se perd en silence.** Le CRM n'attend jamais `set()` : un échec
-   resterait invisible. L'adaptateur affiche une bande rouge et ne se taît pas.
+   resterait invisible. L'adaptateur affiche une bande rouge et ne se tait pas.
 2. **Écritures groupées sur 800 ms**, vidées quand l'onglet passe en arrière-plan
    et par `sendBeacon` à la fermeture. Mesuré : créer un contact = 1 écriture.
 3. **Garde de révision.** Deux personnes à la fois : celle qui enregistre sur un

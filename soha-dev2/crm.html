@@ -121,8 +121,38 @@ section>h2+p{margin-top:15px}
   font-size:.87rem;color:var(--doux)}
 .pied p{max-width:none}
 
+/* --- la procédure, et les mesures --- */
+.etapes{list-style:none;margin:26px 0;padding:0;counter-reset:e}
+.etapes>li{counter-increment:e;display:grid;grid-template-columns:30px 1fr;gap:16px;
+  padding:16px 0;border-bottom:1px solid var(--filet);align-items:start}
+.etapes>li::before{content:counter(e);font-family:var(--mono);font-size:.8rem;
+  color:var(--soigner);padding-top:4px;font-variant-numeric:tabular-nums}
+.etapes b{display:block;font-weight:600;margin-bottom:4px}
+.etapes span{color:var(--doux);font-size:.95rem;display:block}
+.etapes .ou{font-family:var(--mono);font-size:.78rem;color:var(--texte);
+  background:var(--surface-2);padding:.15em .4em;border-radius:2px;
+  display:inline-block;margin-top:5px;overflow-wrap:break-word}
+
+.mesures{display:grid;gap:1px;background:var(--filet);
+  border-block:1px solid var(--filet);margin:26px 0}
+.mesures div{background:var(--fond);padding:11px 0;display:grid;
+  grid-template-columns:1fr auto;gap:14px;align-items:baseline}
+.mesures p{margin:0;max-width:none;font-size:.95rem}
+.mesures em{font-family:var(--mono);font-style:normal;font-size:.8rem;
+  color:var(--cultiver);white-space:nowrap}
+
+.avertis{border-left:3px solid var(--batir);background:var(--surface);
+  padding:18px 20px;margin:26px 0}
+.avertis .titre{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--batir);margin:0 0 9px}
+.avertis p:last-child{margin-bottom:0}
+.avertis ul{margin:0;padding-left:1.15em;font-size:.95rem}
+.avertis li{margin-bottom:.4em}
+.avertis li:last-child{margin-bottom:0}
+
 @media (max-width:560px){
-  .maillon,.defauts li,.phases li{grid-template-columns:1fr;gap:6px}
+  .maillon,.defauts li,.phases li,.etapes>li{grid-template-columns:1fr;gap:6px}
+  .mesures div{grid-template-columns:1fr}
   .option h3 em{margin-left:0}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -134,7 +164,7 @@ section>h2+p{margin-top:15px}
   <div class="sceau" aria-hidden="true"><i></i><b></b><u></u></div>
   <p class="kicker">Centre Soha · 961 Rachel Est · 10 septembre 2026</p>
   <h1>Le CRM du 961</h1>
-  <p class="sous">Ton CRM v02 a un défaut qu'on ne voit pas à l'usage : il ne garde rien. Voici ce que j'ai mesuré, la seule question qui décide de la suite, et l'architecture que je recommande.</p>
+  <p class="sous">Ton CRM v02 avait un défaut qu'on ne voyait pas à l'usage : il ne gardait rien. C'est réparé — ton interface est intacte, c'est le sol sous ses pieds qui a changé. Voici ce que j'ai mesuré, l'extension à installer, et la marche à suivre.</p>
 </header>
 
 <section id="constat" style="margin-top:0">
@@ -220,9 +250,66 @@ section>h2+p{margin-top:15px}
   </div>
 </section>
 
+<section id="livre">
+  <h2>C'est réparé — l'extension est prête</h2>
+  <p>Tu as choisi de garder ton interface. Elle n'a donc pas été réécrite : ses 897 lignes voyagent intactes dans l'extension, sous <code>source/</code>. Ce qui change, c'est qu'elles trouvent maintenant le <code>window.storage</code> qu'elles appelaient dans le vide — fourni par l'extension, adossé à la base de données du site.</p>
+
+  <div class="console">soha_extensioncrm_20260910_v100.zip    <i>284 Ko</i>
+  soha-crm.php                     <i>l'écran, et deux routes</i>
+  assets/adaptateur.js             <i>window.storage → la base</i>
+  assets/crm.js                    <i>ton interface, compilée · 64 Ko</i>
+  assets/polices/                  <i>les 3 familles, 12 fontes</i>
+  source/                          <i>ton JSX d'origine, intact</i></div>
+
+  <h3 style="margin-top:36px">L'installation, pas à pas</h3>
+  <ol class="etapes">
+    <li><div><b>Téléverse l'extension</b><span>Dans l'administration de <code>centresoha.com/dev</code> : <span class="ou">Extensions → Ajouter une extension → Téléverser une extension</span> puis choisis le fichier <code>.zip</code> et clique <em>Installer maintenant</em>.</span></div></li>
+    <li><div><b>Active-la</b><span>Le bouton <em>Activer l'extension</em> apparaît tout de suite après. Un menu <strong>CRM Soha</strong> s'ajoute dans la colonne de gauche, en troisième position, sous Tableau de bord.</span></div></li>
+    <li><div><b>Ouvre-le et crée un contact pour de vrai</b><span>Répertoire → <em>+ Nouveau contact</em> → un nom, un courriel → Enregistrer.</span></div></li>
+    <li><div><b>Recharge la page (F5)</b><span>C'est l'étape qui compte. Le contact doit être encore là. S'il y est, le CRM garde — ce qu'il ne faisait pas avant. S'il n'y est pas, une bande rouge te l'aura dit : envoie-moi ce qu'elle raconte.</span></div></li>
+    <li><div><b>Supprime les cinq fiches d'exemple</b><span>Elles viennent du prototype. Ce sont les seules données fictives ; tout le reste sera le tien.</span></div></li>
+  </ol>
+
+  <div class="avertis">
+    <p class="titre">Avant d'y entrer de vraies personnes</p>
+    <p>Trois choses que je ne peux pas faire à ta place, et qui tiennent toujours :</p>
+    <ul>
+      <li>La <strong>double authentification</strong> posée sur ton compte, et les <strong>deux gestionnaires de fichiers retirés</strong> (<code>fileorganizer</code>, <code>wp-file-manager</code>). Deux portes ouvertes sur les fichiers du serveur, c'est une de trop.</li>
+      <li><strong>UpdraftPlus vérifié</strong>, avec une destination <strong>hors du serveur</strong>. Le registre vit dans la base : il est sauvegardé avec elle — à condition que la sauvegarde parte ailleurs.</li>
+      <li>Un <strong>essai de restauration</strong>. Une sauvegarde qu'on n'a jamais restaurée n'est pas une sauvegarde, c'est une intention.</li>
+    </ul>
+  </div>
+
+  <h3 style="margin-top:36px">Ce qui a été mesuré, au navigateur</h3>
+  <p>Treize points, sur un vrai serveur HTTP qui imite les routes de l'extension — pas une simulation : les requêtes partent pour de bon.</p>
+  <div class="mesures">
+    <div><p>L'interface se monte dans l'écran de WordPress</p><em>63 nœuds</em></div>
+    <div><p>Un contact créé à la main se retrouve dans la base</p><em>oui</em></div>
+    <div><p>Il est encore là après un rechargement</p><em>oui</em></div>
+    <div><p>Créer un contact, frappe par frappe, coûte</p><em>1 écriture</em></div>
+    <div><p>Si quelqu'un d'autre a enregistré entre-temps</p><em>bande ambre</em></div>
+    <div><p>Si le serveur ne répond plus</p><em>bande rouge</em></div>
+    <div><p>Requêtes vers l'extérieur — ni Google, ni CDN</p><em>0</em></div>
+    <div><p>Erreurs dans la console du navigateur</p><em>0</em></div>
+    <div><p>Le CSS du CRM déborde-t-il sur l'administration ?</p><em>non</em></div>
+    <div><p>Débordement horizontal, de 1440 px à 390 px</p><em>aucun</em></div>
+  </div>
+
+  <h3 style="margin-top:36px">Trois défauts trouvés en chemin, dont un grave</h3>
+  <ol class="defauts">
+    <li><span class="n">01</span><div><b>Toute la mise en page pour petits écrans était morte</b><span>En cloisonnant le CSS du CRM pour qu'il ne se cogne pas avec WordPress, l'en-tête <code>@media (max-width:860px)</code> était traité comme un sélecteur. Un navigateur jette une règle comme celle-là <strong>sans rien dire</strong> : aucun outil ne proteste, le fichier est valide, et un tiers de la mise en page est inerte. Seul l'œil posé sur l'écran à 390 px l'a vu. Corrigé, et la fabrique refuse désormais de produire une extension où cela réapparaîtrait.</span></div></li>
+    <li><span class="n">02</span><div><b>Ton interface annonçait « Données gardées dans ton navigateur »</b><span>C'était vrai du prototype — et c'était exactement le défaut. Ce n'est plus vrai : elle dit maintenant « Données gardées dans la base du site, sauvegardées avec elle. » Une interface qui dit faux sur l'endroit où dorment les noms de tes membres, ce n'est pas un détail de formulation.</span></div></li>
+    <li><span class="n">03</span><div><b>Un enregistrement ne peut plus échouer en silence</b><span>Ton code n'attend pas la réponse quand il enregistre — un échec serait donc invisible, la panne d'origine à l'identique. L'adaptateur affiche une bande rouge dès qu'une écriture rate, et ne se tait jamais. Le silence, désormais, veut dire que c'est écrit.</span></div></li>
+  </ol>
+
+  <h3 style="margin-top:36px">Deux choix assumés</h3>
+  <p><strong>Aucune suppression automatique.</strong> La règle des 24 mois de ta politique porte sur les <em>demandes reçues par formulaire</em>, pas sur le registre des personnes qui fréquentent le centre. Effacer d'office la fiche de quelqu'un qui vient depuis trois ans serait une faute, pas une conformité. Supprimer reste un geste : le tien.</p>
+  <p><strong>Qui y a accès :</strong> pour l'instant, toute personne qui peut modifier les pages — toi, et les éditeurs. C'est la question 02 ci-dessous ; dès que tu réponds, je resserre en une ligne.</p>
+</section>
+
 <section id="montage">
   <h2>Le montage</h2>
-  <p>Trois temps. Chacun est utile seul : si on s'arrête après le premier, tu as déjà gagné quelque chose.</p>
+  <p>L'extension livrée aujourd'hui est le socle : le registre garde, et il est sauvegardé. Ce qui suit reste à bâtir, en trois temps. Chacun est utile seul : si on s'arrête après le premier, tu as déjà gagné quelque chose.</p>
 
   <ol class="phases">
     <li><span class="n">1</span><div><b>Ne plus rien perdre</b><span>Archiver chaque envoi de formulaire dans la base, avec sa date, son consentement et son estimation. Un écran simple pour les lire et les marquer traitées. Purge automatique à 24 mois, comme la politique l'annonce.<span class="duree">Un cycle · utile dès le premier jour</span></span></div></li>
@@ -233,17 +320,16 @@ section>h2+p{margin-top:15px}
 
 <section id="decisions">
   <h2>Ce que j'ai besoin de savoir</h2>
-  <p>Trois choses, et une seule est urgente.</p>
+  <p>La première question est tranchée : le CRM vit dans WordPress, et ton interface est restée la tienne. Il en reste deux.</p>
 
   <ol class="defauts">
-    <li><span class="n">01</span><div><b>Es-tu d'accord pour que le CRM vive dans WordPress ?</b><span>C'est la décision qui commande tout le reste. Si tu préfères une autre voie, dis-le maintenant — après la phase 1, revenir coûte cher.</span></div></li>
-    <li><span class="n">02</span><div><b>Qui doit y avoir accès ?</b><span>Toi seule, ou Dominique aussi ? Une personne à la réception ? WordPress sait faire des rôles ; il faut juste savoir lesquels.</span></div></li>
-    <li><span class="n">03</span><div><b>Le service de relais de WP Mail SMTP</b><span>Toujours en suspens. Il ne bloque pas le CRM, mais il bloque la section 4 de ta politique. C'est dans <code>WP Mail SMTP → Réglages → Programme de messagerie</code>, la rangée de logos.</span></div></li>
+    <li><span class="n">01</span><div><b>Qui doit y avoir accès ?</b><span>Toi seule, ou Dominique aussi ? Une personne à la réception ? WordPress sait faire des rôles ; il faut juste savoir lesquels.</span></div></li>
+    <li><span class="n">02</span><div><b>Le service de relais de WP Mail SMTP</b><span>Toujours en suspens. Il ne bloque pas le CRM, mais il bloque la section 4 de ta politique. C'est dans <code>WP Mail SMTP → Réglages → Programme de messagerie</code>, la rangée de logos.</span></div></li>
   </ol>
 </section>
 
 <footer class="pied">
-  <p>Diagnostic établi en lisant les 897 lignes de <code>soha_crm_20260903_v02.jsx</code> et en mesurant le comportement réel de son stockage dans Chromium. Le pont entre l'estimateur et le formulaire est livré et testé.</p>
+  <p>Diagnostic établi en lisant les 897 lignes de <code>soha_crm_20260903_v02.jsx</code> et en mesurant le comportement réel de son stockage dans Chromium. L'extension <code>v1.0.0</code> est livrée, vérifiée par <code>php -l</code>, <code>node --check</code>, et treize mesures au navigateur. Le pont entre l'estimateur et le formulaire est livré et testé.</p>
   <p style="margin-bottom:0">Périmètre : Centre Soha, 961 Rachel Est. Le pôle soha.live n'est pas concerné.</p>
 </footer>
 
