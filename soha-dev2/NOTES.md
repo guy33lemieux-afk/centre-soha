@@ -374,3 +374,47 @@ de nommer qui traite les renseignements **et de dire s'ils sortent du Québec**.
 Il faut donc savoir : (a) quel service est configuré dans WP Mail SMTP, (b) où
 sont les serveurs de l'hébergeur. Sans ces deux réponses, la section 4 nomme le
 mécanisme mais pas la destination finale.
+
+---
+
+# Complément 7 du 10 septembre — les formulaires n'avaient pas de destinataire
+
+Mala a collé le réglage « From Email » de WP Mail SMTP : `admin@centresoha.com`.
+Ce n'est pas le service de relais (la question posée), mais ça a fait sortir
+autre chose.
+
+## Le défaut
+Les **quatre formulaires du kit** — Contact, Studio podcast, Espaces
+professionnels, et la nouvelle page /reservation/ — n'avaient **aucun
+`email_to` défini**. Elementor Pro retombe alors sur l'adresse d'administration
+de WordPress, soit très vraisemblablement `admin@centresoha.com`.
+
+Or le site dit d'écrire à `info@centresoha.com` — **32 fois**.
+
+Conséquence : chaque demande de location, chaque demande de studio, chaque
+message de contact arrivait dans une boîte que le site ne mentionne jamais. Si
+personne ne surveille `admin@`, la demande est perdue. Sur les pages qui portent
+le revenu du Centre.
+
+## Le correctif (kit v11)
+Sur les quatre formulaires :
+- `email_to` → **info@centresoha.com**
+- `email_subject` → distinct par formulaire, pour trier d'un coup d'œil
+- `email_from` → `admin@centresoha.com` (l'expéditeur de WP Mail SMTP, pour que
+  l'authentification du domaine reste valide)
+- `email_from_name` → « Site du Centre Soha »
+- `email_reply_to` → `[field id="courriel"]` — **répondre au courriel écrit
+  directement au visiteur**, sans copier-coller son adresse
+
+## Ce qui reste
+Le **service de relais** configuré dans WP Mail SMTP. « From Email » dit d'où
+part le courriel, pas par qui il transite. Le nom est dans WP Mail SMTP →
+Réglages → section « Programme de messagerie » (la rangée de logos). La Loi 25
+demande de nommer qui traite les renseignements et de dire s'ils sortent du
+Québec — il faut donc aussi savoir où sont les serveurs de l'hébergeur.
+
+## Leçon
+**Une réponse à côté de la question vaut mieux qu'un silence.** L'adresse
+d'expéditeur n'était pas ce que je demandais, mais la regarder a révélé un
+défaut plus grave que celui que je cherchais. Ne pas écarter ce qui arrive hors
+cadre : le lire d'abord.
