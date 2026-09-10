@@ -1096,3 +1096,56 @@ statique remettait les liens d'aplomb à chaque passage, si bien que la mesure
 disait « 107 liens, 0 cassé » sur un kit dont aucun lien ne fonctionnait dans sa
 vraie destination. Vérifier une chose dans un environnement qui la répare, c'est
 vérifier la réparation.
+
+---
+
+# Cycle 17 · Le contrôle d'après-import — Finition v1.3.0
+
+Tout est livré, rien n'est encore importé. Le moment le plus risqué du projet
+est devant nous, et le kit ne contient **aucune image** : il les référence par
+adresse. C'est très exactement là que les cinquante-neuf doublons sont nés.
+
+D'où un écran `Outils → Contrôle Soha`, qui cherche après un import les quatre
+défauts que ce site a réellement subis — et pas quatre au hasard. Aucun des
+quatre ne lève d'erreur ; c'est pour ça qu'ils ont vécu des semaines.
+
+1. **Les doublons de médias.** « nom-1.webp » à côté de « nom.webp ». Un nom qui
+   finit par un chiffre (`soha-studio-podcast-056.webp`) n'en est pas un ; un
+   « -2 » sans jumeau non plus.
+2. **Les images référencées mais absentes.** Le symétrique : à l'écran, un trou.
+3. **Les formulaires sans destinataire.** Elementor se rabat sur l'adresse
+   d'administration ; les demandes partent dans une boîte que personne ne
+   regarde. Quatre formulaires, pendant des mois.
+4. **Les liens internes hors du site.** Quatre-vingt-quatre, dans le kit, la
+   semaine dernière.
+
+Lecture seule. L'écran ne répare rien : il regarde, il compte, il nomme.
+
+## Le banc a trouvé trois défauts dans mes propres contrôles
+Et c'est tout l'intérêt d'en avoir un.
+
+1. **Les images n'étaient jamais retrouvées.** Elementor range son arbre en
+   JSON, barres obliques échappées. Chercher une adresse normale là-dedans ne
+   trouve rien — et ne rien trouver ressemble beaucoup à n'avoir rien à
+   trouver. **C'est le même piège qu'en juillet**, sur le premier recensement
+   des images. Deux fois le même, à deux mois d'écart.
+2. **Le contrôle des liens accusait un site installé à la racine.** Il se tait
+   maintenant, et il dit pourquoi.
+3. **Le banc lui-même mentait.** Pour simuler `/dev`, il filtrait `home_url`,
+   qui reçoit l'adresse complète : les images devenaient
+   `…/uploads/x.webp/dev/`. Le contrôle paraissait aveugle pour une raison qui
+   n'était pas la sienne — le pire genre de faux rouge, celui qui envoie
+   corriger du code qui allait bien.
+
+29 vérifications, 0 échec.
+
+## Livré
+`soha_extensionfinition_20260910_v130.zip`, `finition-modele/`, `finition-banc/`.
+
+## Leçon
+**Le même piège revient tant qu'on ne le pose pas dans le code.** Les barres
+obliques échappées d'Elementor m'avaient déjà eu en juillet ; j'avais corrigé la
+mesure de l'époque et écrit la leçon, mais nulle part le code ne disait « ici,
+le JSON est échappé ». Une leçon qui vit dans des notes protège la prochaine
+lecture des notes. Une leçon qui vit dans un commentaire à l'endroit du piège
+protège la prochaine personne qui passe.
