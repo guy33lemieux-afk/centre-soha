@@ -164,7 +164,7 @@ section>h2+p{margin-top:15px}
   <div class="sceau" aria-hidden="true"><i></i><b></b><u></u></div>
   <p class="kicker">Centre Soha · 961 Rachel Est · 10 septembre 2026</p>
   <h1>Le CRM du 961</h1>
-  <p class="sous">Ton CRM v02 avait un défaut qu'on ne voyait pas à l'usage : il ne gardait rien. C'est réparé — ton interface est intacte, c'est le sol sous ses pieds qui a changé. Depuis, il garde aussi chaque demande reçue par formulaire — et, en un clic, la transforme en fiche et en réservation. Voici l'extension, la marche à suivre, et ce qui a été mesuré.</p>
+  <p class="sous">Ton CRM v02 avait un défaut qu'on ne voyait pas à l'usage : il ne gardait rien. C'est réparé — ton interface est intacte, c'est le sol sous ses pieds qui a changé. Depuis, il garde chaque demande reçue par formulaire, la transforme en fiche et en réservation d'un clic, et tient l'infolettre à jour tout seul. Les trois phases sont faites. Voici l'extension, la marche à suivre, et ce qui a été mesuré.</p>
 </header>
 
 <section id="constat" style="margin-top:0">
@@ -289,7 +289,7 @@ section>h2+p{margin-top:15px}
   <h3 style="margin-top:36px">Ce qui a été mesuré</h3>
   <p>Pas sur une imitation : sur un <strong>WordPress 6.8.3 complet</strong>, monté pour l'occasion, où l'extension est installée et activée comme elle le sera chez toi. Trois séries d'épreuves, chacune repartant d'une base vierge — une épreuve qui hérite de la veille ne prouve rien.</p>
   <div class="mesures">
-    <div><p>Vérifications passées, en tout</p><em>128 sur 128</em></div>
+    <div><p>Vérifications passées, en tout</p><em>179 sur 179</em></div>
     <div><p>Chromium se connecte, ouvre le CRM, crée un contact</p><em>écrit en base</em></div>
     <div><p>Le contact est encore là après rechargement</p><em>oui</em></div>
     <div><p>Un envoi de formulaire est archivé, nom et courriel repérés</p><em>oui</em></div>
@@ -298,6 +298,11 @@ section>h2+p{margin-top:15px}
     <div><p>Une demande de contact, elle, ne crée pas de réservation</p><em>correct</em></div>
     <div><p>La sauvegarde téléchargée, puis relue</p><em>complète</em></div>
     <div><p>Un fichier qui n'est pas un registre, à la remise</p><em>refusé</em></div>
+    <div><p>Cocher l'infolettre inscrit chez Mailchimp</p><em>oui</em></div>
+    <div><p>Un formulaire sans case cochée</p><em>n'inscrit personne</em></div>
+    <div><p>Un désabonnement qui revient de Mailchimp</p><em>marque la fiche</em></div>
+    <div><p>Le retour de Mailchimp sans le bon secret</p><em>refusé</em></div>
+    <div><p>Mailchimp injoignable pendant cinq essais</p><em>rien de perdu</em></div>
     <div><p>Le même courriel une deuxième fois</p><em>0 doublon</em></div>
     <div><p>La purge efface 25 mois et épargne 23</p><em>oui</em></div>
     <div><p>Un abonné WordPress qui tente d'entrer</p><em>refusé</em></div>
@@ -365,6 +370,33 @@ section>h2+p{margin-top:15px}
   <p>C'était le défaut le plus coûteux, et il n'était pas technique. Le CRM proposait « Grande salle · Studio · Petite salle ». Le site, l'estimateur et le formulaire nomment <strong>Studio · Espace SÖHA · Salle 4 · Salles 1·2·3</strong>. Deux vocabulaires pour un même lieu, c'est une réservation mal saisie par mois — et un revenu qu'on ne sait plus attribuer à un espace quand vient le temps de décider lequel fait vivre le 961.</p>
 </section>
 
+<section id="infolettre">
+  <h2>L'infolettre se tient à jour toute seule</h2>
+  <p>Quelqu'un coche l'infolettre — sur un formulaire du site, ou sur sa fiche dans le CRM. Son adresse part chez Mailchimp. Quelqu'un se désabonne depuis un courriel : sa fiche le note. Personne ne recopie plus une adresse à la main, et les deux côtés disent la même chose.</p>
+  <p>C'est la dernière phase du plan, et c'est celle où la question n'est pas technique.</p>
+
+  <div class="preuve">
+    <p class="titre">Mailchimp est américain. Ça se dit dans la politique.</p>
+    <p>Mailchimp appartient à Intuit et ses serveurs sont aux États-Unis. Inscrire quelqu'un, c'est communiquer son adresse hors du Québec — la Loi 25 demande que ce soit annoncé. <strong>L'écran ne se contente pas de te le rappeler : il te donne le paragraphe à coller</strong>, en toutes lettres, dans un champ que tu sélectionnes d'un clic. Une obligation qu'on rappelle sans fournir le texte est une obligation qu'on ne remplit pas.</p>
+  </div>
+
+  <ol class="defauts">
+    <li><span class="n">01</span><div><b>Aucun script Mailchimp sur le site</b><span>Leurs formulaires embarqués posent un traceur sur chaque page qui les affiche. Ici, tout passe par le serveur : le visiteur ne parle jamais à Mailchimp, seul WordPress le fait. La promesse « zéro appel externe » de ton site reste vraie — et elle reste mesurée à zéro.</span></div></li>
+    <li><span class="n">02</span><div><b>La preuve du consentement reste au 961</b><span>Mailchimp reçoit une adresse et un prénom. La date du consentement, le formulaire qui l'a recueilli, le téléphone, les échanges : tout ça demeure dans la base de ton site. C'est là qu'il faudra le retrouver si on te le demande un jour — et un compte chez un fournisseur n'est pas un registre de preuve.</span></div></li>
+    <li><span class="n">03</span><div><b>Un désabonnement n'est jamais annulé</b><span>On désabonne, on ne supprime pas : effacer quelqu'un de Mailchimp effacerait la trace de son refus, et un import pourrait le réinscrire. Et si Mailchimp refuse de réinscrire une personne qui s'était désabonnée, c'est son droit : le refus s'affiche en clair plutôt que d'être contourné.</span></div></li>
+    <li><span class="n">04</span><div><b>Rien ne part en direct</b><span>Une écriture dans le CRM ne doit pas attendre un serveur à l'autre bout du continent. Les changements entrent dans une file, une tâche les envoie, ce qui échoue est réessayé cinq fois — et si ça ne passe toujours pas, le refus de Mailchimp est affiché plutôt qu'oublié.</span></div></li>
+  </ol>
+
+  <h3 style="margin-top:36px">Le branchement, pas à pas</h3>
+  <ol class="etapes">
+    <li><div><b>Crée une clé d'API dans Mailchimp</b><span>Ton avatar → <em>Account &amp; billing</em> → <em>Extras</em> → <em>API keys</em> → <em>Create a key</em>.</span></div></li>
+    <li><div><b>Colle-la dans « Infolettre » et clique « Tester la liaison »</b><span>Si c'est la bonne, le nom de ton compte Mailchimp s'affiche. Une clé refusée n'est jamais enregistrée : mieux vaut le savoir tout de suite que de voir des inscriptions s'entasser dans une file muette.</span></div></li>
+    <li><div><b>Choisis l'audience, puis enregistre</b><span>La liste apparaît une fois la clé acceptée, avec le nombre d'abonnés de chacune.</span></div></li>
+    <li><div><b>Colle l'adresse de retour dans Mailchimp</b><span>En bas de l'écran. Dans Mailchimp : <span class="ou">Audience → Settings → Webhooks → Create New Webhook</span> et coche <em>Unsubscribes</em>. Sans ça, un désabonnement ne reviendrait jamais marquer la fiche — et c'est la fiche qui aurait tort.</span></div></li>
+    <li><div><b>Ajoute le paragraphe à ta politique</b><span>Celui que l'écran te donne. C'est la dernière étape, et c'est celle qu'on oublie.</span></div></li>
+  </ol>
+</section>
+
 <section id="filet">
   <h2>Un filet sous le registre</h2>
   <p>Tout le CRM tient dans un seul enregistrement de la base. C'est ce qui le rend simple — et c'est un seul endroit où tout perdre. UpdraftPlus sauvegarde le site entier, mais restaurer un site entier pour rattraper une fausse manœuvre dans le CRM, c'est un marteau pour une punaise.</p>
@@ -390,18 +422,18 @@ section>h2+p{margin-top:15px}
 
 <section id="montage">
   <h2>Le montage</h2>
-  <p>Deux phases sur trois sont faites. Reste la dernière.</p>
+  <p>Les trois phases sont faites. Ce qui suit reste ici comme trace de ce qui avait été promis, et de ce qui a été tenu.</p>
 
   <ol class="phases">
     <li><span class="n">1</span><div><b>Ne plus rien perdre</b><span>Fait. Chaque envoi de formulaire est archivé avec sa date et son consentement, un écran pour les lire et les marquer traitées, la purge à 24 mois, et le versement au répertoire en un clic.<span class="duree" style="color:var(--cultiver)">Livré le 10 septembre 2026</span></span></div></li>
     <li><span class="n">2</span><div><b>Les contacts et les réservations</b><span>Fait. Le vocabulaire réel des quatre espaces, la réservation créée depuis la demande avec le tarif de l'estimateur, et la sauvegarde du registre en un fichier.<span class="duree" style="color:var(--cultiver)">Livré le 10 septembre 2026</span></span></div></li>
-    <li><span class="n">3</span><div><b>Le tableau de bord et l'infolettre</b><span>Les vues de synthèse, et la jonction avec l'extension Newsletter — le consentement coché sur le formulaire inscrit la personne, sans double saisie et sans export à trimballer.<span class="duree">Un cycle</span></span></div></li>
+    <li><span class="n">3</span><div><b>Le tableau de bord et l'infolettre</b><span>Fait. Le consentement coché quelque part inscrit la personne chez Mailchimp, son désabonnement revient marquer sa fiche, et aucun script Mailchimp ne touche le site.<span class="duree" style="color:var(--cultiver)">Livré le 10 septembre 2026</span></span></div></li>
   </ol>
 </section>
 
 <section id="decisions">
   <h2>Ce que j'ai besoin de savoir</h2>
-  <p>Deux questions sont tranchées : le CRM vit dans WordPress avec ton interface, et vous êtes quatre à y avoir accès. Il en reste deux, toutes les deux sur la politique de confidentialité.</p>
+  <p>Le CRM vit dans WordPress avec ton interface, vous êtes quatre à y avoir accès, et l'infolettre passe par Mailchimp. Il ne reste que la politique de confidentialité — deux renseignements, et je la finis.</p>
 
   <ol class="defauts">
     <li><span class="n">01</span><div><b>Où sont les serveurs de ton hébergeur ?</b><span>La section 4 de ta politique doit dire où dorment les données. C'est une question à poser à l'hébergeur, en une phrase : « Dans quel pays sont hébergées les données de mon site ? »</span></div></li>
@@ -410,7 +442,7 @@ section>h2+p{margin-top:15px}
 </section>
 
 <footer class="pied">
-  <p>Diagnostic établi en lisant les 897 lignes de <code>soha_crm_20260903_v02.jsx</code> et en mesurant le comportement réel de son stockage dans Chromium. L'extension <code>v1.2.0</code> est livrée, éprouvée sur un WordPress 6.8.3 complet monté pour l'occasion : 128 vérifications, aucun échec. Le pont entre l'estimateur et le formulaire est livré et testé.</p>
+  <p>Diagnostic établi en lisant les 897 lignes de <code>soha_crm_20260903_v02.jsx</code> et en mesurant le comportement réel de son stockage dans Chromium. L'extension <code>v1.3.0</code> est livrée, éprouvée sur un WordPress 6.8.3 complet monté pour l'occasion : 179 vérifications, aucun échec. Le banc comprend un faux Mailchimp qui répond comme l'API v3 — il prouve que l'extension parle correctement, pas que Mailchimp accepte : ça, seule ta vraie clé le dira, et c'est à quoi sert le bouton « Tester la liaison ». Le pont entre l'estimateur et le formulaire est livré et testé.</p>
   <p style="margin-bottom:0">Périmètre : Centre Soha, 961 Rachel Est. Le pôle soha.live n'est pas concerné.</p>
 </footer>
 
