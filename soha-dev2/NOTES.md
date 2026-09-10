@@ -959,3 +959,71 @@ import Cyberimpact.
 messagerie configuré » n'était contredit par rien, ne déclenchait aucune alerte,
 et décrivait une chose qui n'existait pas. Les textes de conformité se
 vérifient comme du code : en allant regarder l'écran de réglages.
+
+---
+
+# Cycle 15 · Audit du kit v14 — et vingt-deux dates déjà passées
+
+Le kit final n'avait jamais été audité. Passé au crible avec le contrôle de
+marque Soha, il est techniquement propre : conteneurs flexbox (moderne), aucune
+image en hotlink, aucune image « placeholder », 61 images locales, palette et
+typographies du canon posées, 16 pages, architecture cohérente.
+
+Deux constats de fond en sont sortis.
+
+## 1. Le site annonce une saison terminée
+Vingt-deux passages datés sont derrière nous, sur quatre pages — dont **deux des
+trois pages d'école** :
+
+| Page | Ce qui est périmé |
+|---|---|
+| **Se ressourcer** | Toute la grille des sessions d'hiver et de printemps : 13 janv.→10 mars, 15 févr.→5 avril, 17 févr.→9 juin, 13 mars→15 mai, 9 avril→14 mai, 9 avril→28 mai, « jusqu'au 1er juin » |
+| **Se transformer** | L'atelier Core Energetics des 10–11 juillet |
+| **Atelier d'écriture spontanée** | « Date : jeudi 12 juin de 14 h à 17 h » |
+| **Core Energetics : cœur et bassin** | L'événement des 10–11 juillet, le rabais de prépaiement « avant le 3 juillet », la politique « aucun remboursement après le 3 juillet », et l'offre « dépôt avant le 17 juillet » |
+
+Un visiteur qui arrive aujourd'hui sur *Se ressourcer* lit une grille horaire qui
+s'est terminée en juin. Ce défaut-là ne lève aucune erreur, ne casse aucune
+page, et ne s'en va pas tout seul : on ne le voit plus parce qu'on l'a écrit
+soi-même.
+
+D'où `dates_perimees.py`. Il lit les dates en français dans le kit ou dans le
+site fabriqué et signale celles qui sont derrière, avec la page et la phrase.
+Il ne regarde que ce qui ressemble à une **annonce** — un mot comme « session »,
+« quand », « avant le », « inscription » dans les parages — pour qu'un article
+qui raconte une soirée de mars ne soit pas signalé : raconter le passé au passé
+ne promet rien.
+
+**Il ne propose aucune date de remplacement, et c'est délibéré.** Personne ici ne
+sait quand la prochaine session commence, sauf le Centre. Inventer une date sur
+une page de cours serait pire que de la laisser périmée.
+
+## 2. Ce que la liste d'extensions raconte
+Le manifeste du kit porte la liste des extensions actives au 7 septembre. Trois
+choses à dire à Mala :
+
+- **`FileOrganizer 1.2.0` et `WP File Manager 8.0.4` sont toujours là.** C'est la
+  précondition n° 1 depuis le début, et le CRM contient maintenant des
+  coordonnées de personnes réelles. Deux portes ouvertes sur les fichiers du
+  serveur, c'est une de trop.
+- **`CookieYes | GDPR Cookie Consent`** est installé. Il charge un script depuis
+  un serveur tiers sur chaque page — dans un site dont on répète qu'il ne fait
+  aucun appel externe, et qui a déjà son propre avis de témoins, local, dans
+  l'extension Finition. Deux bannières et un traceur pour dire qu'on ne trace
+  pas.
+- **Finition v1.1.2 tourne encore** alors que la v1.2.3 est livrée : le pont de
+  l'estimateur vers le formulaire n'est donc pas en place sur le site.
+
+## 3. Une nuance sur le rapport d'audit
+L'audit signale cinq couleurs « hors canon » : `#AE1E3B`, `#DDF0F5`, `#F2ECE1`,
+`#E0D8CA`, `#5A6460`. Ce n'est pas un défaut du kit — c'est la fiche de marque de
+l'outil d'audit qui ne connaît que cinq couleurs. Le cramoisi `#AE1E3B` **est**
+au canon v06, et les quatre autres sont des neutres dérivés dont tout système a
+besoin. Aucune correction faite : corriger le kit ici aurait été obéir à un
+outil plutôt qu'au canon.
+
+## Leçon
+**Le temps est un défaut silencieux.** Le code se casse bruyamment ; une date, non.
+Elle reste juste, exacte, bien orthographiée — et fausse à partir d'un certain
+jour. Toute page qui promet une date a besoin d'une vérification qui connaît la
+date d'aujourd'hui.
