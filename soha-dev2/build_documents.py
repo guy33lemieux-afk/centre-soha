@@ -23,6 +23,7 @@ import argparse
 import html
 import os
 import re
+import shutil
 import sys
 
 # --------------------------------------------------------------------------
@@ -134,10 +135,9 @@ GABARIT = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{titre} — Centre Soha</title>
 <meta name="robots" content="noindex, nofollow">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Schibsted+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="soha-document.css">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="polices/schibsted-grotesk-v7-latin-regular.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="polices/fraunces-v38-latin-600.woff2">
 </head>
 <body>
 <article class="doc">
@@ -285,9 +285,39 @@ def separer(md):
     return titre, sous, "\n".join(lignes[debut:])
 
 
-def construire(entree, sortie):
+FAMILLES = {"schibsted-grotesk": "Schibsted Grotesk", "fraunces": "Fraunces", "dm-mono": "DM Mono"}
+
+
+def faces_css(dossier):
+    """Les @font-face des trois familles, servies depuis le dossier du document."""
+    out = []
+    for f in sorted(os.listdir(dossier)):
+        if not f.endswith(".woff2"):
+            continue
+        famille = next((v for k, v in FAMILLES.items() if f.startswith(k)), None)
+        if not famille:
+            continue
+        m = re.search(r"-(\d{3})\.woff2$", f)
+        out.append('@font-face{font-family:"%s";font-style:%s;font-weight:%s;'
+                   'font-display:swap;src:url("polices/%s") format("woff2")}'
+                   % (famille, "italic" if "italic" in f else "normal",
+                      m.group(1) if m else "400", f))
+    return out
+
+
+def construire(entree, sortie, polices=None):
     os.makedirs(sortie, exist_ok=True)
-    open(os.path.join(sortie, "soha-document.css"), "w", encoding="utf-8").write(FEUILLE)
+    tete = ""
+    if polices and os.path.isdir(polices):
+        cible = os.path.join(sortie, "polices")
+        os.makedirs(cible, exist_ok=True)
+        for f in os.listdir(polices):
+            if f.endswith(".woff2"):
+                shutil.copy2(os.path.join(polices, f), os.path.join(cible, f))
+        tete = ("/* Les trois familles du canon, servies depuis la maison.\n"
+                "   Aucun appel à Google : exigence Loi 25. */\n"
+                + "\n".join(faces_css(cible)) + "\n\n")
+    open(os.path.join(sortie, "soha-document.css"), "w", encoding="utf-8").write(tete + FEUILLE)
     faits = []
     for f in sorted(os.listdir(entree)):
         if not f.endswith(".md"):
@@ -310,8 +340,9 @@ def main():
     ap = argparse.ArgumentParser(description="Rend les documents Soha dans la feuille de maison.")
     ap.add_argument("--entree", required=True, help="dossier contenant les .md")
     ap.add_argument("--sortie", default="documents", help="dossier de sortie")
+    ap.add_argument("--polices", default=None, help="dossier de .woff2 (facultatif)")
     a = ap.parse_args()
-    faits = construire(a.entree, a.sortie)
+    faits = construire(a.entree, a.sortie, a.polices)
     print("Documents composés dans « %s » :" % a.sortie)
     for nom, taille in faits:
         print("   %-52s %5.0f Ko" % (nom + ".html", taille / 1024))

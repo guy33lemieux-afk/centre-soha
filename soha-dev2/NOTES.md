@@ -275,3 +275,56 @@ celles à venir.
 générateur et couvre tout ce qui sera produit ensuite. Même logique pour la
 feuille de maison : on ne répare pas quatre documents, on écrit l'outil qui
 fait que le cinquième naît déjà juste.
+
+---
+
+# Complément 5 du 10 septembre — les polices, et la fin de l'appel à Google
+
+Reçus : Fraunces v38 (deux archives **complémentaires**, pas des doublons : les
+graisses d'un côté, l'italique de l'autre), DM Mono v16, Schibsted Grotesk v7.
+Douze fichiers `.woff2`, 276 Ko au total.
+
+## Couverture réelle
+| Famille | Usages couverts | Manque |
+|---|---|---|
+| Schibsted Grotesk | 119 / 124 | 300 (×3), 800 (×2) |
+| Fraunces | 136 / 145 | 300 (×9) |
+| DM Mono | 31 / 31 | — |
+
+286 des 300 usages. Les 14 restants sont approchés par le navigateur depuis la
+graisse voisine ; l'écart n'est pas perceptible à ces volumes.
+
+## Trois endroits câblés
+1. **Le site HTML** — `build_site.py` copie les 12 fichiers, écrit les 12
+   `@font-face`, précharge les deux faces du premier écran, et le gabarit
+   n'appelle plus Google.
+2. **Les documents** — `build_documents.py` fait pareil.
+3. **WordPress** — extension **Finition v1.2.2** :
+   `add_filter('elementor/frontend/print_google_fonts', '__return_false')`,
+   déqueue tout style du thème qui viserait `fonts.googleapis.com`, et sert les
+   mêmes 12 fichiers depuis le dossier de l'extension. 100 % réversible :
+   désactiver l'extension rend l'état d'avant.
+
+Au passage, les 3 dernières occurrences du cyan retiré `#046C86` sont corrigées
+dans l'extension elle-même.
+
+## Un défaut trouvé par la mesure
+Le contrôle au navigateur a relevé **2 requêtes sortantes** malgré tout :
+`soha-accueil-plate-b4c136c1.webp` et `soha-hero-espaces-professionnels.webp`.
+Ce sont des **images de fond** (`background_image`) — le générateur les écrivait
+telles quelles au lieu de les rapatrier comme les `<img>`. Corrigé : les fonds
+passent par le même résolveur. Images copiées 66 → **74**, soit la totalité du
+kit médias.
+
+**Vérification finale, mesurée au navigateur :**
+- **0 requête vers l'extérieur** — pages et documents.
+- 12 faces déclarées, 6 à 9 chargées par page (celles réellement utilisées).
+- Corps rendu en Schibsted Grotesk, titres en Fraunces.
+- Porte : 116 rendus (29 pages × 4 largeurs), 0 débordement, 0 image en échec
+  sur 136, un seul H1 par page.
+
+## Leçon
+**« Zéro appel externe » se mesure, ne se déduit pas.** Le CSS ne contenait plus
+une seule URL Google — et pourtant deux requêtes sortaient encore, par un chemin
+que je n'avais pas couvert. Écouter le trafic réel du navigateur, pas seulement
+relire le code.

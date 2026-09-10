@@ -158,7 +158,7 @@ section>h2+p{margin-top:15px}
     <div><dt>Documents lus</dt><dd>20</dd></div>
     <div><dt>Font autorité</dt><dd>14</dd></div>
     <div><dt>Périmés</dt><dd>9</dd></div>
-    <div><dt>Corrigés</dt><dd>2</dd></div>
+    <div><dt>Corrigés</dt><dd>3</dd></div>
   </dl>
 
   <div class="legende">
@@ -191,7 +191,7 @@ section>h2+p{margin-top:15px}
   <div class="famille">
     <h3>Le code maison <em>5 fichiers</em></h3>
     <ul class="dossier">
-      <li><span class="et verite">Autorité</span><div><span class="nom">soha_extensionfinition_20260909_v121.zip</span><span class="quoi">Finition v1.2.1 — accessibilité, textes alternatifs, préchargement, avis de témoins. <b>À installer.</b></span></div></li>
+      <li><span class="et verite">Autorité</span><div><span class="nom">soha_extensionfinition_20260910_v122.zip</span><span class="quoi">Finition v1.2.2 — accessibilité, textes alternatifs, préchargement, avis de témoins, et désormais <b>les trois polices servies par le site</b> : Elementor cesse d'appeler Google. <b>À installer.</b></span></div></li>
       <li><span class="et verite">Autorité</span><div><span class="nom">soha_extensionestimateur_20260910_v201.zip</span><span class="quoi">L'estimateur corrigé. <b>Produit ici.</b> Voir le verdict du Juriste : sa destination est à rétablir vers <code>/reservation/</code>.</span></div></li>
       <li><span class="et remplace">Périmé</span><div><span class="nom">soha_extensionestimateur_20260907_v200.zip</span><span class="quoi">Envoyé <b>deux fois</b>, à l'identique. Remplacé.</span></div></li>
       <li><span class="et hors">Hors périmètre</span><div><span class="nom">soha_plugincentreshortcode_20260716_v01.zip</span><span class="quoi">Six raccourcis, <b>aucun présent dans le kit</b>. Ton propre index dit « ne pas installer ». Mesure indépendante : même conclusion.</span></div></li>
@@ -234,7 +234,7 @@ section>h2+p{margin-top:15px}
     <h3>Les outils et le reste <em>4 fichiers</em></h3>
     <ul class="dossier">
       <li><span class="et verite">Autorité</span><div><span class="nom">soha_reseaux-sociaux_20260907_v01</span><span class="quoi">Cinq piliers, trois publications par semaine, un mois de calendrier. Périmètre Centre, Loi 21 nommée. Solide.</span></div></li>
-      <li><span class="et verite">Autorité</span><div><span class="nom">schibstedgroteskv7latin.zip</span><span class="quoi">Une police sur trois. Il manque <b>Fraunces</b> et <b>DM Mono</b> pour que le site cesse d'appeler Google.</span></div></li>
+      <li><span class="et verite">Autorité</span><div><span class="nom">polices/ — 12 fichiers .woff2</span><span class="quoi">Fraunces v38, Schibsted Grotesk v7, DM Mono v16. <b>Les trois familles au complet</b>, embarquées dans le site et dans l'extension Finition.</span></div></li>
       <li><span class="et matiere">Matière</span><div><span class="nom">soha_crm_20260903_v02.jsx</span><span class="quoi">Un CRM de réservations, 897 lignes, entièrement Centre Soha. <b>À trancher</b> : c'est un outil séparé du site WordPress, pas une page. Où doit-il vivre ?</span></div></li>
       <li><span class="et remplace">Périmé</span><div><span class="nom">soha_generateur_20260825_v10.zip</span><span class="quoi">Six scripts de fabrication de kit. Remplacé par <code>build_site.py</code>, qui fait le chemin inverse et mesure le résultat.</span></div></li>
     </ul>
@@ -332,7 +332,7 @@ section>h2+p{margin-top:15px}
 
 <section id="chantier">
   <h2>Ce qui suit</h2>
-  <p><strong>Quatre des six sont faits</strong>, et le cinquième est tranché. Les fichiers sont livrés avec ce document. Il reste deux choses, et elles ne dépendent que de toi.</p>
+  <p><strong>Sept des huit sont faits</strong>, et un est tranché. Les fichiers sont livrés avec ce document. Il ne reste qu'une chose, et elle ne dépend que de toi.</p>
 
   <ul class="chantier">
     <li><span class="n">01</span><div><b>Le cyan, partout — fait</b><span><code>#046C86</code> → <code>#19A7DB</code> : <strong>65 remplacements</strong> dans 13 fichiers du kit, plus 3 dans le socle du site. Il n'en reste aucun, ni dans le kit v08, ni dans les 26 pages HTML. Reste à supprimer les deux couleurs globales d'Elementor après l'import, sinon elles le réintroduiront.</span></div></li>
@@ -341,7 +341,7 @@ section>h2+p{margin-top:15px}
     <li><span class="n">04</span><div><b>La feuille de maison — fait</b><span>Un outil, <code>build_documents.py</code>, et une seule feuille de style. <strong>Sept documents</strong> recomposés : index, métas, réseaux, livre de bord, miroir, formulaire, infolettre. Fraunces, Schibsted Grotesk, DM Mono, palette v06, clair et sombre. Plus une seule ligne d'Inter. Le prochain document naît déjà à la marque.</span></div></li>
     <li><span class="n">05</span><div><b>La page Ateliers — tranchée</b><span>Elle est retirée, et « <strong>Se transformer</strong> » vit. La raison a changé de camp en cours de route : Se transformer est dans le menu, dans le kit, et elle a désormais <em>trois vraies fiches d'atelier</em> derrière elle. La maquette Ateliers promettait ce que Se transformer livre maintenant — avec de vrais liens et de vraies photos. Son bon apport, les filtres par type, est noté pour un cycle ultérieur.</span></div></li>
     <li><span class="n">06</span><div><b>Les métas SEO posées — fait</b><span>Les 15 titres et descriptions rédigés sont câblés dans le site, page par page. Confidentialité et Page introuvable restent volontairement sans méta marketing : elles ne doivent pas être proposées dans les résultats.</span></div></li>
-    <li><span class="n">07</span><div><b>Deux polices — bloqué, il me faut les fichiers</b><span><b>Fraunces</b> (300 à 700 + italique) et <b>DM Mono</b> (400, 500) en <code>.woff2</code>, même source que Schibsted. Je ne peux pas les fabriquer : sans elles, le site continue d'appeler Google, et la Loi 25 reste en suspens sur ce point.</span></div></li>
+    <li><span class="n">07</span><div><b>Les polices — fait, et l'appel à Google est mort</b><span>Douze fichiers <code>.woff2</code>, 276 Ko, servis par le site lui-même : Fraunces, Schibsted Grotesk, DM Mono. Mesuré au navigateur — <strong>zéro requête sortante</strong>, sur les pages comme sur les documents. L'adresse IP du visiteur ne part plus chez un tiers avant tout consentement. Côté WordPress, l'extension <strong>Finition v1.2.2</strong> fait la même chose : elle coupe les liens Google d'Elementor et sert les mêmes fichiers. Couverture : 286 des 300 usages ; les 14 restants (Fraunces 300, Schibsted 300 et 800) sont approchés depuis la graisse voisine.</span></div></li>
     <li><span class="n">08</span><div><b>Deux champs de la politique — bloqué, il me faut les faits</b><span>Le service qui achemine les formulaires est vraisemblablement <b>WP Mail SMTP</b> et l'infolettre passe par l'extension <b>Newsletter</b> — tous deux sont dans ta liste d'extensions. Mais je ne <em>publie pas</em> une politique de confidentialité sur une vraisemblance, et je n'invente pas une durée de conservation. Confirme les deux et je pose le texte.</span></div></li>
   </ul>
 </section>

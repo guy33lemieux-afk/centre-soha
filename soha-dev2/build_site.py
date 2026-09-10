@@ -27,6 +27,33 @@ import sys
 from collections import Counter, OrderedDict
 
 # --------------------------------------------------------------------------
+#  Les fichiers de police : reconnaître la famille, le poids et le style
+# --------------------------------------------------------------------------
+FAMILLES = {
+    "schibsted-grotesk": "Schibsted Grotesk",
+    "fraunces": "Fraunces",
+    "dm-mono": "DM Mono",
+}
+
+
+def famille_de(nom):
+    for prefixe, famille in FAMILLES.items():
+        if nom.startswith(prefixe):
+            return famille
+    return None
+
+
+def face_css(famille, nom, chemin):
+    """Un @font-face par fichier. « regular » vaut 400 ; « italic » sans poids aussi."""
+    m = re.search(r"-(\d{3})\.woff2$", nom)
+    poids = m.group(1) if m else "400"
+    style = "italic" if "italic" in nom else "normal"
+    return ('@font-face{font-family:"%s";font-style:%s;font-weight:%s;'
+            'font-display:swap;src:url("%s") format("woff2")}'
+            % (famille, style, poids, chemin))
+
+
+# --------------------------------------------------------------------------
 #  Les métas SEO rédigées (soha_metas-seo_20260907_v01), page par page.
 #  Elles priment sur le titre et l'extrait du kit : c'est le texte travaillé.
 #  Confidentialité (7386) et Page introuvable (7388) restent sans méta
@@ -150,8 +177,12 @@ def typographie(s, prefixe, suffixe=""):
     return d
 
 
-def css_conteneur(s):
-    """Réglages de conteneur → (déclarations base, tablette, téléphone)."""
+def css_conteneur(s, media=None):
+    """Réglages de conteneur → (déclarations base, tablette, téléphone).
+
+    `media` résout une URL d'upload vers le chemin local ; sans lui, une image
+    de fond resterait servie par le serveur d'origine — deux d'entre elles
+    faisaient encore sortir une requête, mesuré au navigateur."""
     base, tab, tel = [], [], []
     if s.get("flex_direction"):
         base.append("flex-direction:%s" % s["flex_direction"])
@@ -199,7 +230,8 @@ def css_conteneur(s):
             base.append("background-color:%s" % s["background_color"])
         bi = s.get("background_image")
         if isinstance(bi, dict) and bi.get("url"):
-            base.append("background-image:url(%s)" % bi["url"])
+            url = media(bi["url"]) if media else bi["url"]
+            base.append("background-image:url(%s)" % url)
             base.append("background-position:%s" % (s.get("background_position") or "center center"))
             base.append("background-size:%s" % (s.get("background_size") or "cover"))
             base.append("background-repeat:no-repeat")
@@ -426,7 +458,7 @@ class Rendu:
     def conteneur(self, e, profondeur):
         eid = e.get("id", "x")
         s = e.get("settings") if isinstance(e.get("settings"), dict) else {}
-        base, tab, tel = css_conteneur(s)
+        base, tab, tel = css_conteneur(s, self.media)
         boxed = (s.get("content_width") or "boxed") != "full"
         classes = ["elementor-element", "elementor-element-%s" % eid, "e-con",
                    "e-parent" if profondeur == 0 else "e-child"]
@@ -1110,10 +1142,9 @@ GABARIT = """<!DOCTYPE html>
 <meta property="og:title" content="{titre}">
 <meta property="og:description" content="{description}">
 <meta property="og:locale" content="fr_CA">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=DM+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="assets/soha.css">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="assets/polices/schibsted-grotesk-v7-latin-regular.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="assets/polices/fraunces-v38-latin-600.woff2">
 {prechargement}
 </head>
 <body class="soha-page soha-page-{corps}">
@@ -1214,7 +1245,7 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
         shutil.copy2(medias[nom], os.path.join(sortie, "medias", nom))
         copiees += 1
 
-    # polices auto-hébergées si fournies
+    # les trois familles du canon, auto-hébergées : plus aucun appel à Google
     if polices_dir and os.path.isdir(polices_dir):
         os.makedirs(os.path.join(sortie, "assets/polices"), exist_ok=True)
         faces = []
@@ -1222,19 +1253,19 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
             if not f.endswith(".woff2"):
                 continue
             shutil.copy2(os.path.join(polices_dir, f), os.path.join(sortie, "assets/polices", f))
-            poids = {"regular": "400", "500": "500", "600": "600", "700": "700"}
-            italique = "italic" in f
-            pds = "400"
-            for cle, val in poids.items():
-                if cle in f:
-                    pds = val
-            faces.append('@font-face{font-family:"Schibsted Grotesk";font-style:%s;'
-                         'font-weight:%s;font-display:swap;src:url("polices/%s") format("woff2")}'
-                         % ("italic" if italique else "normal", pds, f))
+            famille = famille_de(f)
+            if not famille:
+                continue
+            faces.append(face_css(famille, f, "polices/" + f))
         with open(os.path.join(sortie, "assets/soha.css"), "r+", encoding="utf-8") as fh:
             reste = fh.read()
             fh.seek(0)
-            fh.write("/* Schibsted Grotesk auto-hébergée */\n" + "\n".join(faces) + "\n\n" + reste)
+            fh.write("/* ============================================================\n"
+                     "   Les trois familles du canon, servies depuis le site lui-même.\n"
+                     "   Aucun appel à Google : exigence Loi 25, et un aller-retour de\n"
+                     "   moins avant le premier affichage.\n"
+                     "   ============================================================ */\n"
+                     + "\n".join(faces) + "\n\n" + reste)
 
     return {
         "pages": pages_ecrites,
