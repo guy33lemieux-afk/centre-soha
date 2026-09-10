@@ -822,3 +822,81 @@ désormais.
 confidentialité.** Le code aurait pu se contenter d'un champ « clé d'API ». Le
 vrai livrable, ici, c'est le paragraphe que Mala doit ajouter à sa politique —
 et le fait qu'aucun script Mailchimp ne touche le site.
+
+---
+
+# Cycle 13 · Retrait d'une offre, hébergement nommé — et neuf images qui ne s'affichaient pas
+
+## Le défaut le plus grave de tout le chantier, et il était déjà livré
+En rebâtissant le site après le retrait d'une offre, la porte du regard a trouvé
+ceci : **neuf images de fond ne s'affichaient pas**, dont les hero de l'accueil,
+de Prendre soin, Se ressourcer, Se transformer, Studio podcast, Espaces
+professionnels, Contact, Journal et Réservation.
+
+Cause : une `url()` dans une feuille de style se résout par rapport à la
+**feuille**, pas à la page. `assets/soha.css` écrivait `url(medias/…)`, donc le
+navigateur cherchait `assets/medias/…` et ne trouvait rien. Corrigé par un
+`media_css()` qui rend `../medias/…`.
+
+**Et mon générateur disait « 74 images copiées, aucune manquante ».** C'était
+vrai : elles étaient copiées. Compter ce qu'on écrit ne prouve rien sur ce qui
+s'affiche. C'est la deuxième fois exactement que ce piège se referme — la
+première, c'était « zéro appel externe » qui se déduisait au lieu de se mesurer.
+
+D'où `porte_du_regard.py` : elle n'ouvre aucun fichier. Elle sert le site,
+l'ouvre dans Chromium page par page, et note toute ressource en 400+, tout appel
+externe, toute erreur JavaScript et tout débordement horizontal à 1440, 1024,
+768 et 390 px. Passée sur la version **déjà livrée**, elle sort les neuf
+404 en trois secondes. Passée sur la nouvelle : 29 pages, rien.
+
+## Retrait de la formule « Podcast audio · Audio seul · 200 $ »
+Décision de Mala. Quatre endroits devaient bouger ensemble, et le quatrième est
+celui qu'on oublie :
+1. la carte de prix (conteneur `30eae111`) ;
+2. « Quatre façons de repartir » → « Trois façons » ;
+3. la fourchette de l'introduction, « de 200 $ à 420 $ » → « de 300 $ à 420 $ » ;
+4. **le menu déroulant du formulaire de réservation**, qui aurait continué de
+   proposer « Podcast audio — 200 $ » ;
+5. l'onglet « Podcast audio » des conditions de service ;
+6. les métadonnées SEO, qui annonçaient « dès 200 $ » à Google.
+
+`kit_retrait_audio.py` fait les cinq premiers et **exige** que chacun trouve sa
+cible, puis relit tout le kit pour vérifier qu'il ne reste aucune trace. Un
+retrait partiel serait pire que pas de retrait.
+
+Ce qui n'a **pas** été touché, alors que le nombre est le même : « à partir de
+200 $ + tx la soirée » sur la page des espaces. Ce 200 $-là est la location du
+Studio en soirée de semaine.
+
+## L'hébergement, enfin nommé dans la politique
+Réponse de l'hébergeur : Toronto (installation principale au Canada), Los
+Angeles, Amsterdam. La politique dit maintenant **Toronto, en Ontario** — donc
+« au Canada, mais hors du Québec » — et nomme les deux autres centres en
+précisant que le site ne les utilise pas.
+
+Une phrase reste à confirmer auprès de l'hébergeur : « Dans lequel de vos trois
+centres mon compte est-il hébergé ? » Si ce n'est pas Toronto, le texte change ;
+c'est pour ça qu'il vit dans `kit_hebergement.py` et non dans une retouche à la
+main.
+
+La ligne sur l'infolettre n'a pas bougé : elle dit que l'envoi part de notre
+propre serveur, et c'est vrai tant que rien n'est branché ailleurs.
+
+## Mailchimp : rien n'est choisi
+Mala n'a pas tranché. Le pont Mailchimp reste livré et éprouvé ; ma
+recommandation, elle, va à **Cyberimpact** — entreprise québécoise, serveurs au
+Canada, conçue pour la LCAP et la Loi 25, et le CRM v02 de Mala **contient déjà
+un import Cyberimpact**, ce qui dit assez d'où venait sa liste. Choisir
+Cyberimpact ferait disparaître le transfert hors Canada et le paragraphe
+supplémentaire de la politique. Coût : un cycle pour l'adaptateur.
+
+## Livré
+- `soha_kitdev_20260910_v13.zip` — l'offre retirée, l'hébergement nommé.
+- `soha_site-html_20260910_v09.zip` — 29 pages, neuf images de fond réparées.
+- `porte_du_regard.py`, `kit_retrait_audio.py`, `kit_hebergement.py`.
+
+## Leçon
+**Un compteur n'est pas un regard.** « 74 images copiées, aucune manquante » et
+« neuf hero invisibles » étaient vrais en même temps. Tant qu'une vérification
+lit les fichiers qu'on vient d'écrire plutôt que la page qu'un visiteur reçoit,
+elle mesure le travail, pas le résultat.

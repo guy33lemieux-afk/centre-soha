@@ -72,9 +72,11 @@ METAS = {
     7350: ("Se transformer — ateliers et parcours · Centre Soha, Montréal",
            "Des ateliers pour bouger quelque chose en toi, au 961 Rachel Est. Petits "
            "groupes, artisan·es présent·es. Vois les prochaines dates."),
-    7355: ("Studio podcast à louer à Montréal — Centre Soha, dès 200 $",
-           "Un studio insonorisé sur le Plateau pour enregistrer ton balado. Équipé, "
-           "calme, dès 200 $. Estime ton prix et réserve en ligne."),
+    # La formule « Podcast audio · 200 $ » a été retirée le 10 septembre 2026 :
+    # la moins chère qui reste est le podcast filmé, à 300 $.
+    7355: ("Studio podcast à louer à Montréal — Centre Soha, dès 300 $",
+           "Un studio insonorisé sur le Plateau pour enregistrer ton balado, filmé et "
+           "monté. Équipé, calme, dès 300 $. Estime ton prix et réserve en ligne."),
     7373: ("Salle à louer sur le Plateau, Montréal — Centre Soha",
            "Cabinet, grand plateau de 2200 pi² ou studio : loue ton espace au 961, à deux "
            "pas du métro Mont-Royal. Dès 30 $. Estime ton prix."),
@@ -230,6 +232,8 @@ def css_conteneur(s, media=None):
             base.append("background-color:%s" % s["background_color"])
         bi = s.get("background_image")
         if isinstance(bi, dict) and bi.get("url"):
+            # `media` est ici la version « vue depuis la feuille de style » :
+            # c'est dans `assets/soha.css` que cette règle atterrit.
             url = media(bi["url"]) if media else bi["url"]
             base.append("background-image:url(%s)" % url)
             base.append("background-position:%s" % (s.get("background_position") or "center center"))
@@ -388,6 +392,18 @@ class Rendu:
         self.images_manquantes[nom] += 1
         return "medias/" + nom
 
+    def media_css(self, url):
+        """Le même chemin, mais vu depuis la feuille de style.
+
+        Une `url()` dans un fichier CSS se résout par rapport au CSS, pas à la
+        page. `assets/soha.css` cherchait donc `assets/medias/…` et ne trouvait
+        rien : les neuf images de fond du site — dont quatre hero de page — ne
+        s'affichaient pas, en silence, depuis la première version. Aucune erreur
+        nulle part : un fond qui manque, ça ressemble à un fond qui n'existe pas.
+        """
+        chemin = self.media(url)
+        return ("../" + chemin) if chemin else chemin
+
     def lien(self, url):
         """Lien du kit → lien du site statique."""
         if not url:
@@ -458,7 +474,8 @@ class Rendu:
     def conteneur(self, e, profondeur):
         eid = e.get("id", "x")
         s = e.get("settings") if isinstance(e.get("settings"), dict) else {}
-        base, tab, tel = css_conteneur(s, self.media)
+        # `media_css` et non `media` : ces règles vont dans `assets/soha.css`.
+        base, tab, tel = css_conteneur(s, self.media_css)
         boxed = (s.get("content_width") or "boxed") != "full"
         classes = ["elementor-element", "elementor-element-%s" % eid, "e-con",
                    "e-parent" if profondeur == 0 else "e-child"]
