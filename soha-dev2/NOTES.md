@@ -418,3 +418,67 @@ Québec — il faut donc aussi savoir où sont les serveurs de l'hébergeur.
 d'expéditeur n'était pas ce que je demandais, mais la regarder a révélé un
 défaut plus grave que celui que je cherchais. Ne pas écarter ce qui arrive hors
 cadre : le lire d'abord.
+
+---
+
+# Complément 8 du 10 septembre — le CRM
+
+Mala : « c'est la partie à monter avec un bon CRM sur mesure, besoin d'aide pour
+configurer tout ça ».
+
+## Le défaut central du CRM v02, mesuré
+Le fichier enregistre à travers **`window.storage`** — un objet **qui n'existe
+pas dans un navigateur**. Chaque appel est enveloppé dans un `try` qui avale
+l'erreur. Donc : rien n'échoue, rien n'avertit, **rien n'est écrit**.
+
+Mesuré dans Chromium sur une vraie page :
+
+    window.storage        undefined
+    window.localStorage   object
+    window.indexedDB      object
+    le garde-fou du CRM   ne fait rien, sans erreur
+
+On ajoute un contact, il s'affiche, on ferme l'onglet — il n'a jamais existé.
+La pire panne : celle qui a l'air de marcher.
+
+## Quatre défauts de plus, même réparé
+1. Un navigateur, un appareil : ni téléphone, ni deuxième personne, ni sauvegarde.
+2. Aucun lien avec le site : les 4 formulaires n'alimentent rien.
+3. Vocabulaire discordant : CRM « Grande salle · Studio · Petite salle » contre
+   estimateur/formulaire « Studio · Espace SÖHA · Salle 4 · Salles 1·2·3 ».
+4. Import Cyberimpact, alors que l'infolettre passe par l'extension Newsletter.
+
+## Recommandation : le CRM vit dans WordPress
+Les formulaires y arrivent déjà, UpdraftPlus sauvegarde déjà, l'accès
+multi-appareil et multi-personne existe déjà, zéro abonnement, rien ne sort du
+Québec de plus qu'aujourd'hui. Le modèle de données du v02 est bon et se reprend
+tel quel. Trois types de contenu : `contact`, `reservation`, `atelier`.
+
+Montage en 3 temps, chacun utile seul :
+1. **Ne plus rien perdre** — archiver chaque envoi en base avant l'envoi du
+   courriel, purge à 24 mois.
+2. **Contacts et réservations** — les 3 CPT, import du JSON exporté par le v02.
+3. **Tableau de bord et infolettre** — jonction avec l'extension Newsletter.
+
+## Livré aujourd'hui : le pont estimateur → formulaire
+L'estimateur passait déjà `?espace=&jour=&plage=&tarif=` à `/reservation/`, mais
+rien ne les recueillait : la personne refaisait son choix à la main et le montant
+qu'elle avait vu n'arrivait jamais au Centre.
+
+- **Kit v12** : 4 champs cachés sur le formulaire (`estim_espace`, `estim_jour`,
+  `estim_plage`, `estim_tarif`).
+- **Finition v1.2.3** : recopie les paramètres d'URL dedans, en clair.
+
+Testé au navigateur : `?espace=soha&jour=fds&plage=demi&tarif=400` donne
+« Espace SÖHA · Fin de semaine · Demi-journée · 400 $ +tx ». `php -l` et
+`node --check` passent.
+
+## Décisions attendues
+1. D'accord pour que le CRM vive dans WordPress ? (commande tout le reste)
+2. Qui doit y accéder — Mala seule, Dominique aussi, la réception ?
+3. Le service de relais WP Mail SMTP (bloque encore la section 4 de la politique).
+
+## Leçon
+**Un `try/catch` vide transforme une panne en illusion.** Le CRM avait l'air de
+fonctionner parce que l'échec d'écriture était avalé. Avant de croire qu'un
+stockage marche, l'ouvrir, écrire, recharger, relire.

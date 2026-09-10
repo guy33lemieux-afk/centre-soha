@@ -1,0 +1,250 @@
+<title>Le CRM du 961</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Schibsted+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --encre:#0E1A15; --ivoire:#F4F0E7; --papier:#FBF8F3;
+  --soigner:#19A7DB; --batir:#D29A4E; --cultiver:#5E8C5A; --cramoisi:#AE1E3B;
+  --fond:var(--papier); --surface:#FFFFFF; --surface-2:#F1EBE1;
+  --texte:var(--encre); --doux:#5A6862;
+  --filet:#E2DACC; --filet-fort:#C7BCA8; --accent:#0F7FA6;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --fond:#0A1310; --surface:#121D19; --surface-2:#1A2823;
+    --texte:#EDE7DB; --doux:#9BA9A2; --filet:#293832; --filet-fort:#3B4F47;
+    --accent:#63C8E6;
+  }
+}
+:root[data-theme="dark"]{
+  --fond:#0A1310; --surface:#121D19; --surface-2:#1A2823;
+  --texte:#EDE7DB; --doux:#9BA9A2; --filet:#293832; --filet-fort:#3B4F47;
+  --accent:#63C8E6;
+}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font-family:var(--sans);
+  font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased}
+.page{max-width:880px;margin:0 auto;padding-inline:20px;padding-block:44px 96px}
+
+h1,h2{font-family:var(--serif);font-weight:500;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.2rem,6vw,3.4rem);line-height:1.02;letter-spacing:-.018em}
+h2{font-size:clamp(1.4rem,3.2vw,1.95rem);line-height:1.12;letter-spacing:-.008em}
+h3{font-family:var(--sans);font-size:1.04rem;font-weight:600;line-height:1.25;margin:0}
+p{margin:0 0 1em;max-width:68ch}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--soigner);outline-offset:3px}
+code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);
+  padding:.1em .36em;border-radius:2px;overflow-wrap:break-word}
+strong{font-weight:600}
+
+.kicker{font-family:var(--mono);font-size:.7rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--doux);margin:0 0 14px}
+.sceau{display:flex;align-items:center;gap:8px;margin-bottom:18px}
+.sceau i{width:9px;height:9px;border-radius:50%;background:var(--soigner)}
+.sceau b{width:46px;height:2px;background:var(--batir)}
+.sceau u{width:7px;height:7px;border-radius:50%;background:var(--cramoisi)}
+
+.chapeau{border-bottom:1px solid var(--filet-fort);padding-bottom:32px;margin-bottom:40px}
+.chapeau .sous{font-size:1.12rem;color:var(--doux);max-width:58ch;margin-top:14px}
+
+section{margin-top:58px}
+section>h2{padding-bottom:11px;border-bottom:1px solid var(--filet)}
+section>h2+p{margin-top:15px}
+
+/* --- le constat mesuré --- */
+.preuve{border-left:3px solid var(--cramoisi);background:var(--surface);
+  padding:20px 22px;margin:26px 0}
+.preuve .titre{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--cramoisi);margin:0 0 10px}
+.preuve p:last-child{margin-bottom:0}
+.console{font-family:var(--mono);font-size:.82rem;line-height:1.9;
+  background:var(--surface-2);padding:14px 16px;margin:14px 0 0;
+  overflow-x:auto;white-space:pre;color:var(--texte);border-radius:2px}
+.console b{color:var(--cramoisi);font-weight:400}
+.console i{color:var(--doux);font-style:normal}
+
+/* --- défauts --- */
+.defauts{list-style:none;margin:24px 0;padding:0;
+  display:grid;gap:1px;background:var(--filet);border-block:1px solid var(--filet)}
+.defauts li{background:var(--fond);padding:15px 0;display:grid;
+  grid-template-columns:26px 1fr;gap:16px;align-items:start}
+.defauts .n{font-family:var(--mono);font-size:.78rem;color:var(--doux);padding-top:3px}
+.defauts b{display:block;font-weight:600;margin-bottom:3px}
+.defauts span{color:var(--doux);font-size:.95rem}
+
+/* --- les trois options --- */
+.options{display:grid;gap:18px;margin:28px 0}
+.option{border:1px solid var(--filet);padding:20px 22px;background:var(--surface)}
+.option.retenue{border-color:var(--soigner);border-width:2px}
+.option h3{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.option h3 em{font-family:var(--mono);font-style:normal;font-size:.64rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--soigner);margin-left:auto}
+.option p{font-size:.95rem;margin-bottom:.7em}
+.pour,.contre{font-size:.92rem;margin:0;display:grid;grid-template-columns:auto 1fr;
+  gap:10px;align-items:baseline}
+.pour+.contre{margin-top:6px}
+.pour i,.contre i{font-family:var(--mono);font-style:normal;font-size:.64rem;
+  letter-spacing:.08em;text-transform:uppercase}
+.pour i{color:var(--cultiver)}
+.contre i{color:var(--cramoisi)}
+.option .doux{color:var(--doux)}
+
+/* --- la chaîne --- */
+.chaine{display:grid;gap:1px;background:var(--filet);border:1px solid var(--filet);margin:28px 0}
+.maillon{background:var(--fond);padding:16px 18px;display:grid;
+  grid-template-columns:112px 1fr;gap:18px;align-items:start}
+.maillon .quoi{font-family:var(--mono);font-size:.66rem;letter-spacing:.09em;
+  text-transform:uppercase;padding-top:3px}
+.maillon.existe .quoi{color:var(--cultiver)}
+.maillon.batir .quoi{color:var(--batir)}
+.maillon b{display:block;font-weight:600;margin-bottom:3px}
+.maillon span{color:var(--doux);font-size:.94rem}
+.maillon code{font-size:.8rem}
+
+/* --- phases --- */
+.phases{list-style:none;margin:24px 0;padding:0}
+.phases li{display:grid;grid-template-columns:30px 1fr;gap:16px;
+  padding:16px 0;border-bottom:1px solid var(--filet);align-items:start}
+.phases .n{font-family:var(--serif);font-size:1.42rem;line-height:1;
+  color:var(--soigner);font-variant-numeric:tabular-nums}
+.phases b{display:block;font-weight:600;margin-bottom:4px}
+.phases span{color:var(--doux);font-size:.95rem}
+.phases .duree{font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--doux);display:block;margin-top:6px}
+
+.pied{margin-top:66px;padding-top:20px;border-top:1px solid var(--filet-fort);
+  font-size:.87rem;color:var(--doux)}
+.pied p{max-width:none}
+
+@media (max-width:560px){
+  .maillon,.defauts li,.phases li{grid-template-columns:1fr;gap:6px}
+  .option h3 em{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="page">
+
+<header class="chapeau">
+  <div class="sceau" aria-hidden="true"><i></i><b></b><u></u></div>
+  <p class="kicker">Centre Soha · 961 Rachel Est · 10 septembre 2026</p>
+  <h1>Le CRM du 961</h1>
+  <p class="sous">Ton CRM v02 a un défaut qu'on ne voit pas à l'usage : il ne garde rien. Voici ce que j'ai mesuré, la seule question qui décide de la suite, et l'architecture que je recommande.</p>
+</header>
+
+<section id="constat" style="margin-top:0">
+  <h2>Ce que fait ton CRM aujourd'hui</h2>
+  <p>897 lignes, cinq écrans — tableau de bord, infolettre, répertoire, location, ateliers — et un modèle de données juste : contacts typés par école, réservations avec statut de paiement, consentement daté par personne. Le travail de conception est bon. Le problème est ailleurs.</p>
+
+  <div class="preuve">
+    <p class="titre">Mesuré, pas supposé</p>
+    <p>Le CRM enregistre à travers <code>window.storage</code>. <strong>Cet objet n'existe pas dans un navigateur.</strong> Et chaque appel est enveloppé dans un <code>try</code> qui avale l'erreur — donc rien n'échoue, rien n'avertit, et rien n'est écrit.</p>
+    <div class="console">Chromium, sur une vraie page :
+  window.storage        <b>undefined</b>
+  window.localStorage   object
+  window.indexedDB      object
+  le garde-fou du CRM   <b>ne fait rien, sans erreur</b></div>
+    <p style="margin-top:14px">Concrètement : tu ajoutes un contact, il s'affiche. Tu fermes l'onglet. <strong>Il n'a jamais existé.</strong> C'est le pire genre de panne — celle qui a l'air de marcher.</p>
+  </div>
+
+  <p>Et même si on réparait cette ligne, il resterait quatre choses.</p>
+
+  <ol class="defauts">
+    <li><span class="n">01</span><div><b>Un navigateur, un appareil</b><span>Le stockage local vit dans <em>ce</em> navigateur, sur <em>cet</em> ordinateur. Rien depuis ton téléphone, rien pour une deuxième personne, aucune sauvegarde. Un nettoyage de cache et le répertoire du Centre disparaît.</span></div></li>
+    <li><span class="n">02</span><div><b>Aucun lien avec le site</b><span>Les quatre formulaires n'alimentent rien. Chaque demande de location serait retapée à la main — c'est-à-dire, en pratique, pas retapée.</span></div></li>
+    <li><span class="n">03</span><div><b>Le vocabulaire ne concorde pas</b><span>Le CRM connaît « Grande salle · Studio · Petite salle ». L'estimateur et le formulaire parlent de « Studio · Espace SÖHA · Salle 4 · Salles 1·2·3 ». Trois noms contre quatre : aucune réservation ne se rangerait toute seule.</span></div></li>
+    <li><span class="n">04</span><div><b>Il importe depuis Cyberimpact</b><span>L'écran Infolettre attend un export Cyberimpact. Ce n'est plus l'outil : l'infolettre passe par l'extension Newsletter, qui vit sur ton propre serveur.</span></div></li>
+  </ol>
+</section>
+
+<section id="question">
+  <h2>La seule question qui décide de tout</h2>
+  <p><strong>Où vivent les données ?</strong> Tout le reste en découle — qui y accède, comment les demandes y entrent, ce qui se passe si l'ordinateur meurt, et ce qu'on répond à la Commission d'accès à l'information si elle demande à voir.</p>
+
+  <div class="options">
+    <div class="option">
+      <h3>Dans le navigateur <em>ce que fait le v02</em></h3>
+      <p class="pour"><i>Pour</i><span>Rien à installer, rien à payer, rien à configurer.</span></p>
+      <p class="contre"><i>Contre</i><span>Un appareil, une personne, aucune sauvegarde, et aujourd'hui : aucune écriture du tout. Le répertoire de tes locataires ne peut pas tenir là.</span></p>
+    </div>
+
+    <div class="option">
+      <h3>Dans un service hébergé <em>Airtable, Notion, HubSpot…</em></h3>
+      <p class="pour"><i>Pour</i><span>Prêt en une journée, robuste, accessible partout.</span></p>
+      <p class="contre"><i>Contre</i><span>Un abonnement de plus, des serveurs hors Québec à déclarer dans ta politique — et surtout : le « sur mesure » disparaît. Tu ranges le Centre dans les cases de quelqu'un d'autre.</span></p>
+    </div>
+
+    <div class="option retenue">
+      <h3>Dans WordPress <em>ma recommandation</em></h3>
+      <p>Une extension maison, comme la Finition et l'Estimateur. Les données vivent dans la base du site, à côté du reste.</p>
+      <p class="pour"><i>Pour</i><span>Les formulaires y arrivent <strong>déjà</strong>. UpdraftPlus sauvegarde <strong>déjà</strong>. Accessible de n'importe quel appareil, à plusieurs, avec les comptes qui existent. Zéro abonnement. Rien ne sort du Québec de plus qu'aujourd'hui. Et « sur mesure » veut dire ce qu'il dit : tes quatre espaces, tes trois écoles, ton vocabulaire.</span></p>
+      <p class="contre"><i>Contre</i><span>C'est à construire — deux ou trois cycles. Et ça vit avec le site : si le site tombe, le CRM tombe. C'est pour ça que la sauvegarde n'est pas optionnelle.</span></p>
+    </div>
+  </div>
+</section>
+
+<section id="chaine">
+  <h2>La chaîne, maillon par maillon</h2>
+  <p>La bonne nouvelle : la moitié existe déjà, et deux morceaux ont été posés aujourd'hui.</p>
+
+  <div class="chaine">
+    <div class="maillon existe">
+      <span class="quoi">Existe</span>
+      <div><b>1 · L'estimateur</b><span>La personne choisit son espace, son moment, sa plage. Elle voit un prix. Le bouton l'emmène vers <code>/reservation/</code> avec son choix dans l'adresse : <code>?espace=&amp;jour=&amp;plage=&amp;tarif=</code>.</span></div>
+    </div>
+    <div class="maillon existe">
+      <span class="quoi">Posé aujourd'hui</span>
+      <div><b>2 · Le pont</b><span>Ces quatre valeurs se recopient dans quatre champs cachés du formulaire. <strong>L'estimation voyage avec la demande</strong> — testé au navigateur : <code>?espace=soha&amp;jour=fds&amp;plage=demi&amp;tarif=400</code> devient « Espace SÖHA · Fin de semaine · Demi-journée · 400 $ +tx ». Avant, ce prix mourait à la porte.</span></div>
+    </div>
+    <div class="maillon existe">
+      <span class="quoi">Posé aujourd'hui</span>
+      <div><b>3 · Le formulaire</b><span>Treize champs, deux consentements distincts, aucun pré-coché. Il livre à <strong>info@centresoha.com</strong> — il ne livrait à personne de nommé jusqu'à ce matin — et répondre au courriel écrit directement à la personne.</span></div>
+    </div>
+    <div class="maillon batir">
+      <span class="quoi">À bâtir</span>
+      <div><b>4 · L'archivage</b><span>Chaque envoi est enregistré dans la base <em>avant</em> le courriel. Aujourd'hui, si le relais SMTP hoquette, la demande est perdue sans laisser de trace. C'est le premier morceau à monter, et le plus court.</span></div>
+    </div>
+    <div class="maillon batir">
+      <span class="quoi">À bâtir</span>
+      <div><b>5 · Le CRM</b><span>Une extension maison. Trois types de contenu — <code>contact</code>, <code>reservation</code>, <code>atelier</code> — le modèle de ton v02, repris tel quel : il est bon. Chaque envoi de formulaire devient une fiche, rattachée au contact s'il existe déjà, créé sinon.</span></div>
+    </div>
+    <div class="maillon batir">
+      <span class="quoi">À bâtir</span>
+      <div><b>6 · L'écran</b><span>Tes cinq vues, dans l'administration de WordPress, au canon. Même dessin qu'aujourd'hui — c'est le bon dessin. Ce qui change, c'est qu'il lit de vraies données, et qu'elles sont encore là demain.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="montage">
+  <h2>Le montage</h2>
+  <p>Trois temps. Chacun est utile seul : si on s'arrête après le premier, tu as déjà gagné quelque chose.</p>
+
+  <ol class="phases">
+    <li><span class="n">1</span><div><b>Ne plus rien perdre</b><span>Archiver chaque envoi de formulaire dans la base, avec sa date, son consentement et son estimation. Un écran simple pour les lire et les marquer traitées. Purge automatique à 24 mois, comme la politique l'annonce.<span class="duree">Un cycle · utile dès le premier jour</span></span></div></li>
+    <li><span class="n">2</span><div><b>Les contacts et les réservations</b><span>Les trois types de contenu, la fiche contact avec son historique, la réservation avec son statut de paiement. Reprise du modèle de ton v02, et du vocabulaire réel des quatre espaces. Import de ce que tu as déjà, par le fichier JSON que ton CRM sait exporter.<span class="duree">Un à deux cycles</span></span></div></li>
+    <li><span class="n">3</span><div><b>Le tableau de bord et l'infolettre</b><span>Les vues de synthèse, et la jonction avec l'extension Newsletter — le consentement coché sur le formulaire inscrit la personne, sans double saisie et sans export à trimballer.<span class="duree">Un cycle</span></span></div></li>
+  </ol>
+</section>
+
+<section id="decisions">
+  <h2>Ce que j'ai besoin de savoir</h2>
+  <p>Trois choses, et une seule est urgente.</p>
+
+  <ol class="defauts">
+    <li><span class="n">01</span><div><b>Es-tu d'accord pour que le CRM vive dans WordPress ?</b><span>C'est la décision qui commande tout le reste. Si tu préfères une autre voie, dis-le maintenant — après la phase 1, revenir coûte cher.</span></div></li>
+    <li><span class="n">02</span><div><b>Qui doit y avoir accès ?</b><span>Toi seule, ou Dominique aussi ? Une personne à la réception ? WordPress sait faire des rôles ; il faut juste savoir lesquels.</span></div></li>
+    <li><span class="n">03</span><div><b>Le service de relais de WP Mail SMTP</b><span>Toujours en suspens. Il ne bloque pas le CRM, mais il bloque la section 4 de ta politique. C'est dans <code>WP Mail SMTP → Réglages → Programme de messagerie</code>, la rangée de logos.</span></div></li>
+  </ol>
+</section>
+
+<footer class="pied">
+  <p>Diagnostic établi en lisant les 897 lignes de <code>soha_crm_20260903_v02.jsx</code> et en mesurant le comportement réel de son stockage dans Chromium. Le pont entre l'estimateur et le formulaire est livré et testé.</p>
+  <p style="margin-bottom:0">Périmètre : Centre Soha, 961 Rachel Est. Le pôle soha.live n'est pas concerné.</p>
+</footer>
+
+</div>
