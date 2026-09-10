@@ -1,0 +1,325 @@
+<title>L'import du 961</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Schibsted+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --encre:#0E1A15; --ivoire:#F4F0E7;
+  --fond:#FBF8F3; --surface:#FFFFFF; --surface-2:#F1EBE1;
+  --texte:var(--encre); --doux:#5A6862;
+  --filet:#E2DACC; --filet-fort:#C7BCA8;
+  --accent:#0F7FA6;            /* Soigner, assombri pour le contraste sur papier */
+  --arret:#AE1E3B;             /* cramoisi : ne pas faire */
+  --garde:#B0762C;             /* bâtir, assombri : attention */
+  --fait:#4A7346;              /* cultiver, assombri : c'est bon */
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --fond:#0A1310; --surface:#121D19; --surface-2:#1A2823;
+    --texte:#EDE7DB; --doux:#9BA9A2; --filet:#293832; --filet-fort:#3B4F47;
+    --accent:#63C8E6; --arret:#F08099; --garde:#E5B978; --fait:#8FC08A;
+  }
+}
+:root[data-theme="dark"]{
+  --fond:#0A1310; --surface:#121D19; --surface-2:#1A2823;
+  --texte:#EDE7DB; --doux:#9BA9A2; --filet:#293832; --filet-fort:#3B4F47;
+  --accent:#63C8E6; --arret:#F08099; --garde:#E5B978; --fait:#8FC08A;
+}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font-family:var(--sans);
+  font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.page{max-width:820px;margin:0 auto;padding-inline:20px;padding-block:44px 100px}
+
+h1,h2{font-family:var(--serif);font-weight:500;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.1rem,6vw,3.1rem);line-height:1.03;letter-spacing:-.018em}
+h2{font-size:clamp(1.3rem,3vw,1.75rem);line-height:1.15;letter-spacing:-.008em}
+h3{font-family:var(--sans);font-size:1rem;font-weight:600;line-height:1.3;margin:0}
+p{margin:0 0 .95em;max-width:66ch}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+code{font-family:var(--mono);font-size:.84em;background:var(--surface-2);
+  padding:.12em .38em;border-radius:2px;overflow-wrap:break-word}
+strong{font-weight:600}
+
+.kicker{font-family:var(--mono);font-size:.7rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--doux);margin:0 0 14px}
+.sceau{display:flex;align-items:center;gap:8px;margin-bottom:18px}
+.sceau i{width:9px;height:9px;border-radius:50%;background:var(--accent)}
+.sceau b{width:46px;height:2px;background:var(--garde)}
+.sceau u{width:7px;height:7px;border-radius:50%;background:var(--arret)}
+
+.chapeau{border-bottom:1px solid var(--filet-fort);padding-bottom:30px;margin-bottom:14px}
+.chapeau .sous{font-size:1.1rem;color:var(--doux);max-width:56ch;margin-top:14px}
+
+/* --- l'avancement --- */
+.avancement{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--doux);margin:26px 0 0}
+.avancement b{color:var(--texte);font-weight:500;font-variant-numeric:tabular-nums}
+.avancement button{font:inherit;letter-spacing:inherit;text-transform:inherit;
+  background:none;border:0;border-bottom:1px solid var(--filet-fort);
+  color:var(--doux);cursor:pointer;padding:0 0 1px}
+.avancement button:hover{color:var(--texte)}
+
+/* --- les phases --- */
+.phase{margin-top:54px}
+.phase>h2{display:flex;align-items:baseline;gap:14px;
+  padding-bottom:11px;border-bottom:1px solid var(--filet)}
+.phase>h2 em{font-family:var(--mono);font-style:normal;font-size:.68rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--accent);flex:none}
+.phase>h2 .duree{margin-left:auto;font-family:var(--mono);font-size:.66rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--doux);flex:none;font-style:normal}
+.phase>p:first-of-type{margin-top:15px}
+
+/* --- les gestes --- */
+.gestes{list-style:none;margin:22px 0 0;padding:0;
+  display:grid;gap:1px;background:var(--filet);border-block:1px solid var(--filet)}
+.gestes li{background:var(--fond);padding:15px 0;
+  display:grid;grid-template-columns:26px 1fr;gap:14px;align-items:start}
+.gestes label{display:contents;cursor:pointer}
+.gestes input{width:17px;height:17px;margin:3px 0 0;flex:none;accent-color:var(--accent);cursor:pointer}
+.gestes .quoi b{display:block;font-weight:600;margin-bottom:3px}
+.gestes .quoi span{display:block;color:var(--doux);font-size:.95rem}
+.gestes input:checked ~ .quoi b,
+.gestes input:checked ~ .quoi span{opacity:.45;text-decoration:line-through;
+  text-decoration-thickness:1px}
+.ou{display:inline-block;font-family:var(--mono);font-size:.78rem;
+  background:var(--surface-2);color:var(--texte);
+  padding:.2em .5em;border-radius:2px;margin-top:6px;overflow-wrap:break-word}
+
+/* --- ce qui arrête --- */
+.piege{border-left:3px solid var(--arret);background:var(--surface);
+  padding:18px 20px;margin:26px 0}
+.piege .titre{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--arret);margin:0 0 9px}
+.piege p:last-child,.attention p:last-child{margin-bottom:0}
+.attention{border-left:3px solid var(--garde);background:var(--surface);
+  padding:18px 20px;margin:26px 0}
+.attention .titre{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--garde);margin:0 0 9px}
+
+/* --- ce qu'on doit voir --- */
+.preuves{display:grid;gap:1px;background:var(--filet);
+  border-block:1px solid var(--filet);margin:22px 0}
+.preuves div{background:var(--fond);padding:11px 0;display:grid;
+  grid-template-columns:1fr auto;gap:14px;align-items:baseline}
+.preuves p{margin:0;max-width:none;font-size:.95rem}
+.preuves em{font-family:var(--mono);font-style:normal;font-size:.78rem;
+  color:var(--fait);white-space:nowrap}
+
+.console{font-family:var(--mono);font-size:.8rem;line-height:1.85;
+  background:var(--surface-2);padding:14px 16px;margin:16px 0;
+  overflow-x:auto;white-space:pre;border-radius:2px}
+.console i{color:var(--doux);font-style:normal}
+
+.pied{margin-top:70px;padding-top:20px;border-top:1px solid var(--filet-fort);
+  font-size:.87rem;color:var(--doux)}
+.pied p{max-width:none}
+
+@media (max-width:560px){
+  .gestes li{grid-template-columns:22px 1fr;gap:11px}
+  .preuves div{grid-template-columns:1fr;gap:3px}
+  .phase>h2{flex-wrap:wrap}
+  .phase>h2 .duree{margin-left:0;width:100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="page">
+
+<header class="chapeau">
+  <div class="sceau" aria-hidden="true"><i></i><b></b><u></u></div>
+  <p class="kicker">Centre Soha · 961 Rachel Est · 10 septembre 2026</p>
+  <h1>L'import du 961</h1>
+  <p class="sous">Tout est prêt et rien n'est encore posé. Voici l'ordre, la raison de chaque position, et les trois pièges qui ont déjà coûté cher. Coche à mesure — la page s'en souvient.</p>
+</header>
+
+<p class="avancement">
+  <span><b id="compte">0</b> / <b id="total">0</b> gestes faits</span>
+  <button type="button" id="remise">Tout décocher</button>
+</p>
+
+<!-- ================================================================= -->
+<section class="phase">
+  <h2><em>Phase 0</em> Le filet <span class="duree">30 min · à ne pas sauter</span></h2>
+  <p>Un import ne se défait pas. Ce qui se défait, c'est une sauvegarde qu'on a vraiment restaurée une fois.</p>
+
+  <ol class="gestes">
+    <li><label><input type="checkbox"><span class="quoi"><b>Sauvegarde complète UpdraftPlus</b><span>Fichiers <em>et</em> base de données. <span class="ou">UpdraftPlus → Sauvegarder / Restaurer → Sauvegarder maintenant</span></span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Vérifie qu'elle est partie hors du serveur</b><span>Une sauvegarde qui dort à côté du site disparaît avec lui. <span class="ou">UpdraftPlus → Réglages → Stockage distant</span></span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Télécharge-la sur ton ordinateur</b><span>Les cinq fichiers (base, extensions, thèmes, téléversements, autres). C'est la copie que tu contrôles vraiment.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Note la date et l'heure quelque part</b><span>Si tu dois restaurer dans deux heures, tu ne veux pas hésiter entre deux sauvegardes.</span></span></label></li>
+  </ol>
+
+  <div class="piege">
+    <p class="titre">Le seul vrai filet</p>
+    <p>Une sauvegarde qu'on n'a jamais restaurée n'est pas une sauvegarde, c'est une intention. Si tu n'en as jamais essayé une, c'est <strong>aujourd'hui</strong> qu'il faut le savoir — pas le jour où tu en auras besoin.</p>
+  </div>
+</section>
+
+<!-- ================================================================= -->
+<section class="phase">
+  <h2><em>Phase 1</em> Cloudflare se met de côté <span class="duree">5 min</span></h2>
+  <p>Cloudflare met tes pages en cache. Pendant tout ce qui suit, tu dois voir ton vrai site — pas une photo de ton site prise il y a une heure.</p>
+
+  <ol class="gestes">
+    <li><label><input type="checkbox"><span class="quoi"><b>Mode développement : activé</b><span>Cloudflare cesse de mettre en cache pendant trois heures, puis se rallume tout seul. <span class="ou">Cloudflare → Caching → Configuration → Development Mode</span></span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Rocket Loader : désactivé</b><span>Il diffère et réordonne les scripts de tes pages. C'est lui qu'on a vu dans ton onglet Réseau. <span class="ou">Cloudflare → Speed → Optimization → Content Optimization → Rocket Loader</span></span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Regarde le nuage, onglet DNS</b><span><strong>Orange</strong> = tout passe par Cloudflare, et ta politique le dit maintenant. <strong>Gris</strong> = rien ne transite — dis-le-moi, je retire le paragraphe.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Mode SSL : Full (strict)</b><span>Si tu lis « Flexible », change-le. Flexible fabrique des boucles de redirection et du contenu mixte, et le symptôme ressemble à tout sauf à sa cause. <span class="ou">Cloudflare → SSL/TLS → Overview</span></span></span></label></li>
+  </ol>
+
+  <div class="attention">
+    <p class="titre">Pourquoi couper Rocket Loader et pas Cloudflare</p>
+    <p>Le proxy te protège des attaques et sert tes pages plus vite : garde-le. Rocket Loader, lui, ne fait qu'une chose — déplacer tes scripts — et sur un site Elementor c'est un pari. Finition v1.3.1 protège déjà mes quatre scripts ; ceux d'Elementor, non.</p>
+  </div>
+</section>
+
+<!-- ================================================================= -->
+<section class="phase">
+  <h2><em>Phase 2</em> Les extensions, avant le contenu <span class="duree">15 min</span></h2>
+  <p>D'abord les extensions, ensuite le kit. Dans cet ordre, ton site n'est jamais à moitié : quand les pages arrivent, tout ce dont elles ont besoin est déjà là.</p>
+
+  <ol class="gestes">
+    <li><label><input type="checkbox"><span class="quoi"><b>Finition v1.3.1</b><span>Les polices servies depuis ton serveur, l'avis de témoins, le pont de l'estimateur, la protection Rocket Loader, et l'écran Contrôle Soha. <span class="ou">Extensions → Ajouter → Téléverser</span></span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Estimateur v2.0.2</b><span>La grille des quatre espaces et le bouton qui envoie vers le formulaire.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>CRM v1.4.0</b><span>À activer <strong>avant</strong> l'import : dès qu'un formulaire existe, il capte. Une demande reçue pendant que tu travailles ne doit pas se perdre.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Note l'état de départ</b><span>Ouvre <span class="ou">Outils → Contrôle Soha</span> et écris les quatre chiffres sur un papier. Après l'import, tu compareras — c'est la seule façon de savoir si l'import a créé quelque chose ou révélé quelque chose.</span></span></label></li>
+  </ol>
+
+  <div class="console">Avant l'import, j'ai noté :
+  médias en double            <i>____</i>
+  images absentes             <i>____</i>   <i>(au moins 1 : soha-accueil-001-1.webp)</i>
+  formulaires sans destinataire <i>____</i>
+  liens hors du site          <i>____</i></div>
+</section>
+
+<!-- ================================================================= -->
+<section class="phase">
+  <h2><em>Phase 3</em> L'import du kit <span class="duree">10 min · le moment sensible</span></h2>
+
+  <div class="piege">
+    <p class="titre">Ne téléverse pas les images avant</p>
+    <p>Le fichier <code>_medias.csv</code> du kit médias porte la mention « téléverser AVANT import ». <strong>C'est cette instruction qui a fabriqué les cinquante-neuf doublons</strong>, pas ce qui les évitait : l'import va chercher chaque image lui-même, et quand il la trouve déjà là, il en fait une copie <code>-1</code>. Les pages pointent alors vers la copie, et l'originale devient orpheline.</p>
+    <p>Le kit ne contient aucune image. Il les demande par leur adresse, sur ton propre site. Laisse-le faire.</p>
+  </div>
+
+  <ol class="gestes">
+    <li><label><input type="checkbox"><span class="quoi"><b>Téléverse <code>soha_kitdev_20260910_v16.zip</code></b><span><span class="ou">Elementor → Outils → Import / Export Kit → Importer</span></span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Coche tout ce qu'il propose</b><span>Réglages du site, modèles, contenu, taxonomies. Les réglages globaux portent la palette et les typographies : sans eux, les pages arrivent nues.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Laisse-le finir sans fermer l'onglet</b><span>Il télécharge les images une à une. Deux à cinq minutes, parfois plus.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Réenregistre les permaliens</b><span>Sans ce geste, les nouvelles pages répondent « introuvable » alors qu'elles existent. <span class="ou">Réglages → Permaliens → Enregistrer</span> — rien à changer, juste enregistrer.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Repose la page d'accueil</b><span>L'import peut la décrocher. <span class="ou">Réglages → Lecture → Une page statique → Accueil</span></span></span></label></li>
+  </ol>
+</section>
+
+<!-- ================================================================= -->
+<section class="phase">
+  <h2><em>Phase 4</em> Ce qui doit être vrai <span class="duree">20 min · la partie qui compte</span></h2>
+  <p>Rien de ce qui suit n'est facultatif. Chacun de ces points correspond à un défaut que ce site a réellement eu, et qu'aucune erreur n'annonce.</p>
+
+  <ol class="gestes">
+    <li><label><input type="checkbox"><span class="quoi"><b>Contrôle Soha, et compare</b><span><span class="ou">Outils → Contrôle Soha</span> Les quatre chiffres doivent être <strong>égaux ou plus bas</strong> qu'avant. S'ils ont monté, l'import a créé des doublons : arrête-toi et envoie-moi la capture.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>L'image d'accueil s'affiche</b><span>C'est celle qui répond 404 aujourd'hui. Si elle est encore absente, le Contrôle te dira son nom exact.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Zéro formulaire sans destinataire</b><span>Quatre l'ont été pendant des mois. Le Contrôle les nomme, page par page.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Zéro lien hors du site</b><span>Il y en avait quatre-vingt-quatre dans la version précédente du kit. Le v16 les a tous ramenés sur <code>/dev</code>.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>La chaîne complète, pour de vrai</b><span>Va sur <span class="ou">/dev/espaces-professionnels/</span>, choisis un espace dans l'estimateur, clique « Demander cette réservation », remplis le formulaire, envoie. Puis <span class="ou">CRM Soha → Demandes</span> : elle doit y être, avec ton estimation. Clique <strong>Verser au répertoire</strong> : tu dois obtenir la fiche <em>et</em> la réservation en devis.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Le courriel est arrivé</b><span>Si l'écran Demandes affiche une bande orange « avis non parti », la demande est sauvée mais personne n'a été prévenu. C'est le moment de finir WP Mail SMTP.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>L'onglet Réseau, une dernière fois</b><span><kbd>F12</kbd> → Réseau → recharge. Tout doit venir de <code>centresoha.com</code>. Plus de <code>rocket-loader</code> non plus, si tu l'as coupé.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Le téléphone</b><span>Ouvre le site sur ton téléphone, pas en réduisant la fenêtre. Le menu, l'estimateur, le formulaire.</span></span></label></li>
+  </ol>
+
+  <div class="preuves">
+    <div><p>Contrôle Soha, les quatre chiffres</p><em>≤ avant</em></div>
+    <div><p>L'image d'accueil</p><em>s'affiche</em></div>
+    <div><p>Une demande d'essai, de l'estimateur au CRM</p><em>arrivée entière</em></div>
+    <div><p>Requêtes vers un domaine tiers</p><em>0</em></div>
+    <div><p>Le site sur un vrai téléphone</p><em>utilisable</em></div>
+  </div>
+</section>
+
+<!-- ================================================================= -->
+<section class="phase">
+  <h2><em>Phase 5</em> On referme <span class="duree">10 min</span></h2>
+
+  <ol class="gestes">
+    <li><label><input type="checkbox"><span class="quoi"><b>Vide le cache de Hummingbird</b><span><span class="ou">Hummingbird → Cache → Vider le cache</span> Sinon tes visiteurs continuent de recevoir les anciennes pages.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Purge le cache Cloudflare</b><span><span class="ou">Cloudflare → Caching → Configuration → Purge Everything</span></span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Coupe le mode développement</b><span>Ou laisse-le expirer tout seul dans trois heures. Mais ne l'oublie pas allumé une semaine : ton site serait lent pour rien.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Une deuxième sauvegarde</b><span>Celle-ci contient un site qui marche. C'est celle vers laquelle tu voudras revenir la prochaine fois.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Ouvre les accès du CRM</b><span><span class="ou">CRM Soha → Accès</span> Toi, Dominique, Cassandra, Fred.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Télécharge une sauvegarde du registre</b><span><span class="ou">CRM Soha → Sauvegarde</span> Et range-la ailleurs que sur le serveur.</span></span></label></li>
+  </ol>
+</section>
+
+<!-- ================================================================= -->
+<section class="phase">
+  <h2><em>Au besoin</em> Si ça tourne mal <span class="duree">15 min</span></h2>
+  <p>Il n'y a pas de honte à revenir en arrière. Il y a une honte à s'acharner sur un site cassé pendant que des gens essaient de le lire.</p>
+
+  <ol class="gestes">
+    <li><label><input type="checkbox"><span class="quoi"><b>Écran blanc ou erreur critique</b><span>Désactive les extensions par FTP en renommant le dossier <code>wp-content/plugins</code> — ou demande à ton hébergeur, c'est une manœuvre courante pour eux.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Le site est là mais tout va mal</b><span><span class="ou">UpdraftPlus → Sauvegarder / Restaurer → Restaurer</span> Choisis celle de la phase 0. Coche base de données <em>et</em> téléversements.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Après toute restauration</b><span>Réenregistre les permaliens, vide les deux caches. Sans ça, tu regardes encore l'ancien état et tu crois que la restauration a échoué.</span></span></label></li>
+  </ol>
+
+  <div class="attention">
+    <p class="titre">Avant de recommencer</p>
+    <p>Envoie-moi ce que tu as vu — la capture du Contrôle Soha, celle de l'onglet Réseau, le message d'erreur s'il y en a un. Recommencer sans savoir ce qui a coincé, c'est refaire la même chose en espérant autre chose.</p>
+  </div>
+</section>
+
+<footer class="pied">
+  <p>Extensions à installer : <code>soha_extensionfinition_20260910_v131.zip</code>, <code>soha_extensionestimateur_20260910_v202.zip</code>, <code>soha_extensioncrm_20260910_v140.zip</code>. Kit : <code>soha_kitdev_20260910_v16.zip</code>. Le site en HTML statique, <code>soha_site-html_20260910_v12.zip</code>, ne s'installe pas — c'est la référence de ce à quoi le résultat doit ressembler.</p>
+  <p style="margin-bottom:0">Périmètre : Centre Soha, 961 Rachel Est. Le pôle soha.live n'est pas concerné.</p>
+</footer>
+
+</div>
+
+<script>
+(function () {
+  var cases = Array.prototype.slice.call(document.querySelectorAll('.gestes input'));
+  var CLE = 'soha-import-v16';
+  var compte = document.getElementById('compte');
+  var total = document.getElementById('total');
+  total.textContent = cases.length;
+
+  cases.forEach(function (c, i) { c.id = 'geste-' + i; });
+
+  function lire() {
+    try { return JSON.parse(localStorage.getItem(CLE) || '[]'); } catch (e) { return []; }
+  }
+  function ecrire(faits) {
+    try { localStorage.setItem(CLE, JSON.stringify(faits)); } catch (e) {}
+  }
+  function compter() {
+    var n = cases.filter(function (c) { return c.checked; }).length;
+    compte.textContent = n;
+  }
+
+  var faits = lire();
+  cases.forEach(function (c, i) { if (faits.indexOf(i) !== -1) c.checked = true; });
+  compter();
+
+  cases.forEach(function (c, i) {
+    c.addEventListener('change', function () {
+      var f = lire();
+      var p = f.indexOf(i);
+      if (c.checked && p === -1) f.push(i);
+      if (!c.checked && p !== -1) f.splice(p, 1);
+      ecrire(f);
+      compter();
+    });
+  });
+
+  document.getElementById('remise').addEventListener('click', function () {
+    cases.forEach(function (c) { c.checked = false; });
+    ecrire([]);
+    compter();
+  });
+})();
+</script>

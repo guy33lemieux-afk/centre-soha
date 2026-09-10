@@ -1200,3 +1200,67 @@ images envoyées en passant contenaient : la preuve que le nettoyage avait
 réussi, un 404 en production que personne n'avait vu, et un intermédiaire dont
 je ne soupçonnais pas l'existence. Rien de tout ça n'était dans la question
 posée.
+
+---
+
+# Cycle 19 · Cloudflare nommé, et la procédure d'import
+
+Mala confirme : le site s'installe bien dans **`/dev`**. Les 84 liens du cycle 16
+étaient donc à corriger, et ils l'ont été dans la bonne direction.
+
+## Cloudflare : ce n'était pas une hypothèse
+`rocket-loader.min.js` apparaît dans le HTML servi. Rocket Loader est une
+fonction de Cloudflare, et Cloudflare ne peut l'injecter que s'il voit passer le
+HTML — c'est-à-dire en **mode proxy**, pas en DNS seul. La capture prouve donc
+le proxy, sans avoir à ouvrir le tableau de bord.
+
+Conséquence : chaque visite transite par le réseau de Cloudflare avant
+d'atteindre Toronto. L'adresse IP du visiteur, la page demandée et l'agent du
+navigateur y passent. `kit_cloudflare.py` ajoute donc le paragraphe à la
+politique — et un `--retirer` le reprend en une commande si Mala découvre que
+son nuage est gris.
+
+Le texte dit aussi ce que Cloudflare **n'est pas** : un destinataire. Il
+achemine ; les dossiers restent à Toronto. Un intermédiaire de transport n'est
+pas rien, mais ce n'est pas un tiers à qui l'on confie des données.
+
+## La procédure d'import
+Publiée : <https://claude.ai/code/artifact/450f1753-20b8-43f5-89e6-0d5a8b714308>
+
+Six phases, trente-quatre gestes, une case à cocher par geste que la page
+retient d'une session à l'autre. Ce n'est pas un ornement : l'opération dure
+une heure et demie et se fait entre deux appels.
+
+L'ordre et ses raisons :
+- **Phase 0, le filet.** Sauvegarde, hors serveur, téléchargée, datée.
+- **Phase 1, Cloudflare se met de côté.** Mode développement — sinon on
+  vérifie une photo du site prise il y a une heure. Rocket Loader coupé. Et
+  le mode SSL, qui fabrique des symptômes ne ressemblant pas à leur cause.
+- **Phase 2, les extensions AVANT le kit.** Dans cet ordre, le site n'est
+  jamais à moitié. Le CRM en particulier : dès qu'un formulaire existe, il
+  capte, et une demande reçue pendant le travail ne doit pas se perdre. Puis
+  **noter les quatre chiffres du Contrôle Soha** — sans l'avant, l'après ne
+  dit rien.
+- **Phase 3, l'import**, avec le piège en tête de section : ne pas téléverser
+  les images. Et les permaliens à réenregistrer, sans quoi les pages existent
+  mais répondent « introuvable ».
+- **Phase 4, ce qui doit être vrai.** La chaîne complète parcourue à la main :
+  estimateur → formulaire → Demandes → Verser. Puis l'onglet Réseau, et un
+  vrai téléphone.
+- **Phase 5, on referme.** Les deux caches, la deuxième sauvegarde — celle
+  d'un site qui marche —, les accès du CRM.
+- **Au besoin**, la restauration, et la règle qu'on oublie : après toute
+  restauration, réenregistrer les permaliens et vider les caches, sinon on
+  regarde l'ancien état et on croit que la restauration a raté.
+
+## Livré
+`soha_kitdev_20260910_v16.zip`, `soha_site-html_20260910_v12.zip`,
+`import.html`. Porte du regard : 29 pages, rien. Dates : rien. Liens : tous
+sur `/dev`.
+
+## Leçon
+**Une procédure sans ses raisons ne survit pas au premier imprévu.** Chaque
+geste de ce document porte le pourquoi de sa position — et le pourquoi est ce
+qui permettra à Mala de décider seule quand la réalité ne ressemblera pas tout
+à fait au texte. Une liste d'ordres produit quelqu'un qui s'arrête à la
+première surprise.
