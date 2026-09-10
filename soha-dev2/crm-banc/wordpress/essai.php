@@ -261,13 +261,169 @@ wp_set_current_user(0); wp_set_current_user($sans);
 dit("un abonné ne voit pas les demandes", !current_user_can(soha_crm_capacite()));
 wp_set_current_user(0); wp_set_current_user($mala->ID);
 
+
+/* ========================================================================== */
+/*  Phase 2 — la demande devient une réservation                              */
+/* ========================================================================== */
+
+/* Le vrai formulaire du site : ses identifiants et ses libellés, tels que le
+   kit v12 les définit. Si le formulaire change, cet essai doit tomber. */
+function demande_de_location($extra = array()) {
+    $champs = array(
+        'vousetes'     => array('title' => 'Vous êtes',        'type' => 'select',   'value' => 'Praticien·ne / thérapeute'),
+        'nom'          => array('title' => 'Nom complet',      'type' => 'text',     'value' => 'Léa Bouchard'),
+        'courriel'     => array('title' => 'Courriel',         'type' => 'email',    'value' => 'lea@exemple.test'),
+        'tel'          => array('title' => 'Téléphone',        'type' => 'tel',      'value' => '438 555 0199'),
+        'espace'       => array('title' => 'Espace',           'type' => 'select',   'value' => 'Espace SÖHA (2200 pi²)'),
+        'journee'      => array('title' => 'Type de journée',  'type' => 'radio',    'value' => 'Fin de semaine'),
+        'plage'        => array('title' => 'Plage horaire',    'type' => 'radio',    'value' => 'Demi-journée'),
+        'date'         => array('title' => 'Date souhaitée',   'type' => 'date',     'value' => '2026-10-17'),
+        'frequence'    => array('title' => 'Fréquence',        'type' => 'select',   'value' => 'Ponctuel'),
+        'usage'        => array('title' => 'Pour quoi faire',  'type' => 'select',   'value' => 'Cours ou atelier'),
+        'details'      => array('title' => 'Détails',          'type' => 'textarea', 'value' => 'Une quinzaine de personnes.'),
+        'estim_espace' => array('title' => 'Estimation — espace', 'type' => 'hidden', 'value' => 'Espace SÖHA'),
+        'estim_jour'   => array('title' => 'Estimation — type de journée', 'type' => 'hidden', 'value' => 'Fin de semaine'),
+        'estim_plage'  => array('title' => 'Estimation — plage', 'type' => 'hidden', 'value' => 'Demi-journée'),
+        'estim_tarif'  => array('title' => 'Estimation — tarif affiché', 'type' => 'hidden', 'value' => '400 $ +tx'),
+    );
+    foreach ($extra as $k => $v) {
+        if (null === $v) { unset($champs[$k]); } else { $champs[$k]['value'] = $v; }
+    }
+    return $champs;
+}
+
+/**
+ * Toujours passer par le vrai chemin : l'envoi du formulaire, puis le
+ * versement. Appeler `soha_crm_reservation_depuis()` sur le tableau brut d'un
+ * formulaire donnerait un faux résultat — l'extension normalise les champs à
+ * l'archivage, et c'est cette forme-là qu'elle relit ensuite.
+ */
+function verser_une_location($extra = array()) {
+    envoi('Demande de location', demande_de_location($extra));
+    $d = get_posts(array('post_type' => 'soha_demande', 'posts_per_page' => 1,
+                         'orderby' => 'ID', 'order' => 'DESC'));
+    $r = soha_crm_verser_au_repertoire($d[0]->ID);
+    $reg = json_decode(soha_crm_registre_lire()['valeur'], true);
+    return array($r, $reg, $reg['reservations'][0]);
+}
+
+/* La demande de la phase 1 portait déjà un espace : elle a donc, elle aussi,
+   produit une réservation. On compte donc l'écart, pas le total. */
+$avant_resa = count(json_decode(soha_crm_registre_lire()['valeur'], true)['reservations']);
+list($r, $reg, $resa) = verser_une_location();
+
+dit("verser une location crée aussi la réservation",
+    $avant_resa + 1 === count($reg['reservations']),
+    count($reg['reservations']) . ' au total');
+dit("l'espace est celui du 961, sans la superficie", 'Espace SÖHA' === $resa['espace'], $resa['espace']);
+dit("la date souhaitée est reprise", '2026-10-17' === $resa['date'], $resa['date']);
+dit("le tarif affiché devient un prix", '400' === $resa['prix'], $resa['prix']);
+dit("elle arrive en devis, jamais confirmée", 'devis' === $resa['paiement']);
+dit("elle est rattachée à la fiche", !empty($resa['contactId'])
+    && $resa['contactId'] === $reg['contacts'][0]['id']);
+dit("l'heure exacte reste à convenir", '' === $resa['debut'] && '' === $resa['fin']);
+dit("la plage et l'usage sont dans la note",
+    false !== strpos($resa['note'], 'Demi-journée')
+    && false !== strpos($resa['note'], 'Cours ou atelier'));
+dit("l'écran annonce la réservation créée", !empty($r['reservation']), $r['reservation']);
+
+/* --- les quatre espaces se traduisent tous ------------------------------- */
+$traduits = array();
+$i = 0;
+foreach (soha_crm_espaces() as $du_site => $_) {
+    list($_r, $_reg, $rr) = verser_une_location(array(
+        'espace'       => $du_site,
+        'estim_espace' => null,
+        'courriel'     => 'espace' . (++$i) . '@exemple.test',
+        'nom'          => 'Essai espace ' . $i,
+    ));
+    $traduits[] = $rr['espace'];
+}
+dit("les quatre espaces se traduisent", $traduits === array_values(soha_crm_espaces()),
+    implode(' · ', $traduits));
+
+/* --- « Récurrent (résident·e) » ne devient pas un rythme inventé ---------- */
+list($_r, $_reg, $rr) = verser_une_location(array(
+    'frequence' => 'Récurrent (résident·e)', 'courriel' => 'recurrent@exemple.test',
+    'nom' => 'Essai récurrence'));
+dit("« Récurrent » reste « Récurrent »", 'Récurrent' === $rr['recurrence'], $rr['recurrence']);
+
+/* --- une date que le formulaire n'a pas su donner ------------------------- */
+list($_r, $_reg, $rd) = verser_une_location(array(
+    'date' => 'le 17 ou le 18', 'courriel' => 'date@exemple.test', 'nom' => 'Essai date'));
+dit("une date non reconnue n'est pas devinée", '' === $rd['date'], $rd['date']);
+dit("elle est dite dans la note", false !== strpos($rd['note'], 'le 17 ou le 18'));
+
+/* --- une demande sans espace ne crée pas de réservation ------------------- */
+$avant_resa = count(json_decode(soha_crm_registre_lire()['valeur'], true)['reservations']);
+envoi('Demande de location', demande_de_location(array(
+    'espace' => null, 'estim_espace' => null,
+    'courriel' => 'sansespace@exemple.test', 'nom' => 'Essai sans espace')));
+$d = get_posts(array('post_type' => 'soha_demande', 'posts_per_page' => 1, 'orderby' => 'ID', 'order' => 'DESC'));
+$rs = soha_crm_verser_au_repertoire($d[0]->ID);
+$reg = json_decode(soha_crm_registre_lire()['valeur'], true);
+dit("un formulaire sans espace ne crée pas de réservation",
+    $avant_resa === count($reg['reservations']) && empty($rs['reservation']));
+
+/* --- une demande de contact non plus -------------------------------------- */
+$avant_resa = count($reg['reservations']);
+envoi('Contact', array(
+    'n' => array('title' => 'Nom',      'type' => 'text',     'value' => 'Simon Pelletier'),
+    'c' => array('title' => 'Courriel', 'type' => 'email',    'value' => 'simon@exemple.test'),
+    'm' => array('title' => 'Message',  'type' => 'textarea', 'value' => 'Question sur les ateliers.'),
+));
+$ct = get_posts(array('post_type' => 'soha_demande', 'posts_per_page' => 1, 'orderby' => 'ID', 'order' => 'DESC'));
+$rc = soha_crm_verser_au_repertoire($ct[0]->ID);
+$reg = json_decode(soha_crm_registre_lire()['valeur'], true);
+dit("une demande de contact ne crée pas de réservation",
+    $avant_resa === count($reg['reservations']) && empty($rc['reservation']));
+
+/* ========================================================================== */
+/*  La sauvegarde                                                             */
+/* ========================================================================== */
+
+$avant = soha_crm_registre_lire();
+$compte = soha_crm_compter();
+dit("le compte affiché correspond au registre",
+    $compte['contacts'] === count($reg['contacts'])
+    && $compte['reservations'] === count($reg['reservations']),
+    $compte['contacts'] . ' fiches · ' . $compte['reservations'] . ' réservations');
+
+dit("un registre valide est reçu", soha_crm_registre_recevable($avant['valeur']));
+dit("un JSON qui n'est pas un registre est refusé",
+    !soha_crm_registre_recevable('{"nimporte":"quoi"}'));
+dit("un registre sans réservations est refusé",
+    !soha_crm_registre_recevable('{"contacts":[]}'));
+dit("une fiche sans identifiant est refusée",
+    !soha_crm_registre_recevable('{"contacts":[{"nom":"X"}],"reservations":[],"ateliers":[]}'));
+dit("du texte qui n'est pas du JSON est refusé", !soha_crm_registre_recevable('bonjour'));
+dit("un fichier trop gros est refusé",
+    !soha_crm_registre_recevable(str_repeat('a', SOHA_CRM_TAILLE_MAX + 1)));
+
+/* --- restaurer, puis revenir ---------------------------------------------- */
+$vide = wp_json_encode(array('contacts' => array(), 'reservations' => array(), 'ateliers' => array(), 'v' => 2));
+update_option(SOHA_CRM_AVANT, array('valeur' => $avant['valeur'], 'quand' => time()), false);
+soha_crm_registre_ecrire($vide);
+dit("on peut remplacer le registre", 0 === count(json_decode(soha_crm_registre_lire()['valeur'], true)['contacts']));
+
+$conserve = get_option(SOHA_CRM_AVANT);
+soha_crm_registre_ecrire($conserve['valeur']);
+$revenu = json_decode(soha_crm_registre_lire()['valeur'], true);
+dit("et revenir à l'état d'avant, intact",
+    count($revenu['contacts']) === count($reg['contacts'])
+    && count($revenu['reservations']) === count($reg['reservations']),
+    count($revenu['contacts']) . ' fiches retrouvées');
+
 /* --- désactivation --------------------------------------------------------- */
+$avant_desactivation = count(get_posts(array('post_type' => 'soha_demande',
+                                             'posts_per_page' => -1, 'post_status' => 'any')));
 deactivate_plugins('soha-crm/soha-crm.php');
 dit("la désactivation arrête la purge", false === wp_next_scheduled('soha_crm_purge'));
 $apres = get_posts(array('post_type' => 'soha_demande', 'posts_per_page' => -1, 'post_status' => 'any'));
 dit("la désactivation ne perd RIEN",
-    '' !== (string) get_option(SOHA_CRM_OPTION, '') && 4 === count($apres),
+    '' !== (string) get_option(SOHA_CRM_OPTION, '') && count($apres) === $avant_desactivation,
     count($apres) . ' demandes, registre ' . strlen((string) get_option(SOHA_CRM_OPTION, '')) . ' octets');
+
 
 echo "\n", str_repeat('─', 72), "\n";
 printf("%d réussites, %d échecs\n", $ok, $ko);

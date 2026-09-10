@@ -655,3 +655,81 @@ couper si le centre le souhaite.
 appelé « fictives » cinq fiches qui portaient des noms et des matricules réels,
 et demandé leur suppression. Le code était sous mes yeux : `seed()` tenait la
 liste. Avant de dire à quelqu'un d'effacer quelque chose, ouvrir la chose.
+
+---
+
+# Cycle 11 · CRM v1.2.0 — phase 2 : la demande devient une réservation
+
+## Le défaut le plus coûteux du CRM n'était pas technique
+Le CRM disait « Grande salle · Studio · Petite salle ». Le site, l'estimateur et
+le formulaire de réservation disent **Studio · Espace SÖHA · Salle 4 ·
+Salles 1·2·3**. Deux vocabulaires pour un même lieu : une réservation mal
+saisie par mois, et un revenu qu'on ne sait plus attribuer à un espace. Corrigé
+à la fabrication, comme la phrase de stockage — le JSX d'origine reste intact
+dans `source/`.
+
+`build_crm.py` tient maintenant une table `RETOUCHES` : chaque retouche porte sa
+raison en clair, et **doit** trouver sa cible exactement une fois, sinon la
+fabrication s'arrête. Trois aujourd'hui : la phrase de stockage, les espaces,
+et l'ajout de « Récurrent » aux récurrences.
+
+## Le pont estimateur → formulaire → CRM est complet
+Il manquait le dernier maillon. L'estimateur affichait un prix, le formulaire le
+transportait dans ses quatre champs cachés, la phase 1 l'archivait — et Mala
+ressaisissait tout à la main. Maintenant, « Verser au répertoire » crée aussi la
+réservation :
+
+| ce que la personne a choisi | où ça va |
+|---|---|
+| `espace` (ou `estim_espace`) | l'espace, sans sa superficie |
+| `date` | la date, si elle est en AAAA-MM-JJ |
+| `estim_tarif` « 400 $ +tx » | le prix, 400 |
+| `frequence` | Ponctuel, ou Récurrent |
+| `journee`, `plage`, `usage`, `vousetes`, `details` | la note, en clair |
+
+**Rien n'est deviné.** Une date que le formulaire n'a pas su donner reste vide et
+part dans la note. Les heures de début et de fin restent vides : elles se
+conviennent au téléphone. Le paiement arrive toujours en `devis`. Et
+« Récurrent (résident·e) » devient « Récurrent », pas « Hebdomadaire » — choisir
+un rythme à la place de Mala, ce serait inventer.
+
+Contact et réservation sont écrits **en une seule écriture** : soit les deux
+arrivent, soit ni l'un ni l'autre. Une fiche sans sa réservation serait pire que
+rien — on la croirait traitée.
+
+## La sauvegarde du registre
+Le registre tient dans une option. C'est ce qui le rend simple, et c'est un seul
+endroit où tout perdre. Nouvel écran : télécharger un JSON daté avec son en-tête,
+en remettre un (administratrice seulement, case à cocher obligatoire), et
+**revenir en arrière une fois** — l'état d'avant est conservé et les deux
+s'échangent. Un fichier qui n'a pas la forme d'un registre est refusé avant
+d'avoir touché quoi que ce soit.
+
+## Mesuré : 128 vérifications, 0 échec
+Trois suites sur WordPress 6.8.3 (76 + 30 + 22), chacune sur base fraîche. Les
+plus parlantes, au navigateur : une demande de location arrive du site, Mala
+clique une fois, et la réservation apparaît dans l'onglet Location du CRM au bon
+espace, à la bonne date, au bon prix, en devis. Puis la sauvegarde se télécharge
+et le fichier est relu pour vérifier qu'il contient bien fiches et réservations.
+Plus l'ancien banc sans WordPress (12 + 6).
+
+Deux erreurs d'essai instructives, corrigées :
+1. J'appelais `soha_crm_reservation_depuis()` sur le tableau brut d'un
+   formulaire. L'extension normalise les champs à l'archivage : l'essai testait
+   une forme qui n'existe nulle part. Tous les essais passent désormais par le
+   vrai chemin — envoi, puis versement.
+2. Une demande versée est marquée traitée, donc elle **quitte** la liste
+   d'attente. Mon essai la cherchait dans la vue par défaut. C'est devenu une
+   vérification à part entière plutôt qu'un essai corrigé en douce.
+
+## Décisions attendues
+1. Le service de relais de WP Mail SMTP — Mala ne sait pas lequel est
+   sélectionné. Le chemin le plus sûr n'est pas la rangée de logos :
+   `Outils → Santé du site → Infos → WP Mail SMTP` l'écrit en toutes lettres.
+2. Où sont les serveurs de l'hébergeur.
+
+## Leçon
+**Un essai qui n'emprunte pas le vrai chemin ne mesure que lui-même.** Passer
+directement le tableau brut à la fonction interne donnait un joli faux vert au
+premier abord, puis un faux rouge — dans les deux cas, il ne disait rien du
+comportement réel. Entrer par la porte, toujours : le formulaire, puis le clic.

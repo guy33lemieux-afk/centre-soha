@@ -167,7 +167,8 @@ def preparer(jsx):
     # toute autre retouche du texte doit donc venir après, jamais avant.
     jsx = jsx[:m.start(2)] + css + jsx[m.end(2):]
 
-    jsx, rapport["phrase de stockage corrigée"] = corriger_la_phrase(jsx)
+    jsx, faites = retoucher(jsx)
+    rapport["retouches de contenu"] = len(faites)
     return jsx, rapport
 
 
@@ -194,20 +195,54 @@ def verifier_le_cloisonnement(css):
                              % bloc.group(0).strip())
 
 
-def corriger_la_phrase(jsx):
-    """La barre latérale annonçait « Données gardées dans ton navigateur. »
+RETOUCHES = [
+    (
+        "Données gardées dans ton navigateur.",
+        "Données gardées dans la base du site, sauvegardées avec elle.",
+        "C'était vrai du prototype — et c'était le défaut lui-même. Une "
+        "interface qui dit faux sur l'endroit où dorment les noms de ses "
+        "membres n'est pas un détail de formulation.",
+    ),
+    (
+        'const ESPACES = ["Grande salle", "Studio", "Petite salle"];',
+        'const ESPACES = ["Studio", "Espace SÖHA", "Salle 4", "Salles 1·2·3"];',
+        "Le 961 n'a pas de « Grande salle » ni de « Petite salle ». Le site, "
+        "l'estimateur et le formulaire de réservation nomment quatre espaces ; "
+        "le CRM en nommait trois autres. Deux vocabulaires pour un même lieu, "
+        "c'est une réservation mal saisie par mois et un revenu qu'on ne sait "
+        "plus attribuer.",
+    ),
+    (
+        'const RECURRENCES = ["Ponctuel", "Hebdomadaire", "Mensuel"];',
+        'const RECURRENCES = ["Ponctuel", "Récurrent", "Hebdomadaire", "Mensuel"];',
+        "Le formulaire propose « Ponctuel » ou « Récurrent (résident·e) ». "
+        "Sans « Récurrent » dans le CRM, il faudrait deviner entre "
+        "hebdomadaire et mensuel au moment de verser la demande — et deviner, "
+        "ici, c'est inventer. La valeur passe telle quelle ; Mala précise "
+        "ensuite si elle le sait.",
+    ),
+]
 
-    C'était vrai du prototype, et c'était le cœur du problème. Ce n'est plus
-    vrai : les données vivent dans la base du site, sauvegardées avec elle. Une
-    interface qui dit faux sur l'endroit où dorment les noms de ses membres est
-    un défaut, pas un détail de formulation — on la corrige ici, à la source de
-    la fabrication, pour que le JSX d'origine reste intact dans `source/`.
+
+def retoucher(jsx):
+    """Applique les retouches de contenu, chacune exigée et vérifiée.
+
+    Le JSX d'origine n'est jamais modifié sur le disque : il voyage intact dans
+    `source/`. Ces retouches-ci sont faites à la fabrication, et si l'une d'elles
+    ne trouve plus sa cible — parce que Mala aura édité sa source — la
+    fabrication s'arrête au lieu de livrer une extension à moitié corrigée.
     """
-    ancienne = "Données gardées dans ton navigateur."
-    nouvelle = "Données gardées dans la base du site, sauvegardées avec elle."
-    if ancienne not in jsx:
-        return jsx, False
-    return jsx.replace(ancienne, nouvelle), True
+    faites = []
+    for motif, remplacement, _raison in RETOUCHES:
+        n = jsx.count(motif)
+        if n != 1:
+            raise SystemExit(
+                "Retouche introuvable ou ambiguë (%d occurrence(s)) : %s"
+                % (n, motif[:60])
+            )
+        jsx = jsx.replace(motif, remplacement)
+        faites.append(motif[:34])
+    return jsx, faites
 
 
 ENTREE = """import App from "./crm-source.jsx";

@@ -96,10 +96,66 @@ try:
         page.wait_for_timeout(500)
         dit("il est encore là après rechargement", "Rosalie Gagné" in racine.inner_text())
 
+        # --- une demande de location arrive du site, comme en vrai
+        en_base(r"""
+          class Faux { private $c; private $r;
+            function __construct($c,$n){$this->c=$c;$this->r=array("form_name"=>$n);}
+            function get($q){return "fields"===$q?$this->c:("form_settings"===$q?$this->r:null);} }
+          do_action("elementor_pro/forms/new_record", new Faux(array(
+            "nom"=>array("title"=>"Nom complet","type"=>"text","value"=>"Léa Bouchard"),
+            "courriel"=>array("title"=>"Courriel","type"=>"email","value"=>"lea@exemple.test"),
+            "espace"=>array("title"=>"Espace","type"=>"select","value"=>"Espace SÖHA (2200 pi²)"),
+            "date"=>array("title"=>"Date souhaitée","type"=>"date","value"=>"2026-10-17"),
+            "plage"=>array("title"=>"Plage horaire","type"=>"radio","value"=>"Demi-journée"),
+            "estim_tarif"=>array("title"=>"Estimation — tarif affiché","type"=>"hidden","value"=>"400 $ +tx"),
+          ), "Demande de location"), null);
+          echo "ok";
+        """)
+
         # --- l'écran des demandes
         page.goto(BASE + "/wp-admin/admin.php?page=soha-crm-demandes", wait_until="domcontentloaded")
         dit("l'écran des demandes s'ouvre", "Demandes reçues" in page.locator(".wrap h1").inner_text())
         dit("il annonce la conservation", "24 mois" in page.locator(".wrap").inner_text())
+        dit("la demande arrivée du site y est", "lea@exemple.test" in page.locator(".wrap").inner_text())
+        dit("le menu porte la pastille de ce qui attend",
+            page.locator("#adminmenu .update-plugins").count() > 0)
+
+        # --- un clic, et elle devient fiche + réservation
+        page.get_by_role("button", name="Verser au répertoire").first.click()
+        page.wait_for_load_state("domcontentloaded")
+        avis = page.locator(".notice").first.inner_text()
+        dit("l'avis annonce la fiche et la réservation",
+            "Fiche créée" in avis and "devis" in avis, avis.strip()[:96])
+
+        reg = json.loads(en_base('echo (string) get_option("soha_crm_etat","");') or "{}")
+        r = (reg.get("reservations") or [{}])[0]
+        dit("la réservation est en base, au bon espace et au bon prix",
+            r.get("espace") == "Espace SÖHA" and r.get("prix") == "400"
+            and r.get("date") == "2026-10-17" and r.get("paiement") == "devis",
+            json.dumps({k: r.get(k) for k in ("espace", "date", "prix", "paiement")}, ensure_ascii=False))
+
+        # --- et l'onglet Location du CRM la montre
+        page.goto(BASE + "/wp-admin/admin.php?page=soha-crm", wait_until="networkidle")
+        page.wait_for_timeout(1800)
+        page.get_by_role("button", name="Location").first.click()
+        page.wait_for_timeout(600)
+        texte = racine.inner_text()
+        dit("l'onglet Location du CRM l'affiche",
+            "Espace SÖHA" in texte and "Léa Bouchard" in texte)
+        dit("le CRM ne propose plus « Grande salle »", "Grande salle" not in texte)
+
+        # --- la sauvegarde se télécharge
+        page.goto(BASE + "/wp-admin/admin.php?page=soha-crm-sauvegarde", wait_until="domcontentloaded")
+        with page.expect_download() as d:
+            page.get_by_role("link", name="Télécharger la sauvegarde (JSON)").click()
+        fichier = d.value
+        contenu = json.load(open(fichier.path()))
+        dit("le fichier de sauvegarde est complet",
+            contenu.get("quoi", "").startswith("Centre Soha")
+            and len(contenu["registre"]["reservations"]) >= 1
+            and len(contenu["registre"]["contacts"]) >= 1,
+            "%d fiches · %d réservations" % (len(contenu["registre"]["contacts"]),
+                                             len(contenu["registre"]["reservations"])))
 
         # --- l'écran des accès
         page.goto(BASE + "/wp-admin/admin.php?page=soha-crm-acces", wait_until="domcontentloaded")

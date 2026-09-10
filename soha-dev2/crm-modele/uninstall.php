@@ -15,6 +15,7 @@ delete_option('soha_crm_etat');
 delete_option('soha_crm_revision');
 delete_option('soha_crm_dernier');
 delete_option('soha_crm_derniere_purge');
+delete_option('soha_crm_avant_restauration');
 
 /* Les demandes archivées. */
 $demandes = get_posts(array(

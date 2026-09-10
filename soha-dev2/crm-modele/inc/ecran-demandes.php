@@ -160,8 +160,17 @@ function soha_crm_ecran_demandes() {
                             </details>
                         </td>
                         <td>
-                            <?php if ($versee) : ?>
+                            <?php if ($versee) :
+                                $resa = (string) get_post_meta($id, '_soha_reservation', true); ?>
                                 <span style="color:#2c7a3f">✓ <?php esc_html_e('au répertoire', 'soha-crm'); ?></span><br>
+                                <?php if ($resa) : ?>
+                                    <span style="color:#2c7a3f">✓ <?php
+                                        printf(
+                                            /* translators: %s : espace, date et prix. */
+                                            esc_html__('réservation en devis · %s', 'soha-crm'),
+                                            esc_html($resa)
+                                        ); ?></span><br>
+                                <?php endif; ?>
                             <?php endif; ?>
                             <form method="post" style="display:inline">
                                 <?php wp_nonce_field('soha_crm_demande_' . $id, 'soha_crm_jeton'); ?>
@@ -225,17 +234,26 @@ function soha_crm_traiter_le_geste() {
             if (is_wp_error($r)) {
                 return array('genre' => 'error', 'texte' => $r->get_error_message());
             }
-            return array('genre' => 'success', 'texte' => 'cree' === $r['geste']
+            $texte = 'cree' === $r['geste']
                 ? sprintf(
                     /* translators: %s : le nom du contact. */
-                    __('Fiche créée pour %s. Recharge le CRM si tu l\'as ouvert ailleurs.', 'soha-crm'),
+                    __('Fiche créée pour %s.', 'soha-crm'),
                     $r['nom']
                 )
                 : sprintf(
                     /* translators: %s : le nom du contact. */
                     __('%s existait déjà : la demande a été ajoutée à son historique, sans doublon.', 'soha-crm'),
                     $r['nom']
-                ));
+                );
+            if (!empty($r['reservation'])) {
+                $texte .= ' ' . sprintf(
+                    /* translators: %s : espace, date et prix de la réservation. */
+                    __('Réservation créée en devis : %s.', 'soha-crm'),
+                    $r['reservation']
+                );
+            }
+            $texte .= ' ' . __("Recharge le CRM si tu l'as ouvert ailleurs.", 'soha-crm');
+            return array('genre' => 'success', 'texte' => $texte);
 
         case 'traiter':
             update_post_meta($id, '_soha_traitee', 1);
@@ -278,7 +296,7 @@ add_action('admin_post_soha_crm_export', function () {
     $sortie = fopen('php://output', 'w');
     fwrite($sortie, "\xEF\xBB\xBF");      // pour qu'Excel lise les accents
     fputcsv($sortie, array('Reçue le', 'Formulaire', 'Nom', 'Courriel', 'Téléphone',
-                           'Infolettre', 'Traitée', 'Au répertoire', 'Contenu'));
+                           'Infolettre', 'Traitée', 'Au répertoire', 'Réservation', 'Contenu'));
 
     foreach ($demandes as $d) {
         fputcsv($sortie, array(
@@ -290,6 +308,7 @@ add_action('admin_post_soha_crm_export', function () {
             get_post_meta($d->ID, '_soha_consentement', true) ? 'oui' : 'non',
             get_post_meta($d->ID, '_soha_traitee', true) ? 'oui' : 'non',
             (string) get_post_meta($d->ID, '_soha_versee', true),
+            (string) get_post_meta($d->ID, '_soha_reservation', true),
             soha_crm_resumer($d->ID, 2000),
         ));
     }

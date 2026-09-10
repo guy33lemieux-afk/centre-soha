@@ -216,13 +216,19 @@ function soha_crm_purger() {
 /* -------------------------------------------------------------------------- */
 
 /**
- * Transforme une demande en fiche contact, dans le registre du CRM.
+ * Transforme une demande en fiche contact — et, si c'est une location, en
+ * réservation — dans le registre du CRM.
  *
  * Si le courriel est déjà connu, on n'ajoute pas une deuxième fiche : on inscrit
  * un échange dans celle qui existe. C'est exactement le doublon qui a coûté
  * cher ailleurs sur ce site ; on ne le refait pas ici.
  *
- * @return array|WP_Error ('cree'|'fusionnee', nom du contact)
+ * Le tout est écrit en une seule fois : contact et réservation partagent la même
+ * écriture, donc soit les deux arrivent, soit ni l'un ni l'autre. Une fiche sans
+ * sa réservation serait pire que rien — on la croirait traitée.
+ *
+ * @return array|WP_Error ('cree'|'fusionnee', nom du contact, résumé éventuel
+ *                        de la réservation)
  */
 function soha_crm_verser_au_repertoire($id_demande) {
     $demande = get_post($id_demande);
@@ -238,8 +244,10 @@ function soha_crm_verser_au_repertoire($id_demande) {
     if (!is_array($reg)) {
         $reg = array('contacts' => array(), 'reservations' => array(), 'ateliers' => array(), 'v' => 2);
     }
-    if (!isset($reg['contacts']) || !is_array($reg['contacts'])) {
-        $reg['contacts'] = array();
+    foreach (array('contacts', 'reservations', 'ateliers') as $col) {
+        if (!isset($reg[$col]) || !is_array($reg[$col])) {
+            $reg[$col] = array();
+        }
     }
 
     $nom      = (string) get_post_meta($id_demande, '_soha_nom', true);
@@ -315,6 +323,20 @@ function soha_crm_verser_au_repertoire($id_demande) {
         $qui   = $contact['nom'];
     }
 
+    /* Phase 2 : si la demande parle d'un espace, elle porte aussi une
+       réservation. On la crée en devis, rattachée à la fiche. */
+    $champs = (array) get_post_meta($id_demande, '_soha_champs', true);
+    $resume_resa = '';
+    $reservation = soha_crm_reservation_depuis(
+        $champs,
+        $indice >= 0 ? $reg['contacts'][$indice]['id'] : $contact['id'],
+        $jour
+    );
+    if ($reservation) {
+        array_unshift($reg['reservations'], $reservation);
+        $resume_resa = soha_crm_resumer_reservation($reservation);
+    }
+
     $ecrit = soha_crm_registre_ecrire(wp_json_encode($reg));
     if (is_wp_error($ecrit)) {
         return $ecrit;
@@ -322,8 +344,11 @@ function soha_crm_verser_au_repertoire($id_demande) {
 
     update_post_meta($id_demande, '_soha_versee', $jour);
     update_post_meta($id_demande, '_soha_traitee', 1);
+    if ($resume_resa) {
+        update_post_meta($id_demande, '_soha_reservation', $resume_resa);
+    }
 
-    return array('geste' => $geste, 'nom' => $qui);
+    return array('geste' => $geste, 'nom' => $qui, 'reservation' => $resume_resa);
 }
 
 /** Un résumé court d'une demande, pour l'inscrire dans l'historique du contact. */

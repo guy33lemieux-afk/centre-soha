@@ -86,6 +86,51 @@ dit("les trois gestes sont offerts",
 dit("la conservation est annoncée", false !== strpos($html, '24 mois'));
 dit("l'export CSV est offert", false !== strpos($html, 'soha_crm_export'));
 
+/* --- la demande versée porte sa réservation -------------------------------- */
+$d = get_posts(array('post_type' => 'soha_demande', 'posts_per_page' => 1));
+do_action('elementor_pro/forms/new_record', new Faux_Record(array(
+    'nom'          => array('title' => 'Nom complet',    'type' => 'text',   'value' => 'Léa Bouchard'),
+    'courriel'     => array('title' => 'Courriel',       'type' => 'email',  'value' => 'lea@exemple.test'),
+    'espace'       => array('title' => 'Espace',         'type' => 'select', 'value' => 'Salle 4 (bureau double)'),
+    'date'         => array('title' => 'Date souhaitée', 'type' => 'date',   'value' => '2026-11-03'),
+    'estim_tarif'  => array('title' => 'Estimation — tarif affiché', 'type' => 'hidden', 'value' => '160 $ +tx'),
+), 'Demande de location'), null);
+$loc = get_posts(array('post_type' => 'soha_demande', 'posts_per_page' => 1, 'orderby' => 'ID', 'order' => 'DESC'));
+soha_crm_verser_au_repertoire($loc[0]->ID);
+
+/* Versée veut dire traitée : elle doit avoir quitté la liste d'attente. */
+ob_start(); soha_crm_ecran_demandes(); $attente = ob_get_clean();
+dit("une demande versée quitte la liste d'attente",
+    propre($attente) && false === strpos($attente, 'lea@exemple.test'));
+
+$_GET['etat'] = 'toutes';
+ob_start(); soha_crm_ecran_demandes(); $html = ob_get_clean();
+unset($_GET['etat']);
+dit("la demande versée affiche sa réservation",
+    propre($html) && false !== strpos($html, 'réservation en devis'));
+dit("elle en donne l'espace et le prix",
+    false !== strpos($html, 'Salle 4') && false !== strpos($html, '160 $'));
+
+/* --- la sauvegarde --------------------------------------------------------- */
+ob_start(); soha_crm_ecran_sauvegarde(); $html = ob_get_clean();
+dit("l'écran de sauvegarde se rend", propre($html));
+dit("il compte ce que contient le registre",
+    false !== strpos($html, 'Fiches contact') && false !== strpos($html, 'Réservations'));
+dit("il offre le téléchargement", false !== strpos($html, 'soha_crm_sauvegarde'));
+dit("il offre la remise, à une administratrice",
+    false !== strpos($html, 'type="file"') && false !== strpos($html, 'soha_crm_restaurer_jeton'));
+dit("la remise exige une case cochée", false !== strpos($html, 'name="compris"'));
+
+/* la même page, vue par quelqu'un qui n'est pas administrateur */
+$editrice = wp_insert_user(array('user_login' => 'cassandra2', 'user_pass' => wp_generate_password(),
+                                 'user_email' => 'c2@exemple.test', 'role' => 'editor'));
+get_userdata($editrice)->add_cap('soha_acceder_crm');
+clean_user_cache($editrice); wp_set_current_user(0); wp_set_current_user($editrice);
+ob_start(); soha_crm_ecran_sauvegarde(); $html = ob_get_clean();
+dit("elle peut télécharger la sauvegarde", false !== strpos($html, 'soha_crm_sauvegarde'));
+dit("mais PAS remettre un fichier", false === strpos($html, 'type="file"'));
+wp_set_current_user(0); wp_set_current_user(get_user_by('login', 'mala')->ID);
+
 /* --- les accès ------------------------------------------------------------- */
 ob_start(); soha_crm_ecran_acces(); $html = ob_get_clean();
 dit("l'écran des accès se rend", propre($html));
@@ -98,9 +143,10 @@ $GLOBALS['menu'] = array(); $GLOBALS['submenu'] = array();
 do_action('admin_menu');
 $pages = array();
 foreach ((array) $GLOBALS['submenu']['soha-crm'] as $e) { $pages[] = $e[2]; }
-dit("les trois écrans sont au menu",
+dit("les quatre écrans sont au menu",
     in_array('soha-crm', $pages, true) && in_array('soha-crm-demandes', $pages, true)
-    && in_array('soha-crm-acces', $pages, true), implode(' · ', $pages));
+    && in_array('soha-crm-sauvegarde', $pages, true) && in_array('soha-crm-acces', $pages, true),
+    implode(' · ', $pages));
 $avec_pastille = implode('', array_map(function ($e) { return $e[0]; }, $GLOBALS['submenu']['soha-crm']));
 dit("la demande en attente porte une pastille", false !== strpos($avec_pastille, 'plugin-count'));
 

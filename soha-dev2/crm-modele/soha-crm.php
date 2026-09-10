@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Centre Soha — CRM
  * Plugin URI:        https://centresoha.com/
- * Description:       Le CRM du Centre Soha : l'interface React de Mala adossée à la base de données de WordPress, l'archivage de chaque demande reçue par formulaire, et la gestion nominative des accès.
- * Version:           1.1.0
+ * Description:       Le CRM du Centre Soha : l'interface React de Mala adossée à la base de données de WordPress, l'archivage de chaque demande reçue par formulaire, sa transformation en fiche et en réservation, et la gestion nominative des accès.
+ * Version:           1.2.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Centre Soha
@@ -31,6 +31,16 @@
  *                        que le courriel parte, et peut être versé au répertoire
  *                        en un geste, sans doublon. Purge à 24 mois.
  *
+ *  `inc/locations.php` — une demande de location porte déjà l'espace, la date et
+ *                        le tarif que la personne avait sous les yeux. Verser la
+ *                        demande crée donc aussi la réservation, en devis. Rien
+ *                        n'est inventé : ce qui n'a pas été demandé reste vide.
+ *
+ *  `inc/sauvegarde.php`— le registre entier tient dans une option : c'est ce qui
+ *                        le rend simple, et c'est un seul endroit où tout
+ *                        perdre. Un fichier qu'on télécharge, qu'on remet, et un
+ *                        état d'avant conservé pour défaire une fois.
+ *
  *  Deux choses qu'elle ne fait pas, et c'est voulu :
  *
  *  Pas de purge du répertoire. Les 24 mois annoncés dans la politique portent
@@ -49,7 +59,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('SOHA_CRM_VERSION', '1.1.0');
+define('SOHA_CRM_VERSION', '1.2.0');
 
 /** L'option qui porte l'état du registre (jamais en autoload). */
 define('SOHA_CRM_OPTION', 'soha_crm_etat');
@@ -65,8 +75,10 @@ define('SOHA_CRM_TAILLE_MAX', 5 * 1024 * 1024);
 
 require_once plugin_dir_path(__FILE__) . 'inc/acces.php';
 require_once plugin_dir_path(__FILE__) . 'inc/registre.php';
+require_once plugin_dir_path(__FILE__) . 'inc/locations.php';
 require_once plugin_dir_path(__FILE__) . 'inc/demandes.php';
 require_once plugin_dir_path(__FILE__) . 'inc/ecran-demandes.php';
+require_once plugin_dir_path(__FILE__) . 'inc/sauvegarde.php';
 
 /* -------------------------------------------------------------------------- */
 /*  L'écran du CRM                                                             */
