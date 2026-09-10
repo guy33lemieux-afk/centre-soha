@@ -17,6 +17,7 @@ Usage :
 Aucune dépendance externe.
 """
 
+import datetime
 import argparse
 import html
 import json
@@ -1284,6 +1285,8 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
                      "   ============================================================ */\n"
                      + "\n".join(faces) + "\n\n" + reste)
 
+    sommaire(sortie, list(kit.pages.values()), kit.articles)
+
     return {
         "pages": pages_ecrites,
         "images_copiees": copiees,
@@ -1292,6 +1295,114 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
         "menu": kit.menu,
         "estimateur": r.estimateur_pose,
     }
+
+
+# --------------------------------------------------------------------------
+#  Le sommaire
+# --------------------------------------------------------------------------
+#  Le dossier livré contient vingt-neuf fichiers HTML et deux dossiers. Sans
+#  porte d'entrée, on l'ouvre et on ne sait pas par où commencer — et on finit
+#  par cliquer au hasard en croyant qu'il manque des pages. Celle-ci les nomme
+#  toutes, dit ce que ce dossier est, et surtout ce qu'il n'est pas.
+
+SOMMAIRE = """<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le site du 961, en HTML — sommaire</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="assets/soha.css">
+<style>
+/* Le site est en clair seulement — body y est #FBF8F3 sans variante sombre.
+   Ce sommaire s'y tient : pas de bloc « prefers-color-scheme », sinon les
+   listes passeraient au noir sur une page restée ivoire. */
+.s-page{{max-width:62rem;margin:0 auto;padding:3rem 1.25rem 5rem}}
+.s-titre{{font-family:"Fraunces",Georgia,serif;font-weight:500;
+  font-size:clamp(2rem,5vw,2.9rem);line-height:1.05;margin:0 0 .6em}}
+.s-chapeau{{max-width:40rem;font-size:1.05rem;line-height:1.6}}
+.s-avis{{border-left:3px solid #AE1E3B;padding:1rem 1.15rem;margin:2rem 0;
+  background:rgba(174,30,59,.05)}}
+.s-avis p{{margin:0 0 .6em}} .s-avis p:last-child{{margin:0}}
+.s-bloc{{margin-top:2.75rem}}
+.s-bloc h2{{font-family:"Fraunces",Georgia,serif;font-weight:500;
+  font-size:1.45rem;margin:0 0 .2em;padding-bottom:.5rem;border-bottom:1px solid #C7BCA8}}
+.s-bloc>p{{margin:.7em 0 0;max-width:40rem;color:#5A6862;font-size:.95rem}}
+.s-liste{{list-style:none;margin:1.1rem 0 0;padding:0;
+  display:grid;gap:1px;background:#E2DACC;border-block:1px solid #E2DACC}}
+.s-liste li{{background:#FBF8F3;padding:.7rem .2rem}}
+/* `a{{color:inherit}}` dans la feuille du site : sans ceci, vingt-huit liens
+   auraient l'air de vingt-huit titres en gras. */
+.s-liste a{{color:#0F7FA6;font-weight:600;text-decoration:none;
+  border-bottom:1px solid rgba(15,127,166,.35)}}
+.s-liste a:hover,.s-liste a:focus-visible{{border-bottom-color:#0F7FA6}}
+.s-liste code{{font-family:"DM Mono",ui-monospace,monospace;
+  font-size:.8rem;color:#5A6862;display:block;margin-top:.15rem}}
+.s-pied{{margin-top:3.5rem;padding-top:1.1rem;border-top:1px solid #C7BCA8;
+  font-size:.88rem;color:#5A6862}}
+</style>
+</head>
+<body class="soha-page">
+<div class="s-page">
+  <h1 class="s-titre">Le site du 961, en HTML</h1>
+  <p class="s-chapeau">Les {n} pages du site, fabriquées en HTML simple :
+  aucun WordPress, aucun Elementor, aucun appel vers l'extérieur. Tu peux
+  l'ouvrir hors ligne, le copier sur une clé, l'envoyer à quelqu'un.</p>
+
+  <div class="s-avis">
+    <p><strong>Ceci ne s'installe pas.</strong> C'est la <em>référence</em> :
+    ce à quoi le site doit ressembler après l'import du kit. Quand une page
+    importée ne ressemble pas à celle d'ici, c'est l'import qui a un problème,
+    pas la page.</p>
+    <p>Les formulaires ne partent nulle part — il n'y a pas de serveur derrière.
+    L'estimateur, lui, calcule pour de vrai.</p>
+  </div>
+
+  <div class="s-bloc">
+    <h2>Commence ici</h2>
+    <ul class="s-liste"><li><a href="index.html">L'accueil</a><code>index.html</code></li></ul>
+  </div>
+
+  <div class="s-bloc">
+    <h2>Les pages</h2>
+    <p>Dans l'ordre du kit, celui des identifiants WordPress.</p>
+    <ul class="s-liste">{pages}</ul>
+  </div>
+
+  <div class="s-bloc">
+    <h2>Le Journal</h2>
+    <p>{na} articles, du plus récent au plus ancien.</p>
+    <ul class="s-liste">{articles}</ul>
+  </div>
+
+  <p class="s-pied">Centre Soha · 961 Rachel Est, Montréal. Fabriqué le {jour}.
+  Le pôle soha.live n'est pas concerné.</p>
+</div>
+</body>
+</html>
+"""
+
+
+def sommaire(sortie, pages, articles):
+    """Écrit « lisez-moi.html » : la porte d'entrée du dossier livré."""
+    def ligne(titre, fichier, apres=""):
+        return ('<li><a href="%s">%s</a>%s<code>%s</code></li>'
+                % (fichier, html.escape(titre or fichier), apres, fichier))
+
+    lignes_pages = "".join(
+        ligne(p["titre"], p["fichier"]) for p in pages if p["fichier"] != "index.html")
+    lignes_arts = "".join(
+        ligne(a["titre"], a["fichier"]) for a in articles)
+
+    doc = SOMMAIRE.format(
+        n=len(pages) + len(articles),
+        na=len(articles),
+        pages=lignes_pages,
+        articles=lignes_arts,
+        jour=datetime.date.today().isoformat(),
+    )
+    open(os.path.join(sortie, "lisez-moi.html"), "w", encoding="utf-8").write(doc)
+    return "lisez-moi.html"
 
 
 def premiere_image(html_page):

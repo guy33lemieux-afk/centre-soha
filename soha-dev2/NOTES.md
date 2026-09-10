@@ -1404,3 +1404,58 @@ réconcilie, ce n'est pas de choisir, c'est de rendre l'exception **visible** :
 une poignée de demandes retenues, nommées à l'écran, avec le geste qui les
 libère. Le vrai défaut aurait été le silence, dans un sens comme dans l'autre :
 effacer la preuve sans le dire, ou tout garder pour toujours sans le dire.
+
+---
+
+# Cycle 22 · Le site HTML, complet — et une porte d'entrée
+
+« Fais moi le site en html complet. » Le site existait déjà (v12). J'ai d'abord
+vérifié qu'il était bien *complet*, plutôt que de renvoyer le zip.
+
+## Ce que la vérification a donné
+
+Le kit contient **16 pages**, **26 entrées de type `post`** et **1 événement**.
+Le site en compte 29 : les 16 pages et 13 articles. Les treize `post` manquants
+sont des pièces jointes (`soha-journal-0XX`) — des images, pas des textes ;
+le constructeur les range en vignettes, ce qui est juste.
+
+L'événement, lui, mérite d'être nommé : c'est le seul `tribe_events` du kit, il
+s'appelle **« DEV »**, il est **en brouillon**, sans contenu, daté du 29 août
+2026 (passé), en **dollars américains** et en **UTC+0**. Ce n'est pas du
+contenu, c'est un résidu. Il n'a pas de page, et c'est bien.
+
+## Ce que j'ai ajouté
+
+`build_site.py` écrit maintenant un **`lisez-moi.html`** : la porte d'entrée du
+dossier. Vingt-neuf fichiers HTML lâchés dans un dossier, ça se parcourt au
+hasard et on finit par croire qu'il manque des pages. Le sommaire les nomme
+toutes, avec leur nom de fichier, et dit ce que ce dossier **n'est pas** : ni
+une installation, ni un site avec un serveur derrière.
+
+Et le zip contient enfin un **dossier de premier niveau** (`soha-site/`). Avant,
+il se décompressait à plat : cent vingt fichiers répandus dans le dossier
+courant.
+
+## Deux détails attrapés au regard
+
+- Mon sommaire portait un bloc `prefers-color-scheme: dark`. **Le site est en
+  clair seulement** — les listes seraient passées au noir sur une page restée
+  ivoire. Retiré.
+- `a{color:inherit}` dans la feuille du site : sans couleur explicite, mes
+  vingt-huit liens auraient eu l'air de vingt-huit titres en gras.
+- Et une phrase d'aide qui mentait — « les quatre dernières sont les fiches
+  d'atelier » — alors que « Demander une location » est au milieu. Retirée
+  plutôt que rafistolée.
+
+## Livré
+`soha_site-html_20260910_v13.zip` · 30 pages, 74 images, 2,7 Mo.
+**Porte du regard : aucune ressource manquante, aucun appel externe, aucune
+erreur, aucun débordement de 1440 à 390 px.** Aucune date passée annoncée comme
+à venir.
+
+## Leçon
+**« Complet » est une question, pas une affirmation.** La réponse ne s'obtient
+pas en regardant ce qui a été produit, mais en comparant à la source : seize
+pages attendues, seize écrites ; vingt-six `post`, treize articles et treize
+images. Sans ce comptage, j'aurais renvoyé le zip en disant « il est complet »,
+et j'aurais eu raison — par chance, pas par vérification.
