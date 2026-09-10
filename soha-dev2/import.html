@@ -177,8 +177,15 @@ strong{font-weight:600}
     <li><label><input type="checkbox"><span class="quoi"><b>Mode développement : activé</b><span>Cloudflare cesse de mettre en cache pendant trois heures, puis se rallume tout seul. <span class="ou">Mise en cache → Configuration → Mode développement</span> ou cherche « Development Mode ».</span></span></label></li>
     <li><label><input type="checkbox"><span class="quoi"><b>Rocket Loader : désactivé</b><span>Il diffère et réordonne les scripts de tes pages. C'est lui qu'on a vu dans ton onglet Réseau. <span class="ou">Paramètres → Optimisation → Rocket Loader</span> ou cherche « Rocket Loader ».</span></span></label></li>
     <li><label><input type="checkbox"><span class="quoi"><b>Regarde le nuage, onglet DNS</b><span><span class="ou">DNS → Enregistrements</span> <strong>Orange</strong> = tout passe par Cloudflare, et ta politique le dit maintenant. <strong>Gris</strong> = rien ne transite — dis-le-moi, je retire le paragraphe.</span></span></label></li>
+    <li><label><input type="checkbox"><span class="quoi"><b>Durée de vie du cache du navigateur : respecter les en-têtes existants</b><span>C'est le seul cache que tu ne peux pas purger — il est dans le navigateur de chaque personne. Réglé sur « respecter les en-têtes existants », c'est WordPress qui décide fichier par fichier, et il le fait bien. <span class="ou">Mise en cache → Configuration → Durée de vie du cache du navigateur</span></span></span></label></li>
     <li><label><input type="checkbox"><span class="quoi"><b>Mode SSL : complet (strict)</b><span>Si tu lis « Flexible », change-le. Flexible fabrique des boucles de redirection et du contenu mixte, et le symptôme ressemble à tout sauf à sa cause. <span class="ou">SSL/TLS → Vue d'ensemble</span></span></span></label></li>
   </ol>
+
+  <div class="piege">
+    <p class="titre">Le cache que la purge n'atteint pas</p>
+    <p>Purger Cloudflare vide le cache de Cloudflare. Ça ne touche pas au cache du navigateur de tes visiteurs — ni au tien. Si après l'import tu vois encore l'ancienne page alors que tu as tout purgé, c'est presque toujours ça.</p>
+    <p>Pendant que tu vérifies : recharge avec <kbd>Ctrl</kbd>+<kbd>Maj</kbd>+<kbd>R</kbd> (<kbd>Cmd</kbd>+<kbd>Maj</kbd>+<kbd>R</kbd> sur Mac), ou coche <strong>« Désactiver le cache »</strong> dans l'onglet Réseau des outils de développement — elle reste active tant que les outils sont ouverts.</p>
+  </div>
 
   <div class="attention">
     <p class="titre">Pourquoi couper Rocket Loader et pas Cloudflare</p>
