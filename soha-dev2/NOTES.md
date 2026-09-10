@@ -1264,3 +1264,66 @@ geste de ce document porte le pourquoi de sa position — et le pourquoi est ce
 qui permettra à Mala de décider seule quand la réalité ne ressemblera pas tout
 à fait au texte. Une liste d'ordres produit quelqu'un qui s'arrête à la
 première surprise.
+
+---
+
+# Cycle 20 · L'estimateur — la dernière pièce jamais éprouvée
+
+Le CRM a 191 vérifications, Finition 31, le site sa porte du regard. L'estimateur
+n'avait rien — alors qu'il ouvre la chaîne que la procédure demande à Mala de
+parcourir. Trou comblé : **36 vérifications**, 22 sur le rendu, 14 au navigateur.
+
+## Le défaut qui perdait des demandes
+`<a class="se-cta" id="seCta" href="#">`. Le bouton n'obtenait sa vraie
+destination qu'une fois le JavaScript exécuté. Sur un site servi derrière
+Rocket Loader — qui diffère et réordonne les scripts, et qui **est actif chez
+Mala** — la personne pouvait cliquer « Demander cette réservation » et rester
+exactement où elle était. Aucune erreur, aucune trace : une demande de location
+perdue, en silence.
+
+Corrigé : `soha_estim_lien()` calcule l'adresse en PHP et la pose dans le `href`
+dès le rendu. Le JavaScript ne fait plus que l'affiner.
+
+## Trois autres, du même passage
+- **Le prix de départ était écrit en dur** (`450 $`) au lieu d'être tiré de la
+  grille. Le jour où la grille change, la page annonce l'ancien prix jusqu'à ce
+  qu'un script la corrige — et jamais, s'il ne tourne pas.
+- **Les boutons ne disaient pas lequel était choisi.** `aria-pressed` sur les
+  neuf, tenu à jour par le script. Le prix est un `role="status"` en
+  `aria-live="polite"` : quelqu'un qui change d'espace l'entend maintenant.
+- **Le script n'était pas à l'abri de Rocket Loader.** `data-cfasync="false"`,
+  comme les quatre de Finition.
+
+## Le banc ouvre la page deux fois
+Avec JavaScript, et **sans**. Les deux comptent autant l'une que l'autre : sans
+JavaScript, on éprouve ce que voit quelqu'un dont le script n'a pas tourné.
+
+Et il fait le tour complet de la grille : **les 24 combinaisons** cliquées, le
+prix affiché comparé à celui que le PHP déclare. Une grille et un affichage qui
+divergent, c'est un tarif annoncé qu'on ne pourra pas tenir.
+
+## Deux erreurs de banc, corrigées
+- `class="se-space` comptait aussi `se-spaces`, `se-space-name` et
+  `se-space-sub` : 13 au lieu de 4. On compte les boutons, pas les préfixes.
+- `aria-pressed` était compté dans le script aussi : 15 au lieu de 9. On compte
+  la forme attribut, `aria-pressed="`, qui n'existe que dans le balisage.
+
+## Ce qui n'a PAS été corrigé, et pourquoi
+Deux estimateurs sur une même page produisent des identifiants en double
+(`#sePrice`, `#seCta`…). C'est du HTML invalide — mais le script parcourt
+`querySelectorAll('#sohaEstim')` et cherche ensuite **dans** chaque racine, donc
+les deux fonctionnent. Aucun impact observé, et le corriger toucherait le CSS.
+Noté, pas touché : élargir un correctif sur une gêne théorique, c'est ajouter du
+risque là où il n'y en avait pas.
+
+## Livré
+`soha_extensionestimateur_20260910_v210.zip`, `estimateur-modele/`,
+`estimateur-banc/`. La procédure d'import nomme la v2.1.0.
+
+## Leçon
+**Un lien mort ne se plaint jamais.** Une erreur JavaScript s'affiche dans la
+console, une image absente laisse un trou, une page introuvable affiche 404. Un
+`href="#"` ne fait rien du tout : la personne clique, il ne se passe rien, elle
+s'en va. C'est le défaut le plus cher du lot, et le seul qu'aucune mesure
+automatique ne signalait — il a fallu ouvrir la page sans JavaScript pour le
+voir.
