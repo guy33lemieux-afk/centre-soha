@@ -587,6 +587,16 @@ class Rendu:
                 opts = "".join('<option>%s</option>' % html.escape(o)
                                for o in (f.get("field_options") or "").split("\n") if o.strip())
                 entree = '<select id="%s" name="%s"%s>%s</select>' % (fid, fid, req, opts)
+            elif genre == "radio":
+                choix = [o for o in (f.get("field_options") or "").split("\n") if o.strip()]
+                boutons = "".join(
+                    '<label class="soha-radio"><input type="radio" name="%s" value="%s"%s> %s</label>'
+                    % (fid, html.escape(o.strip()), req if i == 0 else "", html.escape(o.strip()))
+                    for i, o in enumerate(choix))
+                champs.append('<div class="soha-champ"><span class="soha-legende">%s</span>'
+                              '<div class="soha-radios" role="radiogroup" aria-label="%s">%s</div></div>'
+                              % (label, label, boutons))
+                continue
             elif genre == "acceptance":
                 entree = ('<label class="soha-case"><input type="checkbox" id="%s" name="%s"%s> %s</label>'
                           % (fid, fid, req, self.reecrire_html(f.get("acceptance_text", "") or label)))
@@ -717,7 +727,7 @@ class Rendu:
                 " on" if i == 0 else "", k, html.escape(v[0]), html.escape(v[1]))
             for i, (k, v) in enumerate(grille.items()))
         data = json.dumps(grille, ensure_ascii=False)
-        resa = json.dumps("espaces-professionnels.html#demande")
+        resa = json.dumps("reservation.html")
         self.estimateur_pose = True
         return ('<div id="sohaEstim" data-first="studio"><div class="se-grid">'
                 '<div class="se-panel">'
@@ -737,7 +747,7 @@ class Rendu:
                 '<div class="se-sel" id="seSel">Studio · Semaine · Journée</div>'
                 '<p class="se-note">* Tarif indicatif. Prix, conditions et disponibilités sujets à '
                 'changement. Minimum 2 jours les fins de semaine. Aucune réservation par téléphone.</p>'
-                '<a class="se-cta" id="seCta" href="espaces-professionnels.html#demande">'
+                '<a class="se-cta" id="seCta" href="reservation.html">'
                 'Demander cette réservation</a></div></div>'
                 '<script>window.SOHA_ESTIM=%s;window.SOHA_ESTIM_RESA=%s;</script></div>'
                 % (espaces, data, resa))
@@ -892,6 +902,11 @@ figure{margin:0}
   border-radius:2px;background:#fff;color:inherit;width:100%}
 .soha-formulaire textarea{min-height:110px;resize:vertical}
 .soha-champ-case label{display:flex;gap:10px;align-items:flex-start;font-weight:400}
+.soha-legende{font-size:.85rem;font-weight:500}
+.soha-radios{display:flex;flex-wrap:wrap;gap:8px 18px}
+.soha-radio{display:inline-flex;align-items:center;gap:8px;min-height:44px;
+  font-weight:400;cursor:pointer}
+.soha-radio input{flex:none;width:20px;height:20px;min-height:0;accent-color:#19A7DB}
 .soha-champ-case input{flex:none;width:24px;height:24px;min-height:0;margin-top:2px;accent-color:#19A7DB}
 .soha-formulaire button{font:inherit;cursor:pointer;border:0;background:#19A7DB;color:#fff;
   padding:14px 26px;min-height:48px;border-radius:2px;justify-self:start}
@@ -924,15 +939,15 @@ figure{margin:0}
 .soha-article-corps h3{font-family:"Fraunces",Georgia,serif;font-weight:600;
   font-size:1.25rem;margin:1.6em 0 .5em}
 .soha-article-corps img{margin:1.6em 0}
-.soha-article-corps a{color:#046C86}
+.soha-article-corps a{color:#19A7DB}
 .soha-retour{display:inline-block;margin-top:40px;font-weight:600;
-  text-decoration:none;color:#046C86}
+  text-decoration:none;color:#19A7DB}
 
 /* accessibilité */
 .soha-saut{position:absolute;left:-9999px;top:0;background:#0E1A15;color:#fff;
   padding:12px 18px;z-index:100}
 .soha-saut:focus{left:8px;top:8px}
-:focus-visible{outline:2px solid #046C86;outline-offset:2px}
+:focus-visible{outline:2px solid #19A7DB;outline-offset:2px}
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;
     transition-duration:.01ms!important;scroll-behavior:auto!important}

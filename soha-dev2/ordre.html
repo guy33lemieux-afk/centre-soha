@@ -1,0 +1,352 @@
+<title>L'ordre du 961</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Schibsted+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --encre:#0E1A15; --ivoire:#F4F0E7; --papier:#FBF8F3;
+  --soigner:#19A7DB; --batir:#D29A4E; --cultiver:#5E8C5A; --cramoisi:#AE1E3B;
+
+  --fond:var(--papier); --surface:#FFFFFF; --surface-2:#F1EBE1;
+  --texte:var(--encre); --doux:#5A6862;
+  --filet:#E2DACC; --filet-fort:#C7BCA8;
+  --accent:#0F7FA6;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --fond:#0A1310; --surface:#121D19; --surface-2:#1A2823;
+    --texte:#EDE7DB; --doux:#9BA9A2; --filet:#293832; --filet-fort:#3B4F47;
+    --accent:#63C8E6;
+  }
+}
+:root[data-theme="dark"]{
+  --fond:#0A1310; --surface:#121D19; --surface-2:#1A2823;
+  --texte:#EDE7DB; --doux:#9BA9A2; --filet:#293832; --filet-fort:#3B4F47;
+  --accent:#63C8E6;
+}
+
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font-family:var(--sans);
+  font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.page{max-width:900px;margin:0 auto;padding-inline:20px;padding-block:44px 96px}
+
+h1,h2,h3{font-family:var(--serif);font-weight:500;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.2rem,6vw,3.4rem);line-height:1.02;letter-spacing:-.018em}
+h2{font-size:clamp(1.4rem,3.2vw,1.95rem);line-height:1.12;letter-spacing:-.008em}
+h3{font-size:1.06rem;font-family:var(--sans);font-weight:600;line-height:1.25}
+p{margin:0 0 1em;max-width:68ch}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--soigner);outline-offset:3px}
+code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);
+  padding:.1em .36em;border-radius:2px;overflow-wrap:break-word}
+strong{font-weight:600}
+
+.kicker{font-family:var(--mono);font-size:.7rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--doux);margin:0 0 14px}
+
+/* --- sceau visarga : point Soigner, fil Bâtir, point cramoisi --- */
+.sceau{display:flex;align-items:center;gap:8px;margin-bottom:18px}
+.sceau i{width:9px;height:9px;border-radius:50%;background:var(--soigner)}
+.sceau b{width:46px;height:2px;background:var(--batir)}
+.sceau u{width:7px;height:7px;border-radius:50%;background:var(--cramoisi)}
+
+.chapeau{border-bottom:1px solid var(--filet-fort);padding-bottom:32px;margin-bottom:40px}
+.chapeau .sous{font-size:1.12rem;color:var(--doux);max-width:58ch;margin-top:14px}
+
+section{margin-top:56px}
+section>h2{padding-bottom:11px;border-bottom:1px solid var(--filet)}
+section>h2+p{margin-top:15px}
+
+/* --- compteurs --- */
+.compte{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,132px),1fr));
+  gap:1px;background:var(--filet);border:1px solid var(--filet);margin:30px 0}
+.compte div{background:var(--fond);padding:14px 15px}
+.compte dt{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--doux);margin-bottom:5px}
+.compte dd{margin:0;font-family:var(--serif);font-size:1.62rem;line-height:1;
+  font-variant-numeric:tabular-nums}
+
+/* --- pastilles d'état --- */
+.et{font-family:var(--mono);font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;
+  white-space:nowrap;padding:3px 8px;border:1px solid currentColor;border-radius:2px}
+.et.verite{color:#2F6B4F}
+.et.remplace{color:var(--doux)}
+.et.corriger{color:#9A6410}
+.et.hors{color:var(--cramoisi)}
+.et.matiere{color:#3C6E8C}
+
+/* --- légende des états --- */
+.legende{display:grid;gap:10px;margin:24px 0 8px}
+.legende div{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:baseline}
+.legende p{margin:0;font-size:.95rem;color:var(--doux)}
+.legende b{color:var(--texte);font-weight:600}
+
+/* --- familles de fichiers --- */
+.famille{margin-top:34px}
+.famille>h3{display:flex;align-items:baseline;gap:12px;
+  padding-bottom:8px;border-bottom:1px solid var(--filet-fort);margin-bottom:0}
+.famille>h3 em{font-family:var(--mono);font-style:normal;font-size:.66rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--doux);margin-left:auto}
+.dossier{list-style:none;margin:0;padding:0}
+.dossier li{display:grid;grid-template-columns:96px 1fr;gap:16px;
+  padding:13px 0;border-bottom:1px solid var(--filet);align-items:start}
+.dossier .et{justify-self:start;margin-top:2px}
+.dossier .nom{font-family:var(--mono);font-size:.8rem;word-break:break-word;
+  display:block;margin-bottom:4px}
+.dossier .quoi{font-size:.94rem;color:var(--doux)}
+.dossier .quoi b{color:var(--texte);font-weight:500}
+
+/* --- verdicts du Grand Conseil --- */
+.verdict{border-left:3px solid var(--filet-fort);padding:2px 0 2px 20px;margin:26px 0}
+.verdict.grave{border-left-color:var(--cramoisi)}
+.verdict.tenu{border-left-color:var(--cultiver)}
+.voix{font-family:var(--mono);font-size:.66rem;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--doux);margin:0 0 7px}
+.verdict h3{margin-bottom:7px;font-family:var(--serif);font-weight:500;
+  font-size:1.22rem;line-height:1.2}
+.verdict p:last-child{margin-bottom:0}
+.mesure{font-family:var(--mono);font-size:.82rem;color:var(--accent)}
+
+/* --- arborescence --- */
+.arbre{font-family:var(--mono);font-size:.83rem;line-height:1.85;
+  background:var(--surface);border:1px solid var(--filet);
+  padding:20px 22px;margin:24px 0;overflow-x:auto;white-space:pre;color:var(--texte)}
+.arbre b{color:var(--accent);font-weight:400}
+.arbre i{color:var(--doux);font-style:normal}
+
+/* --- chantier --- */
+.chantier{list-style:none;margin:22px 0;padding:0}
+.chantier li{display:grid;grid-template-columns:26px 1fr;gap:14px;
+  padding:12px 0;border-bottom:1px solid var(--filet);align-items:start}
+.chantier .n{font-family:var(--mono);font-size:.8rem;color:var(--doux);
+  padding-top:2px;font-variant-numeric:tabular-nums}
+.chantier b{display:block;font-weight:600;margin-bottom:3px}
+.chantier span{font-size:.94rem;color:var(--doux)}
+
+.pied{margin-top:66px;padding-top:20px;border-top:1px solid var(--filet-fort);
+  font-size:.87rem;color:var(--doux)}
+.pied p{max-width:none}
+
+@media (max-width:560px){
+  .dossier li{grid-template-columns:1fr;gap:7px}
+  .famille>h3{flex-wrap:wrap}
+  .famille>h3 em{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="page">
+
+<header class="chapeau">
+  <div class="sceau" aria-hidden="true"><i></i><b></b><u></u></div>
+  <p class="kicker">Centre Soha · 961 Rachel Est · 10 septembre 2026</p>
+  <h1>L'ordre du 961</h1>
+  <p class="sous">Trente envois : vingt archives et dix documents seuls, soit vingt textes à lire et le matériel du site. Voici ce qui fait autorité, ce qui est périmé, ce qui n'est pas de ce chantier — et les sept jugements que le Grand Conseil a rendus en les lisant.</p>
+</header>
+
+<section id="principe" style="margin-top:0">
+  <h2>Le principe</h2>
+  <p>Un rôle, un seul fichier vivant. Tout le reste est de l'archive : on le garde, on ne l'ouvre plus. C'est la règle qui empêche de rejouer ce qui vient d'arriver avec le site — trois générations de pages qui cohabitaient, et personne pour dire laquelle était la bonne.</p>
+  <p><strong>Et un seul périmètre : le Centre Soha.</strong> Le lieu, ses cours, ses soins, ses ateliers, et la location de ses espaces. <code>soha.live</code> est l'autre pôle : il a ses propres livrables, sa propre langue, son propre trilinguisme. Rien de ce qui suit ne le concerne, et deux documents qui le mentionnaient sont signalés plus bas.</p>
+
+  <dl class="compte">
+    <div><dt>Envois reçus</dt><dd>30</dd></div>
+    <div><dt>Documents lus</dt><dd>20</dd></div>
+    <div><dt>Font autorité</dt><dd>14</dd></div>
+    <div><dt>Périmés</dt><dd>9</dd></div>
+    <div><dt>À corriger</dt><dd>2</dd></div>
+  </dl>
+
+  <div class="legende">
+    <div><span class="et verite">Autorité</span><p><b>C'est la référence.</b> En cas de doute, c'est ce fichier qui tranche.</p></div>
+    <div><span class="et matiere">Matière</span><p><b>Une source, pas un livrable.</b> On y puise du contenu ; on ne le publie pas tel quel.</p></div>
+    <div><span class="et corriger">À corriger</span><p><b>Un défaut mesuré.</b> Le détail est dans les verdicts.</p></div>
+    <div><span class="et remplace">Périmé</span><p><b>Une version dépassée.</b> À garder en archive, à ne plus rouvrir.</p></div>
+    <div><span class="et hors">Hors périmètre</span><p><b>Pas ce chantier.</b> soha.live, ou une extension qu'on n'installe pas.</p></div>
+  </div>
+</section>
+
+<section id="classement">
+  <h2>Le classement</h2>
+  <p>Six familles. Dans chacune, le fichier qui fait autorité vient en premier.</p>
+
+  <div class="famille">
+    <h3>Le site <em>8 fichiers</em></h3>
+    <ul class="dossier">
+      <li><span class="et verite">Autorité</span><div><span class="nom">soha_kitdev_20260910_v07.zip</span><span class="quoi">Le kit à importer. <b>Produit ici</b>, à partir de ton kit corrigé du 9 septembre, avec les liens recâblés, l'ancre morte réparée et les correctifs tactiles.</span></div></li>
+      <li><span class="et verite">Autorité</span><div><span class="nom">soha_site-html_20260910_v02.zip</span><span class="quoi">Le site entier en HTML, 25 pages. <b>Produit ici.</b> Sert à valider avant d'importer.</span></div></li>
+      <li><span class="et verite">Autorité</span><div><span class="nom">soha_mediaskit_20260828_v04.zip</span><span class="quoi">Les 74 photos. C'est la seule banque d'images dont les noms correspondent au kit.</span></div></li>
+      <li><span class="et verite">Autorité</span><div><span class="nom">soha_event.zip</span><span class="quoi">Les quatre fiches d'atelier. Source des vraies adresses <code>/event/…</code>.</span></div></li>
+      <li><span class="et matiere">Matière</span><div><span class="nom">soha_pagesjson_20260825_v02.zip</span><span class="quoi">28 pages en JSON — dont les <b>trois ateliers absents du kit</b>. Ses 95 images portent des noms à empreinte qui n'existent nulle part : à puiser pour le texte, jamais pour les visuels.</span></div></li>
+      <li><span class="et remplace">Périmé</span><div><span class="nom">soha_kitdevcorrige_20260909_v04.zip</span><span class="quoi">Remplacé par le v07. Il reste la base de tout ce qui a été construit depuis.</span></div></li>
+      <li><span class="et remplace">Périmé</span><div><span class="nom">dev_2.zip</span><span class="quoi">L'export du site du 9 septembre. Sa valeur est <b>de preuve</b> : c'est en le comparant au kit qu'on a trouvé la cause des doublons. À garder à ce titre.</span></div></li>
+      <li><span class="et remplace">Périmé</span><div><span class="nom">ACCUEIL__DEV · Accueil__centresoha · Le_Studio_Podcast__DEV · Les_Espaces__DEV · Prendre_soin_de_soi__DEV</span><span class="quoi">Cinq pages sauvegardées d'une <b>génération antérieure</b> du /dev (IDs 884–1015). Utiles comme témoin — elles portent des défauts que le kit a déjà corrigés — pas comme source.</span></div></li>
+    </ul>
+  </div>
+
+  <div class="famille">
+    <h3>Le code maison <em>5 fichiers</em></h3>
+    <ul class="dossier">
+      <li><span class="et verite">Autorité</span><div><span class="nom">soha_extensionfinition_20260909_v121.zip</span><span class="quoi">Finition v1.2.1 — accessibilité, textes alternatifs, préchargement, avis de témoins. <b>À installer.</b></span></div></li>
+      <li><span class="et verite">Autorité</span><div><span class="nom">soha_extensionestimateur_20260910_v201.zip</span><span class="quoi">L'estimateur corrigé. <b>Produit ici.</b> Voir le verdict du Juriste : sa destination est à rétablir vers <code>/reservation/</code>.</span></div></li>
+      <li><span class="et remplace">Périmé</span><div><span class="nom">soha_extensionestimateur_20260907_v200.zip</span><span class="quoi">Envoyé <b>deux fois</b>, à l'identique. Remplacé.</span></div></li>
+      <li><span class="et hors">Hors périmètre</span><div><span class="nom">soha_plugincentreshortcode_20260716_v01.zip</span><span class="quoi">Six raccourcis, <b>aucun présent dans le kit</b>. Ton propre index dit « ne pas installer ». Mesure indépendante : même conclusion.</span></div></li>
+      <li><span class="et hors">Hors périmètre</span><div><span class="nom">soha_pluginpraticienscms_20260716_v03.zip</span><span class="quoi">Deux raccourcis, aucun utilisé ; les portraits sont en dur dans les pages. « Ne pas installer » confirmé.</span></div></li>
+    </ul>
+  </div>
+
+  <div class="famille">
+    <h3>Les décisions et les plans <em>5 documents</em></h3>
+    <ul class="dossier">
+      <li><span class="et verite">Autorité</span><div><span class="nom">soha_index-dossier-dev_20260907_v01</span><span class="quoi">L'ordre d'exécution en 11 étapes et les décisions qui t'attendent. <b>C'est le document qui commande</b> — il m'a fait corriger deux choses que j'avais tranchées sans le savoir.</span></div></li>
+      <li><span class="et verite">Autorité</span><div><span class="nom">soha_metas-seo_20260907_v01</span><span class="quoi">Les 15 titres et descriptions. Ils décrivent un site de <b>15 pages</b> — le kit n'en a que 12. Trois manquent, et ce sont les trois ateliers.</span></div></li>
+      <li><span class="et verite">Autorité</span><div><span class="nom">soha_formulairereservationelementor_20260907_v01</span><span class="quoi">La recette de la page <code>/reservation/</code>, 13 champs, deux consentements. Solide (voir le Juriste). Un détail à corriger : elle cite l'ivoire retiré <code>#F4F1E9</code>.</span></div></li>
+      <li><span class="et verite">Autorité</span><div><span class="nom">soha_livre-de-bord_20260907_v01</span><span class="quoi">Le book maître de la maison. Il couvre les <b>deux pôles</b> : c'est normal et souhaitable pour lui — mais rien de sa partie soha.live ne descend dans ce chantier.</span></div></li>
+      <li><span class="et matiere">Matière</span><div><span class="nom">soha_miroiraudit_20260907_v01</span><span class="quoi">L'audit du kit du 7 septembre. <b>Partiellement périmé, et c'est une bonne nouvelle</b> : il signalait 321 <code>#16241F</code> et 86 <code>#FAFAF8</code> — le kit d'aujourd'hui n'en a plus aucun. Seul le cyan résiste.</span></div></li>
+    </ul>
+  </div>
+
+  <div class="famille">
+    <h3>L'infolettre <em>5 documents</em></h3>
+    <ul class="dossier">
+      <li><span class="et verite">Autorité</span><div><span class="nom">soha_infolettre-bienvenue_20260907_v01.html + .md</span><span class="quoi">6 Ko, aucune image lourde, les tags de désabonnement en place. <b>C'est le bon gabarit</b>, et il est bien fait — voir le verdict de l'Artisane-aînée.</span></div></li>
+      <li><span class="et remplace">Périmé</span><div><span class="nom">soha_infolettre_20260903_v04.html</span><span class="quoi"><b>809 Ko.</b> Quatre images encodées dans le fichier. Gmail coupe à 102 Ko, et le lien de désabonnement est à 808. Voir le Garagiste.</span></div></li>
+      <li><span class="et corriger">À corriger</span><div><span class="nom">soha_infolettre_gabarit_20260903_v03_2.html</span><span class="quoi">Mentionne <code>soha.live</code> dans une infolettre du Centre. Un mot à retirer, ou le fichier à archiver — il est de toute façon dépassé par la version du 7.</span></div></li>
+      <li><span class="et remplace">Périmé</span><div><span class="nom">soha_infolettrebienvenue_20260907_v01.md</span><span class="quoi">Copie du même guide, envoyée hors de son archive. Un seul exemplaire suffit.</span></div></li>
+    </ul>
+  </div>
+
+  <div class="famille">
+    <h3>Les pages publiques <em>4 documents</em></h3>
+    <ul class="dossier">
+      <li><span class="et verite">Autorité</span><div><span class="nom">soha_confidentialite_20260903_v01.html</span><span class="quoi">La politique. Deux champs restent à remplir : le service qui achemine les formulaires, et celui de l'infolettre avec sa durée de conservation. <b>Toi seule peux les donner.</b></span></div></li>
+      <li><span class="et verite">Autorité</span><div><span class="nom">soha_desabonnement_20260903_v01.html</span><span class="quoi">La page de confirmation de désabonnement. Juste, sobre, sans reproche. Rien à redire.</span></div></li>
+      <li><span class="et corriger">À corriger</span><div><span class="nom">soha_atelierspagefinale_20260908_v01.html</span><span class="quoi"><b>Dix-sept fois le cyan retiré</b>, douze liens qui ne mènent nulle part, les photos encore en réserve, et le nom composé à la main. Voir trois verdicts plus bas.</span></div></li>
+      <li><span class="et matiere">Matière</span><div><span class="nom">soha_brieftournage_20260903_v01_1.html</span><span class="quoi">Le brief du tournage photo. C'est lui qui produira les visuels qui manquent — à la page Ateliers, aux trois fiches d'atelier, aux articles.</span></div></li>
+    </ul>
+  </div>
+
+  <div class="famille">
+    <h3>Les outils et le reste <em>4 fichiers</em></h3>
+    <ul class="dossier">
+      <li><span class="et verite">Autorité</span><div><span class="nom">soha_reseaux-sociaux_20260907_v01</span><span class="quoi">Cinq piliers, trois publications par semaine, un mois de calendrier. Périmètre Centre, Loi 21 nommée. Solide.</span></div></li>
+      <li><span class="et verite">Autorité</span><div><span class="nom">schibstedgroteskv7latin.zip</span><span class="quoi">Une police sur trois. Il manque <b>Fraunces</b> et <b>DM Mono</b> pour que le site cesse d'appeler Google.</span></div></li>
+      <li><span class="et matiere">Matière</span><div><span class="nom">soha_crm_20260903_v02.jsx</span><span class="quoi">Un CRM de réservations, 897 lignes, entièrement Centre Soha. <b>À trancher</b> : c'est un outil séparé du site WordPress, pas une page. Où doit-il vivre ?</span></div></li>
+      <li><span class="et remplace">Périmé</span><div><span class="nom">soha_generateur_20260825_v10.zip</span><span class="quoi">Six scripts de fabrication de kit. Remplacé par <code>build_site.py</code>, qui fait le chemin inverse et mesure le résultat.</span></div></li>
+    </ul>
+  </div>
+</section>
+
+<section id="conseil">
+  <h2>Les sept verdicts</h2>
+  <p>Le Grand Conseil a lu les quarante documents. Chaque verdict s'appuie sur une mesure, pas sur une impression — et l'un d'eux <em>protège</em> une décision qu'on aurait pu croire fautive.</p>
+
+  <div class="verdict grave">
+    <p class="voix">Le Garagiste — si ses yeux décrochent, la ligne saute</p>
+    <h3>Une infolettre de 809 kilo-octets n'arrive pas entière</h3>
+    <p>Gmail tronque tout courriel au-delà de <span class="mesure">102 Ko</span> et affiche « message tronqué ». La version du 3 septembre en pèse <span class="mesure">809</span>, parce que quatre images y sont encodées dans le fichier lui-même. J'ai mesuré où tombe chaque chose : les images commencent à <span class="mesure">788 Ko</span>, et <strong>le lien de désabonnement est à 808 Ko</strong> — huit fois au-delà de la coupure. Ce n'est pas qu'une question de poids : le lien que la Loi 25 exige de rendre visible est celui que le destinataire ne verra pas.</p>
+    <p><strong>Verdict :</strong> la version du 7 septembre, 6 Ko, images hébergées, est la seule à garder. Les autres passent à l'archive aujourd'hui.</p>
+  </div>
+
+  <div class="verdict grave">
+    <p class="voix">L'Éditrice — la garde de la langue et du signe</p>
+    <h3>Le nom est composé à la main dans trois documents</h3>
+    <p>« Centre S<span style="color:var(--soigner)">o</span>ha » — le O coloré à la main, en texte stylé — apparaît dans la page Ateliers, la politique de confidentialité et le brief de tournage. Le canon est net : <strong>on câble le logo hébergé, on ne recompose jamais le nom</strong>. Le vrai logo a une anatomie précise — l'anneau cyan, le point qui flotte au-dessus avec son écart — qu'un « o » coloré ne rend pas.</p>
+    <p><strong>Verdict :</strong> partout où le nom est composé, on met <code>soha_logo-site_20260828.webp</code>. Il est déjà dans ton kit médias.</p>
+  </div>
+
+  <div class="verdict grave">
+    <p class="voix">La Guetteuse — celle qui voit la dérive avant les autres</p>
+    <h3>Un deuxième cyan s'est installé</h3>
+    <p><code>#046C86</code> : <span class="mesure">17 fois</span> dans la page Ateliers, <span class="mesure">65 fois</span> dans le kit. Le canon n'a qu'un seul cyan, <code>#19A7DB</code>, l'accent de l'école Soigner. Ton propre audit du 7 septembre le disait déjà — et il avait raison : les deux autres hex qu'il signalait, l'encre et l'ivoire, ont depuis été corrigés. Il ne reste que celui-là.</p>
+    <p><strong>Verdict :</strong> un rechercher-remplacer de longueur identique, donc sans risque, dans le kit et dans la page Ateliers. Et supprimer les deux couleurs globales fautives d'Elementor, sinon elles le réintroduiront.</p>
+  </div>
+
+  <div class="verdict">
+    <p class="voix">L'Éditrice — seconde prise de parole</p>
+    <h3>Les documents de la maison ne portent pas la marque de la maison</h3>
+    <p>Quatre documents HTML — l'index du dossier, les métas SEO, les réseaux sociaux, le livre de bord — sont composés en <strong>Inter</strong>. Ni Fraunces, ni Schibsted Grotesk, ni DM Mono. Une agence qui écrit sa charte dans une police qui n'est pas la sienne se contredit à chaque page.</p>
+    <p><strong>Verdict :</strong> une feuille de maison unique, et tous les documents la reprennent. C'est le geste qui sépare une trousse de fichiers d'un cabinet.</p>
+  </div>
+
+  <div class="verdict grave">
+    <p class="voix">L'Apprenante-sceptique — celle qui clique pour de vrai</p>
+    <h3>La page Ateliers ne mène nulle part</h3>
+    <p>Six boutons « Réserver » pointent vers <code>#</code> — ils ne font rien. Six liens « Voir la fiche » visent <code>/ateliers/…</code>, des pages qui n'existent pas. Les huit visuels sont encore des réserves grises. La page est belle et elle est vide : quelqu'un qui veut s'inscrire n'y arrive pas.</p>
+    <p><strong>Verdict :</strong> elle ne se publie pas dans cet état. Et une question de fond avant de la corriger — <em>elle double la page « Se transformer » du site</em>. Une seule des deux doit exister.</p>
+  </div>
+
+  <div class="verdict">
+    <p class="voix">Le Juriste — la porte finale</p>
+    <h3>Deux consentements, et j'avais dévié une décision déjà prise</h3>
+    <p>La recette du formulaire <code>/reservation/</code> sépare le consentement au traitement de la demande et l'inscription à l'infolettre, aucune case pré-cochée. <strong>C'est exactement ce que la Loi 25 exige</strong>, et il ne faut surtout pas simplifier ça en une seule case.</p>
+    <p>Deux points m'incombent. D'abord, j'ai fait pointer le bouton de l'estimateur vers <code>#demande</code> parce que <code>/reservation/</code> n'existait pas — mais ton index dit que cette page <em>est prévue</em> et que la destination est retenue. <strong>Je rétablis <code>/reservation/</code></strong>, en la calculant d'après l'adresse du site pour qu'elle reste juste sur le clone. Ensuite, la recette cite l'ivoire retiré <code>#F4F1E9</code> : à remplacer par <code>#F4F0E7</code>.</p>
+  </div>
+
+  <div class="verdict tenu">
+    <p class="voix">L'Artisane-aînée — celle qui défend le travail bien fait</p>
+    <h3>La police de l'infolettre n'est pas une faute : c'est une décision juste</h3>
+    <p>Le courriel de bienvenue est composé en Georgia et Arial, pas en Fraunces et Schibsted Grotesk. Un contrôle automatique y verrait un écart au canon. <strong>C'en est un, et il est volontaire</strong> : les logiciels de courriel ne chargent pas les polices web de façon fiable, et le guide qui l'accompagne l'explique noir sur blanc.</p>
+    <p><strong>Verdict :</strong> on n'y touche pas. Une règle qu'on applique sans comprendre pourquoi elle existe casse du bon travail — ce gabarit est le mieux fait du lot.</p>
+  </div>
+</section>
+
+<section id="rangement">
+  <h2>Le rangement</h2>
+  <p>Une arborescence, six dossiers, une règle : <strong>rien ne vit à la racine</strong>. Ce qui est daté et remplacé descend dans <code>_archive</code> et n'en remonte jamais.</p>
+
+  <div class="arbre"><b>centre-soha/</b>
+├── <b>01-site/</b>            <i>ce qu'on importe et ce qu'on regarde</i>
+│   ├── soha_kitdev_20260910_v07.zip
+│   ├── soha_site-html_20260910_v02.zip
+│   ├── soha_mediaskit_20260828_v04.zip
+│   └── build_site.py
+├── <b>02-extensions/</b>      <i>les deux qu'on installe, pas les autres</i>
+│   ├── soha_extensionfinition_20260909_v121.zip
+│   └── soha_extensionestimateur_20260910_v202.zip
+├── <b>03-decisions/</b>       <i>ce qui commande</i>
+│   ├── soha_index-dossier-dev_20260907_v01.md
+│   ├── soha_livre-de-bord_20260907_v01.md
+│   ├── soha_metas-seo_20260907_v01.md
+│   └── soha_formulairereservationelementor_20260907_v01.md
+├── <b>04-collaterale/</b>     <i>ce qui part vers le monde</i>
+│   ├── infolettre/   soha_infolettre-bienvenue_20260907_v01.html + .md
+│   ├── pages/        confidentialite · desabonnement · ateliers
+│   └── social/       soha_reseaux-sociaux_20260907_v01.md
+├── <b>05-matiere/</b>         <i>où l'on puise, jamais ce qu'on publie</i>
+│   ├── soha_pagesjson_20260825_v02.zip
+│   ├── soha_event.zip
+│   ├── soha_brieftournage_20260903_v01.html
+│   └── polices/      schibsted · <i>fraunces (manquant)</i> · <i>dm-mono (manquant)</i>
+└── <b>_archive/</b>           <i>on garde, on n'ouvre plus</i>
+    ├── kit-v04 · dev_2 · generateur-v10
+    ├── pages-dev-884-1015/  <i>les 5 pages sauvegardées</i>
+    └── infolettre-v03 · infolettre-v04 · estimateur-v200</div>
+
+  <p style="font-size:.94rem;color:var(--doux)">Le nommage est déjà bon et il vient de toi : <code>soha_&lt;objet&gt;_AAAAMMJJ_v&lt;NN&gt;</code>. Il suffit de s'y tenir — deux fichiers de ce lot y échappent, et ce sont justement les deux qui ont créé de la confusion.</p>
+</section>
+
+<section id="chantier">
+  <h2>Ce qui suit</h2>
+  <p>Dans cet ordre. <strong>Les deux premiers sont faits</strong> — les fichiers sont livrés avec ce document. Le troisième est à moi ; les trois derniers demandent une décision de toi.</p>
+
+  <ul class="chantier">
+    <li><span class="n">01</span><div><b>Le cyan, partout — fait</b><span><code>#046C86</code> → <code>#19A7DB</code> : <strong>65 remplacements</strong> dans 13 fichiers du kit, plus 3 dans le socle du site. Il n'en reste aucun, ni dans le kit v08, ni dans les 26 pages HTML. Reste à supprimer les deux couleurs globales d'Elementor après l'import, sinon elles le réintroduiront.</span></div></li>
+    <li><span class="n">02</span><div><b>L'estimateur rendu à sa destination — fait</b><span>Extension <strong>v2.0.2</strong> : retour vers <code>/reservation/</code>, résolue par <code>home_url()</code> — donc juste sur le clone comme à la racine. Et la <strong>page montée</strong> d'après ta recette : treize champs dans l'ordre, deux consentements distincts, aucun pré-coché. Le kit passe à 13 pages, le site à 26.</span></div></li>
+    <li><span class="n">03</span><div><b>Les trois ateliers deviennent des pages — à faire</b><span>Tes métas décrivent 15 pages, le kit en a 12. Le texte des trois manquantes existe dans <code>pagesjson</code>. Le site passe à 15, et les cinq boutons cessent de sortir vers la production.</span></div></li>
+    <li><span class="n">04</span><div><b>La feuille de maison</b><span>Un seul style pour tous les documents. Les quatre composés en Inter la reprennent. C'est ce qui fait qu'une trousse devient un cabinet.</span></div></li>
+    <li><span class="n">05</span><div><b>La page Ateliers — décision attendue</b><span>Elle double « Se transformer ». Une seule doit vivre. Dis-moi laquelle et je fusionne.</span></div></li>
+    <li><span class="n">06</span><div><b>Deux champs et deux polices — décision attendue</b><span>Le service d'acheminement des formulaires et celui de l'infolettre, pour la politique. Et <b>Fraunces</b> + <b>DM Mono</b> en <code>.woff2</code>, pour cesser d'appeler Google.</span></div></li>
+  </ul>
+</section>
+
+<footer class="pied">
+  <p>Trente envois relus un par un, quarante documents ouverts. Les constats de couleur, de poids et de casse sont comptés sur les fichiers, pas estimés. Les verdicts sont signés par les voix du Grand Conseil telles que ton livre de bord les définit.</p>
+  <p style="margin-bottom:0">Périmètre : <strong>Centre Soha</strong>, 961 Rachel Est. Le pôle soha.live n'est pas traité ici, et les deux documents qui le mentionnaient sont signalés.</p>
+</footer>
+
+</div>

@@ -166,3 +166,54 @@ auto-hébergée (fichier fourni). Il manque les deux autres familles en `.woff2`
 dont une case de consentement sous le minimum légal — étaient invisibles dans le
 JSON et évidents dès la première mesure au navigateur. Toute livraison web passe
 désormais par la porte du regard : capturer, mesurer, puis seulement conclure.
+
+---
+
+# Complément 3 du 10 septembre — l'ordre, et deux corrections
+
+Reçus : 30 envois au total (20 archives + 10 documents seuls), soit 20 textes
+plus le matériel du site. Périmètre rappelé par Mala : **Centre Soha seulement**,
+pas soha.live.
+
+## L'ordre (livrable `ordre.html`)
+Les 30 envois classés en 5 états — autorité / matière / à corriger / périmé /
+hors périmètre — répartis en 6 familles, avec l'arborescence de rangement.
+Règle : **un rôle, un seul fichier vivant** ; le reste descend dans `_archive`.
+
+## Les sept verdicts du Grand Conseil (mesurés, pas supposés)
+1. **Infolettre v04 = 809 Ko.** Gmail coupe à 102 Ko. Les images encodées
+   commencent à 788 Ko et **le lien de désabonnement est à 808 Ko** — donc
+   invisible. Ce n'est pas un problème de poids mais de Loi 25. → garder la
+   v01 du 7 sept (6 Ko).
+2. **Le nom composé à la main** (« Centre S<o coloré>ha ») dans 3 documents.
+   Canon : câbler le logo hébergé, jamais recomposer le nom.
+3. **Un second cyan** `#046C86` : 17× page Ateliers, 65× kit. → corrigé.
+4. **Quatre documents HTML composés en Inter** — la maison écrit sa charte
+   dans une police qui n'est pas la sienne.
+5. **La page Ateliers ne mène nulle part** : 6 boutons vers `#`, 6 liens vers
+   des pages inexistantes, 8 visuels en réserve. Et elle double « Se transformer ».
+6. **Deux consentements** dans la recette /reservation/ : juste, à ne pas
+   simplifier. Et j'avais dévié une décision déjà prise (voir plus bas).
+7. **Contre-verdict** : la police Georgia/Arial de l'infolettre n'est PAS une
+   faute — les clients mail ne chargent pas les polices web, et le guide
+   l'explique. Ne pas « corriger » ce qui est bien fait.
+
+## Corrections livrées
+- **Kit v08** : `#046C86` → `#19A7DB`, 65 remplacements dans 13 fichiers.
+  Plus 3 dans le socle du générateur. Il n'en reste aucun nulle part.
+- **Estimateur v2.0.2** : destination rendue à `/reservation/`, conformément à
+  la décision de l'index du 7 sept. Ma v2.0.1 l'avait détournée vers `#demande`
+  parce que la page n'existait pas — c'était la page à monter, pas la
+  destination à changer. Le vrai défaut de la v2.0.0 (chemin racine `/reservation/`
+  qui pointait la production depuis un sous-dossier) est corrigé par `home_url()`.
+- **Page `/reservation/` montée** d'après la recette : 13 champs dans l'ordre,
+  2 consentements distincts, aucun pré-coché. Kit → 13 pages, site → 26 pages.
+
+Contrôles : 628 liens internes, 0 cassé · 155 ressources, 0 manquante ·
+0 débordement horizontal · un seul H1 par page.
+
+## Leçon
+**Le dossier de décisions prime sur mon raisonnement.** J'avais tranché seul une
+destination déjà arbitrée. Lire l'index avant d'agir, pas après. Et un contrôle
+automatique ne remplace pas le jugement : la « faute » de police de l'infolettre
+était la bonne décision.
