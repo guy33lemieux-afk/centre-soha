@@ -1,0 +1,414 @@
+<title>Le bordereau du 961</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Schibsted+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --encre:#0E1A15;
+  --fond:#FBF8F3; --surface:#FFFFFF; --creux:#F1EBE1;
+  --texte:#0E1A15; --doux:#5A6862; --tres-doux:#8A968F;
+  --filet:#E2DACC; --filet-fort:#C7BCA8;
+
+  /* La sévérité prend les couleurs d'école : elles sont déjà au canon.        */
+  --bloquant:#9C1B34;      /* cramoisi assombri — sous le seuil                */
+  --reprendre:#9E6A21;     /* bâtir assombri — passable, ça se voit            */
+  --tenu:#40653D;          /* cultiver assombri — tenu                         */
+  --renvoi:#0F7FA6;        /* soigner assombri — les liens                     */
+
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --fond:#0A1310; --surface:#121D19; --creux:#18261F;
+    --texte:#EDE7DB; --doux:#9BA9A2; --tres-doux:#6C7C74;
+    --filet:#263530; --filet-fort:#3B4F47;
+    --bloquant:#F08099; --reprendre:#E5B978; --tenu:#8FC08A; --renvoi:#63C8E6;
+  }
+}
+:root[data-theme="dark"]{
+  --fond:#0A1310; --surface:#121D19; --creux:#18261F;
+  --texte:#EDE7DB; --doux:#9BA9A2; --tres-doux:#6C7C74;
+  --filet:#263530; --filet-fort:#3B4F47;
+  --bloquant:#F08099; --reprendre:#E5B978; --tenu:#8FC08A; --renvoi:#63C8E6;
+}
+
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font-family:var(--sans);
+  font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased}
+.page{max-width:860px;margin:0 auto;padding-inline:20px;padding-block:48px 110px}
+p{margin:0 0 .9em;max-width:64ch}
+a{color:var(--renvoi)}
+:focus-visible{outline:2px solid var(--renvoi);outline-offset:3px}
+strong{font-weight:600}
+code{font-family:var(--mono);font-size:.85em;background:var(--creux);
+  padding:.1em .36em;border-radius:2px;overflow-wrap:break-word}
+
+h1,h2,h3{font-family:var(--serif);font-weight:500;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.2rem,6vw,3.2rem);line-height:1.02;letter-spacing:-.02em}
+h2{font-size:clamp(1.35rem,3.2vw,1.8rem);line-height:1.14;letter-spacing:-.008em}
+h3{font-size:1.06rem;font-family:var(--sans);font-weight:600;line-height:1.3}
+
+.etiq{font-family:var(--mono);font-size:.7rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--doux);margin:0 0 14px}
+.sceau{display:flex;align-items:center;gap:8px;margin-bottom:18px}
+.sceau i{width:9px;height:9px;border-radius:50%;background:var(--renvoi)}
+.sceau b{width:46px;height:2px;background:var(--reprendre)}
+.sceau u{width:7px;height:7px;border-radius:50%;background:var(--bloquant)}
+
+.chapeau{border-bottom:1px solid var(--filet-fort);padding-bottom:28px}
+.chapeau .sous{font-size:1.12rem;color:var(--doux);max-width:52ch;margin-top:14px}
+
+section{margin-top:52px}
+section > h2{padding-bottom:10px;border-bottom:1px solid var(--filet)}
+section > p:first-of-type{margin-top:16px}
+
+/* ---- le verdict ---- */
+.verdict{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;
+  background:var(--surface);border:1px solid var(--filet);
+  padding:22px 24px;margin-top:24px}
+.note{font-family:var(--serif);font-size:3.4rem;line-height:.9;font-weight:500;
+  color:var(--reprendre);font-variant-numeric:tabular-nums;white-space:nowrap}
+.note small{font-size:1.1rem;color:var(--doux)}
+.verdict p{margin:0;max-width:46ch}
+
+/* ---- la grille sur 20 ---- */
+.grille{display:grid;gap:1px;background:var(--filet);
+  border-block:1px solid var(--filet);margin-top:24px}
+.grille div{background:var(--fond);padding:9px 0;
+  display:grid;grid-template-columns:1.6rem 1fr auto;gap:12px;align-items:baseline}
+.grille .n{font-family:var(--mono);font-size:.76rem;color:var(--tres-doux)}
+.grille .q{font-size:.97rem}
+.grille .q em{font-style:normal;color:var(--doux);font-size:.88rem;display:block}
+.grille .pts{font-family:var(--mono);font-size:.84rem;font-weight:500;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.p0{color:var(--bloquant)} .p1{color:var(--reprendre)} .p2{color:var(--tenu)}
+
+/* ---- les trois couches ---- */
+.couches{display:grid;gap:14px;margin-top:22px}
+@media (min-width:720px){.couches{grid-template-columns:repeat(3,1fr)}}
+.couche{border-top:3px solid var(--filet-fort);padding-top:12px}
+.couche.kit{border-top-color:var(--bloquant)}
+.couche.ref{border-top-color:var(--reprendre)}
+.couche.cont{border-top-color:var(--tenu)}
+.couche h3{margin-bottom:5px}
+.couche p{font-size:.93rem;color:var(--doux);margin:0;max-width:none}
+
+/* ---- le bordereau ---- */
+.ligne{border-top:1px solid var(--filet);padding:20px 0}
+.ligne:last-of-type{border-bottom:1px solid var(--filet)}
+.entete-ligne{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin-bottom:8px}
+.rang{font-family:var(--mono);font-size:.76rem;color:var(--tres-doux);
+  font-variant-numeric:tabular-nums}
+.entete-ligne h3{flex:1 1 16rem;min-width:0}
+.badge{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:.25em .55em;white-space:nowrap;
+  border:1px solid currentColor}
+.b-kit{color:var(--bloquant)} .b-ref{color:var(--reprendre)} .b-cont{color:var(--tenu)}
+.ligne p{font-size:.97rem;margin:0 0 .7em}
+.ligne p:last-child{margin-bottom:0}
+
+.preuve{font-family:var(--mono);font-size:.8rem;line-height:1.75;
+  background:var(--creux);padding:11px 14px;margin:10px 0;
+  overflow-x:auto;white-space:pre;color:var(--texte)}
+.fix{border-left:2px solid var(--renvoi);padding-left:13px;color:var(--doux);
+  font-size:.94rem}
+.fix b{color:var(--texte);font-weight:600}
+
+/* ---- le plan ---- */
+ol.plan{list-style:none;counter-reset:p;margin:22px 0 0;padding:0;
+  display:grid;gap:1px;background:var(--filet);border-block:1px solid var(--filet)}
+ol.plan li{background:var(--fond);padding:14px 0;counter-increment:p;
+  display:grid;grid-template-columns:2rem 1fr;gap:14px;align-items:start}
+ol.plan li::before{content:counter(p);font-family:var(--mono);font-size:.8rem;
+  color:var(--tres-doux);padding-top:.2em}
+ol.plan b{display:block;margin-bottom:3px}
+ol.plan span{color:var(--doux);font-size:.94rem}
+
+.regarde{background:var(--creux);padding:18px 20px;margin-top:24px}
+.regarde h3{margin-bottom:8px}
+.regarde ul{margin:0;padding-left:1.1em;font-size:.94rem;color:var(--doux)}
+.regarde li{margin-bottom:.35em}
+
+.pied{margin-top:64px;padding-top:20px;border-top:1px solid var(--filet-fort);
+  font-size:.87rem;color:var(--doux)}
+.pied p{max-width:none}
+
+@media (max-width:560px){
+  .verdict{grid-template-columns:1fr;gap:12px}
+  .grille div{grid-template-columns:1.4rem 1fr;row-gap:2px}
+  .grille .pts{grid-column:2}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="page">
+
+<header class="chapeau">
+  <div class="sceau" aria-hidden="true"><i></i><b></b><u></u></div>
+  <p class="etiq">Centre Soha · 961 Rachel Est · audit du 11 septembre 2026</p>
+  <h1>Le bordereau du&nbsp;961</h1>
+  <p class="sous">Tu trouves que la structure pourrait être meilleure. Elle peut. Voici où
+  exactement, mesuré page par page — et ce qui vient du kit, ce qui ne vient que du site de
+  référence, et ce qui vient des textes eux-mêmes.</p>
+</header>
+
+<section>
+  <h2>Le verdict</h2>
+  <div class="verdict">
+    <div class="note">12<small>&#8202;/&#8202;20</small></div>
+    <p><strong>Générique.</strong> À cette note, la consigne est nette : on reprend le rythme,
+    la variété et la matière — on ne polit pas. Ton impression était juste, et elle tombe
+    exactement là où la grille tombe.</p>
+  </div>
+
+  <p style="margin-top:22px">La note porte sur l'<strong>accueil</strong>, la page que tu as
+  nommée. Les quatre premiers critères sont ceux qui coûtent&nbsp;; les six autres sont tenus.</p>
+
+  <div class="grille">
+    <div><span class="n">1</span><span class="q">Premier écran<em>8 éléments de texte là où le contrat en autorise 4 · titre sur 4 lignes (max 2) · 2 gestes proposés</em></span><span class="pts p1">1 / 2</span></div>
+    <div><span class="n">2</span><span class="q">Hiérarchie<em>3 sauts de niveau de titre · au plissement des yeux, c'est la photo qui gagne, pas le message</em></span><span class="pts p1">1 / 2</span></div>
+    <div><span class="n">3</span><span class="q">Rythme vertical<em>quatre sections, quatre fois 80 px de respiration — écart-type 0,0</em></span><span class="pts p0">0 / 2</span></div>
+    <div><span class="n">4</span><span class="q">Variété de mise en page<em>5 sections, 2 familles, une seule colonne partout</em></span><span class="pts p0">0 / 2</span></div>
+    <div><span class="n">5</span><span class="q">Typographie<em>9 tailles distinctes (max 6) · 4 hors de la rampe du canon · 3 paragraphes au-delà de 75 ch</em></span><span class="pts p1">1 / 2</span></div>
+    <div><span class="n">6</span><span class="q">Couleur<em>un seul accent, posé sur ce qui compte · encre et ivoire portent la page</em></span><span class="pts p2">2 / 2</span></div>
+    <div><span class="n">7</span><span class="q">Matière<em>cinq vraies photographies du 961 — c'est la force de cette page</em></span><span class="pts p2">2 / 2</span></div>
+    <div><span class="n">8</span><span class="q">Mouvement<em>aucun. Le contrat est tenu par abstention, et c'est très bien</em></span><span class="pts p2">2 / 2</span></div>
+    <div><span class="n">9</span><span class="q">Voix<em>tutoiement, phrases courtes, verbes de geste, zéro jargon</em></span><span class="pts p2">2 / 2</span></div>
+    <div><span class="n">10</span><span class="q">Tenue mobile<em>aucun débordement · mais 12 écrans de défilement, et le héros en occupe 0,9</em></span><span class="pts p1">1 / 2</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Trois couches, et elles ne se corrigent pas au même endroit</h2>
+  <p>C'est la distinction la plus utile de cet audit, et elle m'a manqué la semaine dernière
+  quand je t'ai signalé un contraste en te disant que c'était ton design : c'était mon
+  générateur. Avant de corriger quoi que ce soit, il faut savoir dans quelle couche on est.</p>
+
+  <div class="couches">
+    <div class="couche kit">
+      <h3>Le kit</h3>
+      <p>Ce qui partira dans WordPress. Accueil, pages de section, réglages de typographie et
+      d'espacement. Corriger ici, c'est corriger le vrai site.</p>
+    </div>
+    <div class="couche ref">
+      <h3>Le site de référence</h3>
+      <p>Mon générateur HTML, et lui seul. Les pages d'article et les cartes du Journal sont
+      du balisage que <em>j'ai</em> écrit — WordPress rendra les siennes.</p>
+    </div>
+    <div class="couche cont">
+      <h3>Le contenu</h3>
+      <p>Les textes et les photos. Ni le kit ni le générateur n'y peuvent rien : c'est de
+      l'écriture et du choix d'image.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Le bordereau</h2>
+  <p>Neuf constats, du plus coûteux au plus léger. Chacun porte sa mesure : sans preuve, une
+  note n'est qu'une opinion déguisée.</p>
+
+  <div class="ligne">
+    <div class="entete-ligne"><span class="rang">01</span>
+      <h3>Tout le site respire à 80&nbsp;px</h3>
+      <span class="badge b-kit">kit</span></div>
+    <p>C'est la cause principale de ce que tu ressens comme un manque de structure. Chaque
+    section du site a le même espace au-dessus et en dessous. Rien n'indique à l'œil qu'un
+    passage est majeur et le suivant mineur : la page avance au même pas du début à la fin.</p>
+    <div class="preuve">accueil            paddings [80, 80, 80, 80]        écart-type 0,0
+prendre soin       paddings [110, 80, 80, 80, 80…]  écart-type 11,2
+se ressourcer      paddings [110, 80, 90, 80, 80…]  écart-type 10,5
+studio podcast     paddings [110, 80, 80, 80, 80…]  écart-type  9,9</div>
+    <p class="fix"><b>Ce qu'on fait.</b> Trois respirations au lieu d'une : une grande après le
+    héros, une moyenne entre deux idées liées, une courte entre deux blocs du même propos.
+    C'est un réglage d'espacement dans le kit, pas une refonte.</p>
+  </div>
+
+  <div class="ligne">
+    <div class="entete-ligne"><span class="rang">02</span>
+      <h3>L'accueil n'a que deux mises en page pour cinq sections</h3>
+      <span class="badge b-kit">kit</span></div>
+    <p>Tu as dit « pas équilibrée ». Voici pourquoi : les cinq sections sont toutes en
+    <strong>une seule colonne</strong>, et la seule chose qui les distingue est la présence ou
+    l'absence d'images. Le bloc « Tu soignes, tu enseignes » aggrave le tout — à gauche deux
+    cartes empilées, à droite une seule photo de 700&nbsp;px. Le titre « Espaces professionnels »
+    se retrouve tout en bas, seul, très loin de ses voisins.</p>
+    <div class="preuve">§0  héros       738 px   1 colonne   0 image    4 étiquettes
+§1  triptyque   978 px   1 colonne   2 images   1 étiquette
+§2  pratique   1397 px   1 colonne   3 images   1 étiquette
+§3  journal     773 px   1 colonne   0 image    1 étiquette
+§4  visite      501 px   1 colonne   0 image    0 étiquette</div>
+    <p class="fix"><b>Ce qu'on fait.</b> Quatre familles distinctes sur cinq sections : pleine
+    largeur, deux colonnes asymétriques, bande d'images alignées sur une même hauteur, liste.
+    Et les deux colonnes du bloc « pratique » calées sur une même ligne de base.</p>
+  </div>
+
+  <div class="ligne">
+    <div class="entete-ligne"><span class="rang">03</span>
+      <h3>Le site n'utilise pas l'échelle typographique du canon</h3>
+      <span class="badge b-kit">kit</span></div>
+    <p>Le canon fixe une rampe : 12&#8202;/&#8202;14&#8202;/&#8202;16&#8202;/&#8202;19&#8202;/&#8202;24&#8202;/&#8202;32&#8202;/&#8202;48&#8202;/&#8202;72. Le site est bâti sur une autre —
+    15&#8202;/&#8202;17&#8202;/&#8202;40&#8202;/&#8202;60 — et personne ne l'a décidé. C'est pourquoi les écarts entre un
+    titre, un intertitre et un paragraphe paraissent flous par endroits.</p>
+    <div class="preuve">hors rampe    17 px ×493   15 px ×230   40 px ×57   60 px ×16
+              13 px ×26    26 px ×13    20 px ×8    18 px ×6    11 px ×3
+tailles par page   espaces pro 11 · se ressourcer 11 · studio 10 · accueil 9</div>
+    <p class="fix"><b>Ce qu'on fait.</b> On ramène les quatre valeurs dominantes sur la rampe
+    (17→19, 15→16, 40→48, 60→72) et on supprime les cinq valeurs marginales. Un seul réglage
+    global dans le kit, et tout le site se réaligne d'un coup.</p>
+  </div>
+
+  <div class="ligne">
+    <div class="entete-ligne"><span class="rang">04</span>
+      <h3>Quatre paragraphes sur dix sont trop étroits ou trop larges</h3>
+      <span class="badge b-kit">kit</span></div>
+    <p>Une ligne de texte se lit bien entre 45 et 75 caractères. Au-delà, l'œil perd le début
+    de la ligne suivante&nbsp;; en deçà, il saute de ligne tous les trois mots. Le site fait les
+    deux, parfois sur la même page.</p>
+    <div class="preuve">415 paragraphes mesurés · 175 hors de la bande (42 %)
+se ressourcer     26 trop étroits ·  2 dans la bande ·  5 trop larges · max 171 ch
+prendre soin       9 trop étroits ·  1 dans la bande · 10 trop larges · max 141 ch
+studio podcast     3 trop étroits ·  3 dans la bande · 10 trop larges
+articles           0 trop étroits ·  6 dans la bande ·  0 trop large · max  72 ch</div>
+    <p class="fix"><b>Ce qu'on fait.</b> Une largeur maximale de texte posée une fois, et les
+    colonnes trop serrées de « Se ressourcer » élargies. À noter : <strong>les pages d'article
+    sont les mieux réglées du site</strong> sur ce point — elles servent de modèle.</p>
+  </div>
+
+  <div class="ligne">
+    <div class="entete-ligne"><span class="rang">05</span>
+      <h3>Chaque article dit deux fois qui l'a écrit</h3>
+      <span class="badge b-cont">contenu</span></div>
+    <p>Le chapeau annonce <code>JOURNAL · 30 AVRIL 2021 · CHRISTIAN VYBOH</code>, puis le corps
+    du texte reprend <em>« Par Christian Vyboh · 30 avril 2021 »</em> deux cents pixels plus
+    bas. Et comme l'extrait des cartes du Journal prend les premiers mots de l'article, la
+    signature s'affiche une troisième fois, dans la vignette.</p>
+    <div class="preuve">13 articles sur 13 · signature répétée dans le corps
+vignette du Journal : « Par Elisabeth Baile · 13 mars 2023 La voix n'est rien… »</div>
+    <p class="fix"><b>Ce qu'on fait.</b> On retire la ligne de signature du corps des treize
+    textes. Le chapeau la porte déjà, et l'extrait redevient une vraie accroche. Correction de
+    contenu : elle vaut aussi dans WordPress.</p>
+  </div>
+
+  <div class="ligne">
+    <div class="entete-ligne"><span class="rang">06</span>
+      <h3>Les cartes du Journal ne s'alignent pas — mais les photos, si</h3>
+      <span class="badge b-ref">référence</span></div>
+    <p>Je m'étais trompé en regardant la capture : j'ai cru les vignettes irrégulières. Mesure
+    faite, <strong>elles sont impeccables</strong> — treize vignettes, 252&nbsp;px chacune, écart
+    nul. Ce qui décale, ce sont les textes : les titres tiennent sur une, deux ou trois lignes,
+    et tout ce qui suit glisse d'autant.</p>
+    <div class="preuve">vignettes       13 × 252 px · écart 0 px · recadrage « cover »   ✓
+titres          30, 60 ou 90 px de haut selon le nombre de lignes
+« Lire l'article »  rangée 1 : 30 px d'écart · rangée 2 : 59 px · rangée 4 : 24 px</div>
+    <p class="fix"><b>Ce qu'on fait.</b> Titre sur deux lignes réservées et extrait sur trois,
+    quel que soit le texte : le lien de lecture retombe alors au même endroit sur toute une
+    rangée. <em>Attention</em> — c'est mon balisage. Dans WordPress, c'est Elementor qui dessine
+    ces cartes&nbsp;; il faudra vérifier son rendu après l'import.</p>
+  </div>
+
+  <div class="ligne">
+    <div class="entete-ligne"><span class="rang">07</span>
+      <h3>Les pages d'article ont trois bords gauches</h3>
+      <span class="badge b-ref">référence</span></div>
+    <p>Le titre commence à 384&nbsp;px, la photo à 142, le texte à 416. Rien ne s'aligne sur
+    rien. Et la photo change de largeur d'un article à l'autre — de 300 à 800&nbsp;px — parce
+    qu'elle s'affiche à sa taille naturelle au lieu d'occuper une colonne décidée.</p>
+    <div class="preuve">           titre   photo ←   largeur photo   texte ←
+les 13      384 px    142 px    300 / 500 / 720 / 800    416 px</div>
+    <p class="fix"><b>Ce qu'on fait.</b> Un seul axe : photo et texte sur la même colonne, même
+    bord gauche, photo à largeur fixe et hauteur recadrée. <em>Attention</em> — ce gabarit est
+    entièrement le mien. Dans WordPress, les articles seront rendus par le thème : ce que je
+    corrige ici améliore la référence, pas le site importé.</p>
+  </div>
+
+  <div class="ligne">
+    <div class="entete-ligne"><span class="rang">08</span>
+      <h3>Les photos du Journal ne sont pas celles du 961</h3>
+      <span class="badge b-cont">contenu</span></div>
+    <p>Le reste du site montre le centre : une séance de soin, un cours au sol, le mur de
+    briques, le studio. Le Journal, lui, montre une danseuse au coucher de soleil, une femme
+    qui souffle de la neige, une foule en noir et blanc. Ce sont des images de banque, et elles
+    se voient comme telles — c'est probablement une partie de ce que tu appelles « pas
+    harmonisé ».</p>
+    <p class="fix"><b>Ce qu'on fait.</b> Rien tout de suite : remplacer une photo de banque
+    demande une vraie photo. À verser au plan de tournage plutôt qu'au correctif. Trois ou
+    quatre images prises au 961 suffiraient à faire basculer la page entière.</p>
+  </div>
+
+  <div class="ligne">
+    <div class="entete-ligne"><span class="rang">09</span>
+      <h3>Six rayons d'angle, et 78 images qui ne réservent pas leur place</h3>
+      <span class="badge b-kit">kit</span> <span class="badge b-ref">référence</span></div>
+    <p>Deux petites choses qui se sentent sans se voir. Les coins arrondis prennent six valeurs
+    différentes selon l'élément — l'œil enregistre l'incohérence sans savoir la nommer. Et
+    aucune image ne déclare ses dimensions : la page se réorganise pendant le chargement, ce
+    qui donne cette impression de flottement au premier affichage.</p>
+    <div class="preuve">rayons    2px ×34 · 50% ×20 · 999px ×16 · 11px ×4 · 8px ×2 · 14px ×2
+images    78 sur 78 sans width/height · 78 sur 78 avec un alt   ✓</div>
+    <p class="fix"><b>Ce qu'on fait.</b> Un seul rayon (8&nbsp;px) sauf pour les cercles
+    volontaires, et <code>width</code>&#8202;/&#8202;<code>height</code> posés sur chaque image par le
+    générateur. Les textes alternatifs, eux, sont déjà tous là.</p>
+  </div>
+</section>
+
+<section>
+  <h2>L'ordre dans lequel je le ferais</h2>
+  <p>Du plus rentable au plus coûteux. Les trois premiers points touchent tout le site d'un
+  seul geste, et ils se font <strong>avant l'import</strong> — c'est le kit qu'on corrige.</p>
+
+  <ol class="plan">
+    <li><b>Le rythme vertical</b><span>Trois respirations au lieu d'une. Un réglage
+    d'espacement, tout le site en bénéficie. C'est le point 01, et c'est celui qui changera le
+    plus ce que tu ressens.</span></li>
+    <li><b>La rampe typographique</b><span>Quatre valeurs ramenées sur l'échelle du canon, cinq
+    valeurs marginales supprimées. Un réglage global.</span></li>
+    <li><b>La largeur du texte</b><span>Une mesure maximale posée une fois, et les colonnes
+    étranglées de « Se ressourcer » élargies.</span></li>
+    <li><b>L'accueil, sa trame</b><span>Quatre familles de mise en page au lieu de deux, et les
+    deux colonnes du bloc « pratique » alignées. C'est le seul point qui demande de redessiner
+    une page.</span></li>
+    <li><b>Les signatures en double</b><span>Treize textes à nettoyer. Correction de contenu :
+    elle voyage avec le kit.</span></li>
+    <li><b>Les cartes du Journal, les articles, les rayons, les dimensions
+    d'images</b><span>Finition. Une partie ne vaut que pour le site de référence — je le dirai
+    à chaque fois.</span></li>
+    <li><b>Les photos du Journal</b><span>Trois ou quatre images du 961. Ça ne se corrige pas,
+    ça se photographie.</span></li>
+  </ol>
+</section>
+
+<section>
+  <h2>Ce que j'ai regardé, et ce que je n'ai pas regardé</h2>
+  <div class="regarde">
+    <h3>Regardé</h3>
+    <ul>
+      <li>Les 29 pages passées au détecteur de tics : <strong>propres</strong>, deux broutilles
+      en tout (une statistique à vérifier, un noir pur).</li>
+      <li>Les 29 pages mesurées dans le navigateur : sections, familles, étiquettes, tailles,
+      rayons, mesure des paragraphes, images.</li>
+      <li>Captures ouvertes et lues : accueil (1440 et 390&nbsp;px), Journal, un article,
+      Prendre soin.</li>
+    </ul>
+    <h3 style="margin-top:14px">Pas regardé dans cette passe</h3>
+    <ul>
+      <li>Les captures des 21 autres pages — mesurées, mais pas ouvertes.</li>
+      <li>Ce qu'Elementor rendra <em>réellement</em> pour les articles et la grille du Journal
+      dans WordPress. Mon balisage n'est pas le sien&nbsp;: à vérifier après l'import.</li>
+      <li>Le mouvement et l'accessibilité au clavier — il n'y a aucune animation, et le sujet
+      mérite sa propre passe.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="pied">
+  <p>Grille de regard sur 20, dix critères, une preuve par ligne. Mesures prises le
+  11 septembre 2026 sur le site HTML v15, dans Chromium, à 1440 et 390&nbsp;px.</p>
+  <p style="margin-bottom:0">Centre Soha, 961 Rachel Est, Montréal. Le pôle soha.live n'est pas
+  concerné.</p>
+</footer>
+
+</div>

@@ -1602,3 +1602,61 @@ oubliant que ce que je regardais n'était pas le site, mais ma reconstruction du
 site. La bonne question n'était pas « ce contraste est-il acceptable ? » mais
 « d'où vient l'écart ? ». Deux minutes dans le kit répondaient ; j'ai préféré
 un jugement, et j'ai failli faire corriger à Mala quelque chose qui marchait.
+
+---
+
+# Cycle 25 · L'audit d'ensemble — et la couche qu'on oublie de nommer
+
+Mala : « Passe un audit avec tous les départements… la page d'accueil n'est pas
+équilibrée, les pages de blogue les textes et photos pas harmonisés. »
+
+## L'ordre imposé par le skill du goût
+Détecteur → mesures → **ouvrir les captures** → note. On ne saute pas l'étape 3.
+
+Détecteur sur les 29 pages : **propres**, deux broutilles. Donc ce que Mala sent
+n'est pas un tic de génération : c'est la **structure**.
+
+## Ce que les chiffres ont dit
+- **Rythme.** Accueil : paddings `[80, 80, 80, 80]`, **écart-type 0,0**. Partout
+  ailleurs `[110, 80, 80, 80…]`. Tout le site respire au même pas. C'est le
+  critère 3 de la grille, et c'est un zéro franc.
+- **Variété.** Accueil : 5 sections, **2 familles**, une seule colonne partout.
+- **Rampe.** Le site est bâti sur 15/17/40/60 alors que le canon dit
+  16/19/48/72. Personne ne l'a décidé. 9 valeurs hors rampe, jusqu'à 11 tailles
+  sur une page.
+- **Mesure.** 42 % des paragraphes hors de 45–75 ch. « Se ressourcer » : 26 trop
+  étroits, 5 trop larges, max 171 ch. Les **articles** sont les mieux réglés du
+  site (6 sur 6 dans la bande).
+
+Note de l'accueil : **12/20** → « Générique. Reprendre rythme, variété, matière. »
+La grille tombe exactement là où Mala tombait, sans se parler.
+
+## L'œil s'est trompé, la mesure a corrigé
+En lisant la capture du Journal, j'ai conclu que les vignettes étaient
+irrégulières. Mesure faite : **treize vignettes, 252 px, écart 0 px,
+`object-fit: cover`** — impeccables. Ce qui décale, ce sont les titres (30, 60 ou
+90 px selon le nombre de lignes) et donc « Lire l'article », jusqu'à **59 px**
+d'écart dans une rangée. J'ai failli livrer le mauvais diagnostic à partir d'une
+image. C'est précisément pour ça que le déterministe passe avant le visuel.
+
+## La distinction qui manquait : trois couches
+Après l'affaire du voile, j'ai posé la question avant de juger : **d'où vient ce
+que je regarde ?**
+
+- **Le kit** — accueil, pages de section, réglages. Ira dans WordPress.
+- **Le site de référence** — les pages d'article et les cartes du Journal sont du
+  balisage que *j'ai écrit*. Elementor rendra les siennes.
+- **Le contenu** — signatures en double (13/13), photos de banque du Journal.
+
+Sans cette grille de lecture, j'aurais proposé à Mala de « corriger » des pages
+d'article qui n'existent que chez moi.
+
+## Livré
+`audit.html` (artefact « Le bordereau du 961 ») · `audit_structure.py`.
+
+## Leçon
+**Avant de juger une chose, demander de quelle couche elle vient.** La semaine
+dernière j'ai pris mon générateur pour son design. Cette fois j'ai posé la
+question d'abord — et trois des neuf constats ont changé de destinataire. Un
+audit qui ne dit pas *qui* doit corriger ne se termine pas en correction ; il se
+termine en réunion.
