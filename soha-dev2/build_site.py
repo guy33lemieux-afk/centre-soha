@@ -779,6 +779,29 @@ class Rendu:
         r = longueur(s.get("button_border_radius")) or boite(s.get("button_border_radius"))
         if r:
             d.append("border-radius:%s" % r)
+
+        # La bordure du bouton d'envoi — que ce générateur ne lisait pas.
+        #
+        # Le kit décrit un bouton à contour : fond transparent, texte encre,
+        # bordure bleue de 1,5 px. On reprenait le fond transparent et le texte,
+        # on jetait la bordure : il restait un mot posé sur la page, sans forme.
+        # Sur la page de contact, le second formulaire a un texte ivoire — donc
+        # ivoire sur ivoire, un bouton « Envoyer » littéralement invisible.
+        #
+        # Dans WordPress, Elementor pose cette bordure : le défaut n'existait que
+        # dans le site de référence. C'est ce qui le rendait si difficile à voir —
+        # il fallait comparer la copie à ce que le kit déclare, pas à ce qu'on croit.
+        if s.get("button_border_border"):
+            d.append("border-style:%s" % s["button_border_border"])
+            bw = boite(s.get("button_border_width")) or longueur(s.get("button_border_width"))
+            d.append("border-width:%s" % (bw or "1px"))
+            if s.get("button_border_color"):
+                d.append("border-color:%s" % s["button_border_color"])
+        elif s.get("button_background_color") in ("rgba(0,0,0,0)", "transparent"):
+            # Un fond transparent sans bordure déclarée n'est pas un bouton :
+            # on ne devine pas de couleur, on rend au moins la forme visible.
+            d += ["border-style:solid", "border-width:1px", "border-color:currentColor"]
+
         self.ajoute(self.sel(eid) + " button", d)
         if s.get("label_color"):
             self.ajoute(self.sel(eid) + " label", ["color:%s" % s["label_color"]])
@@ -988,7 +1011,7 @@ SOCLE = """/* ============================================================
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:#FBF8F3;color:#0E1A15;
   font-family:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
-  font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  font-size:19px;line-height:1.6;-webkit-font-smoothing:antialiased}
 img,video{max-width:100%;height:auto;display:block}
 a{color:inherit}
 h1,h2,h3,h4,h5,h6{margin:0;font-weight:400}

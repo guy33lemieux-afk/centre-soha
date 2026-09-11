@@ -1660,3 +1660,78 @@ dernière j'ai pris mon générateur pour son design. Cette fois j'ai posé la
 question d'abord — et trois des neuf constats ont changé de destinataire. Un
 audit qui ne dit pas *qui* doit corriger ne se termine pas en correction ; il se
 termine en réunion.
+
+---
+
+# Cycle 26 · Les trois premiers points, le voile allégé, les boutons
+
+Mala : « vas-y et enlève les filtres sur les photos et améliore les boutons. »
+
+## Le filtre, c'était mon voile
+Aucun filtre CSS sur les photos du site — le seul `filter:` de toute la feuille
+est sur le survol d'un bouton. Ce qu'elle voyait, c'est le voile posé au cycle
+précédent. Mesuré : la photo du héros passe de **0,624 à 0,222** de luminance.
+Il en mangeait 64 %.
+
+Plutôt que de choisir à sa place entre photo et lisibilité, j'ai cherché le
+plancher par balayage : 0,70 passe, 0,60 laisse deux textes sous le seuil,
+0,65 en laisse quatre. **0,68** est la plus basse valeur qui tienne — pire cas
+5,51 pour un seuil de 4,5. La photo récupère 60 % de lumière.
+
+## Les boutons : encore ma couche
+82 boutons dans le kit, **77 avec exactement les mêmes réglages**. Le kit est
+cohérent. Les quinze formes que j'avais comptées venaient d'ailleurs — et le
+défaut réel était à moi :
+
+`w_form` lisait `button_background_color`, `button_text_color`,
+`button_text_padding`, `button_border_radius` — et **pas** `button_border_*`.
+Le kit décrit un bouton à contour (fond transparent, bordure bleue 1,5 px) ; je
+gardais le fond transparent et jetais la bordure. Sur la page de contact, le
+second formulaire a un texte ivoire : **un bouton « Envoyer » ivoire sur ivoire,
+sans bordure.** Invisible. Dans WordPress il s'affichait correctement.
+
+Corrigé, avec un garde-fou : un fond transparent sans bordure déclarée reçoit
+au moins `1px solid currentColor` — on ne devine pas une couleur, on rend la
+forme visible.
+
+Et dans le plugin estimateur (qui, lui, part dans WordPress) : la pastille de
+999 px devient un rectangle comme les 82 autres, `filter: brightness(.95)` au
+survol devient une couleur nommée, le rayon 11 px des cartes d'espace rejoint
+celui du site.
+
+**Ce que j'avais mal lu** : « `transition: all` sur 69 éléments » — c'est la
+valeur par défaut que renvoie `getComputedStyle` quand rien n'est déclaré. Il
+n'y avait rien à corriger.
+
+## Les trois points du plan
+**Rythme** — 41 sections à `80/80`, écart-type zéro. Le signal retenu : la
+section porte-t-elle une **étiquette** ? C'est à ça que sert une étiquette.
+(Premier essai : « porte-t-elle un h2 » — trente-deux sections sur quarante et
+une en portent un ; un critère que presque tout le monde satisfait ne classe
+rien.) Résultat : 16 ouvrent, 25 poursuivent ; **σ 0,0 → 31,2** sur l'accueil.
+
+**Rampe** — le kit déclarait bien 48 et 72 ; un bloc CSS de v02 les plafonnait
+à 40 et 60. Plafonds remontés. Puis 213 tailles alignées **dans le kit** — pas
+par une règle globale, qui perdrait à égalité de spécificité et laisserait
+l'éditeur Elementor afficher l'ancienne valeur. La table est écrite à la main :
+17 → **19** et non 16, parce que 16 tiendrait plus de caractères par ligne et
+empirerait la mesure.
+
+**Mesure** — 223 paragraphes de vraie prose, mesurés à la largeur d'un caractère
+réel plutôt qu'à un demi-cadratin supposé : **médiane 57 ch, max 69, 1 % hors
+bande**. Mon chiffre de 42 % dans l'audit venait d'un indicateur grossier qui
+comptait aussi les lignes de calendrier et ma propre note de démonstration.
+
+## Livré
+Kit v17 · estimateur v2.2.0 · site v16. Portes : 30 pages sans faute · 16
+contrastes au-dessus du seuil (pire cas 5,51) · 15 vérifications du fichier
+unique · aucune date périmée.
+
+## Leçon
+**Un indicateur approximatif transforme un succès en échec, et l'inverse.**
+« 42 % des paragraphes hors bande » reposait sur « un caractère ≈ un demi-em ».
+La vraie mesure, prise en dessinant cinquante zéros dans la police réelle, dit
+1 %. J'ai failli refaire une mise en page qui n'avait pas besoin de l'être —
+après avoir failli, deux cycles plus tôt, faire corriger un design qui n'avait
+rien. Le même défaut à chaque fois : croire sa propre mesure sans lui demander
+d'où elle sort.

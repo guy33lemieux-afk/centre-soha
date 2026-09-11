@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Soha — Estimateur de location
  * Description: Shortcode [soha_estimateur] — estimateur de location des espaces du Centre Soha. Grille réelle (24 tarifs), autonome, sans dépendance ACF. Le bouton pointe vers la page de réservation, et fonctionne AVANT que le JavaScript ne tourne.
- * Version:     2.1.0
+ * Version:     2.2.0
  * Author:      Centre Soha
  */
 
@@ -149,7 +149,7 @@ function soha_estim_shortcode($atts = array()) {
       #sohaEstim .se-spaces{display:grid; grid-template-columns:1fr 1fr; gap:10px}
       @media (max-width:480px){#sohaEstim .se-spaces{grid-template-columns:1fr}}
       #sohaEstim .se-space{display:flex; flex-direction:column; gap:2px; text-align:left; cursor:pointer;
-        background:#fff; border:1px solid var(--se-line); border-radius:11px; padding:13px 15px; min-height:60px; font:inherit; color:inherit}
+        background:#fff; border:1px solid var(--se-line); border-radius:0; padding:13px 15px; min-height:60px; font:inherit; color:inherit}
       #sohaEstim .se-space .se-space-name{font-family:"Fraunces",Georgia,serif; font-size:1.05rem}
       #sohaEstim .se-space .se-space-sub{font-size:.78rem; color:rgba(14,26,21,.55)}
       #sohaEstim .se-space.on{border-color:var(--se-accent); box-shadow:inset 0 0 0 1px var(--se-accent)}
@@ -166,9 +166,16 @@ function soha_estim_shortcode($atts = array()) {
       #sohaEstim .se-price small{font-size:1rem; color:var(--se-accent)}
       #sohaEstim .se-sel{font-size:.95rem; color:rgba(244,241,231,.7)}
       #sohaEstim .se-note{font-size:.74rem; color:rgba(244,241,231,.5); margin:16px 0 18px; line-height:1.5}
-      #sohaEstim .se-cta{display:inline-block; text-align:center; text-decoration:none; font-weight:600;
-        background:var(--se-accent); color:#fff; border-radius:999px; padding:14px 22px; min-height:50px}
-      #sohaEstim .se-cta:hover{filter:brightness(.95)}
+      #sohaEstim .se-cta{display:inline-flex; align-items:center; justify-content:center;
+        text-align:center; text-decoration:none; font-weight:600;
+        background:var(--se-accent); color:#fff; border:1px solid var(--se-accent);
+        border-radius:0; padding:14px 27px; min-height:48px;
+        transition:background-color 140ms cubic-bezier(.22,.61,.36,1),
+                   border-color 140ms cubic-bezier(.22,.61,.36,1)}
+      #sohaEstim .se-cta:hover,
+      #sohaEstim .se-cta:focus-visible{background:var(--se-ink); border-color:var(--se-ink); color:#fff}
+      #sohaEstim .se-cta:focus-visible{outline:2px solid var(--se-accent); outline-offset:2px}
+      @media (prefers-reduced-motion:reduce){#sohaEstim .se-cta{transition:none}}
     </style>
 
     <?php /* `data-cfasync="false"` : le site est servi derrière Cloudflare avec
