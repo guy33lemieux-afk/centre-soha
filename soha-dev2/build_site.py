@@ -180,6 +180,32 @@ def typographie(s, prefixe, suffixe=""):
     return d
 
 
+def css_voile(s):
+    """Le voile d'Elementor (« background overlay »), entre l'image et le contenu.
+
+    Le kit le déclare sur ses huit héros — `background_overlay_color` à
+    `rgba(14,26,21,0.80)` — et le générateur ne le lisait pas. Résultat : sur le
+    site HTML, un titre blanc et un paragraphe ivoire posés **nus** sur la photo.
+    Mesuré au pixel : 1,04 de contraste là où il en faut 4,5. Les seize textes
+    des huit héros étaient sous le seuil, et aucune mesure ne le disait —
+    l'image était là, la page s'affichait, rien ne manquait.
+
+    Le défaut n'était pas dans le kit : le site importé dans WordPress, lui,
+    a toujours eu son voile.
+    """
+    if s.get("background_overlay_background") != "classic":
+        return []
+    couleur = s.get("background_overlay_color")
+    if not couleur:
+        return []
+    decl = ["content:''", "position:absolute", "inset:0", "border-radius:inherit",
+            "pointer-events:none", "background-color:%s" % couleur, "z-index:0"]
+    op = s.get("background_overlay_opacity")
+    if isinstance(op, dict) and op.get("size") not in (None, ""):
+        decl.append("opacity:%s" % op["size"])
+    return decl
+
+
 def css_conteneur(s, media=None):
     """Réglages de conteneur → (déclarations base, tablette, téléphone).
 
@@ -512,6 +538,13 @@ class Rendu:
             classes.append("soha-collant")
         # le padding et le fond vont sur l'enveloppe ; la largeur interne sur e-con-inner
         self.ajoute(self.sel(eid), base, tab, tel)
+        voile = css_voile(s)
+        if voile:
+            # Le voile se dessine derrière le contenu : le conteneur devient le
+            # repère, et ses enfants remontent d'un cran.
+            self.ajoute(self.sel(eid), ["position:relative"])
+            self.ajoute(self.sel(eid) + "::before", voile)
+            self.ajoute(self.sel(eid) + " > *", ["position:relative", "z-index:1"])
         if boxed:
             lb = longueur(s.get("boxed_width"))
             if lb:

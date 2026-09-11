@@ -1540,3 +1540,65 @@ chaque page, écoutait le réseau, guettait les erreurs et le débordement — e
 elle a laissé passer 420 liens morts pendant deux cycles, parce qu'afficher un
 lien n'est pas le suivre. Le trou n'était pas dans le code : il était dans la
 liste de ce que je vérifiais.
+
+---
+
+# Cycle 24 · Le voile était déjà là — c'est moi qui ne le lisais pas
+
+J'avais signalé à Mala un contraste douteux sur le héros d'« Espaces
+professionnels », en disant que c'était un choix de design à trancher. Elle a
+dit : « oui mets le voile ». Avant de le poser, j'ai mesuré. Ce que j'ai trouvé
+n'était pas ce que j'avais annoncé.
+
+## D'abord : ce n'est pas une page, c'est huit
+
+Un balayage des vingt-neuf pages : **seize textes clairs posés sur une photo,
+sur huit pages** — tous les héros du site. Titre blanc 60 px, paragraphe ivoire
+19 px, aucun voile, aucune ombre.
+
+Mesure au pixel (on cache le texte, on photographie le fond, on lit les pixels,
+verdict sur le 95ᵉ centile — le pire cas, pas la moyenne) :
+
+| | pire cas | seuil AA |
+|---|---|---|
+| `espaces-professionnels` · paragraphe | **1,04** | 4,5 |
+| `journal` · paragraphe | **1,03** | 4,5 |
+| `contact` · titre | **1,57** | 3,0 |
+
+**16 sur 16 sous le seuil.**
+
+## Puis : le kit avait raison depuis le début
+
+Les huit conteneurs de héros déclarent
+`background_overlay_color: rgba(14,26,21,0.80)`. Elementor le dessine entre
+l'image et le texte. **Le site importé dans WordPress a toujours eu son voile.**
+
+C'est `build_site.py` qui ne lisait pas `background_overlay_*` — il rendait
+l'image de fond et laissait tomber le voile. Donc le seul endroit où ce défaut
+existait, c'est **le site HTML que j'ai livré à Mala comme référence**. La pire
+forme d'erreur pour une référence : elle fait paraître mauvais ce qui est bon, et
+elle aurait pu la pousser à « corriger » un kit qui n'avait rien.
+
+Je lui avais dit que c'était son design à trancher. C'était mon générateur.
+
+Corrigé : `css_voile()` rend le voile en `::before` (position absolue, rayon
+hérité, sans capture du pointeur), le conteneur devient le repère, ses enfants
+remontent d'un cran. Après : **16 sur 16 au-dessus du seuil**, pire cas 8,30.
+
+## Une porte de plus
+`porte_du_contraste.py` mesure ce contraste à chaque passage et échoue s'il
+descend sous AA. Éprouvée en arrachant les huit règles `::before` d'une copie :
+16 fautes, code de sortie 1. Avec le voile : 0.
+
+## Livré
+`soha_site-html_20260910_v15.zip` et l'artefact cliquable, republiés.
+Portes : 30 pages sans faute · 649 liens cliqués · 16 contrastes au-dessus du
+seuil · 15 vérifications du fichier unique.
+
+## Leçon
+**Une différence entre ma copie et l'original n'est pas un défaut de
+l'original.** J'ai vu un texte illisible et j'ai conclu au choix de design — en
+oubliant que ce que je regardais n'était pas le site, mais ma reconstruction du
+site. La bonne question n'était pas « ce contraste est-il acceptable ? » mais
+« d'où vient l'écart ? ». Deux minutes dans le kit répondaient ; j'ai préféré
+un jugement, et j'ai failli faire corriger à Mala quelque chose qui marchait.
