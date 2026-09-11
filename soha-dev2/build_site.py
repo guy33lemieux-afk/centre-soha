@@ -260,10 +260,25 @@ def css_conteneur(s, media=None):
 # --------------------------------------------------------------------------
 #  Lecture du kit
 # --------------------------------------------------------------------------
+def prefixe_du_manifeste(manifest, defaut="/dev"):
+    """Le sous-dossier où le site vit, lu dans le manifeste.
+
+    Il était écrit en dur (« /dev2 ») dans la traduction des liens. Le jour où
+    le kit est passé à « /dev », la traduction a cessé de reconnaître ses
+    propres liens : quatre cent vingt adresses internes sont sorties telles
+    quelles, absolues, mortes dès qu'on ouvre le dossier ailleurs que sur
+    centresoha.com. Aucune erreur, aucune image manquante — rien à voir tant
+    qu'on ne clique pas. On lit donc le préfixe là où il est déclaré.
+    """
+    m = re.match(r"https?://[^/]+(/[^/]+)/?$", (manifest.get("site") or ""))
+    return m.group(1) if m else defaut
+
+
 class Kit:
     def __init__(self, racine):
         self.racine = racine
         self.manifest = json.load(open(os.path.join(racine, "manifest.json"), encoding="utf-8"))
+        self.prefixe = prefixe_du_manifeste(self.manifest)
         self.reglages = json.load(open(os.path.join(racine, "site-settings.json"), encoding="utf-8"))
         self.pages = OrderedDict()
         for pid, info in sorted(self.manifest["content"]["page"].items(), key=lambda x: int(x[0])):
@@ -406,26 +421,36 @@ class Rendu:
         return ("../" + chemin) if chemin else chemin
 
     def lien(self, url):
-        """Lien du kit → lien du site statique."""
+        """Lien du kit → lien du site statique.
+
+        Le préfixe vient du manifeste (`self.kit.prefixe`), jamais d'une
+        constante : c'est en le figeant à « /dev2 » qu'on a laissé passer
+        quatre cent vingt liens absolus le jour où le site est devenu « /dev ».
+        """
         if not url:
             return "#"
         u = url.strip()
         if u.startswith(("mailto:", "tel:", "#")):
             return u
+
+        pre = self.kit.prefixe                      # « /dev »
+        pres = pre + "/"                            # « /dev/ »
+
         if re.match(r"^https?://", u):
             if "/wp-content/uploads/" in u:
                 # les images sont rapatriées en local ; les autres pièces (vidéos,
                 # PDF) restent servies par le serveur — elles ne sont dans aucun kit
                 if re.search(r"\.(webp|jpe?g|png|gif|svg|avif)$", u, re.I):
                     return self.media(u)
-                return u.replace("/dev2/wp-content/", "/dev/wp-content/")
-            m = re.match(r"^https?://[^/]+/dev2/?(.*)$", u)
+                return re.sub(r"/dev\d*/wp-content/", pres + "wp-content/", u)
+            m = re.match(r"^https?://[^/]+" + re.escape(pre) + r"(?:/(.*))?$", u)
             if m:
-                u = "/dev2/" + m.group(1)
+                u = pres + (m.group(1) or "")
             else:
                 return u                       # lien vraiment externe : on n'y touche pas
-        if u.startswith("/dev2/"):
-            reste = u[len("/dev2/"):]
+
+        if u == pre or u.startswith(pres):
+            reste = u[len(pres):] if u.startswith(pres) else ""
             ancre = ""
             if "#" in reste:
                 reste, ancre = reste.split("#", 1)
@@ -1361,6 +1386,9 @@ SOMMAIRE = """<!DOCTYPE html>
   <div class="s-bloc">
     <h2>Commence ici</h2>
     <ul class="s-liste"><li><a href="index.html">L'accueil</a><code>index.html</code></li></ul>
+    <p>Et à côté de ce dossier, <strong>soha-site-cliquable.html</strong> : le même
+    site entier dans un seul fichier. Rien à décompresser, rien à installer — on
+    l'ouvre, on clique dedans. C'est celui qu'on envoie à quelqu'un.</p>
   </div>
 
   <div class="s-bloc">

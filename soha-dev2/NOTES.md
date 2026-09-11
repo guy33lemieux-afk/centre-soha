@@ -1459,3 +1459,84 @@ pas en regardant ce qui a été produit, mais en comparant à la source : seize
 pages attendues, seize écrites ; vingt-six `post`, treize articles et treize
 images. Sans ce comptage, j'aurais renvoyé le zip en disant « il est complet »,
 et j'aurais eu raison — par chance, pas par vérification.
+
+---
+
+# Cycle 23 · « Monté comme un site cliquable » — et 420 liens qui ne menaient nulle part
+
+Mala : « je veux le html monté comme un site cliquable ». Avant de le monter,
+j'ai vérifié que les liens **étaient** cliquables. Ils ne l'étaient pas.
+
+## Quatre cent vingt liens absolus
+
+Chaque adresse interne écrite dans le contenu Elementor sortait telle quelle :
+`/dev/prendre-soin/` ×64, `/dev/confidentialite/` ×62, `/dev/` ×33… **420 en
+tout.** Hors de centresoha.com — donc dans le dossier livré, ouvert en local —
+aucun ne menait quelque part.
+
+La cause est à moi et elle date du cycle 16. Le traducteur de liens de
+`build_site.py` cherchait `/dev2/`, écrit en dur. Le jour où j'ai aligné le kit
+sur `/dev`, il a cessé de reconnaître ses propres liens et les a laissés passer.
+Aucune erreur, aucune image manquante, aucune page blanche. **La porte du regard
+ne clique pas** : elle ouvre les pages, elle ne les suit pas.
+
+Corrigé : le préfixe est lu dans le manifeste (`prefixe_du_manifeste`), comme
+`kit_liens.py` le fait déjà. 420 → **0**, et 789 liens internes tous valides.
+
+## Deux défauts découverts en corrigeant le premier
+
+**Le préfixe mordait dans son voisin.** `/dev` acceptait `/dev2/…` comme
+« `/dev` suivi de `2/` » : l'adresse devenait `2.html`, un fichier qui n'existe
+pas. Borné.
+
+**Et le kit partait à l'import avec deux liens morts.** `kit_liens.py` ne
+rattrapait que les adresses relatives : son garde-fou — « pas précédé d'une
+lettre » — existait pour ne pas mordre dans `https://`, mais écartait du même
+coup `centresoha.com/dev2/`. Les deux rescapés étaient sur la page **« Page
+introuvable »** : ses deux boutons de secours menaient à `/dev2/`. Une page
+d'erreur dont les deux sorties sont elles-mêmes des erreurs. La nouvelle règle
+est **bornée au domaine du kit** — sans quoi on casserait un lien sortant pour
+en réparer un entrant.
+
+## La porte clique, maintenant
+
+`porte_du_regard.py` refuse désormais tout lien interne absolu ou pointant vers
+un fichier absent. Vérifié en posant deux pièges dans une copie : les deux sont
+tombés. (Et la règle s'est trompée une fois avant de se corriger : elle prenait
+`reservation.html?espace=…` pour une page absente — c'est l'estimateur qui passe
+son choix en paramètres.)
+
+## Le site en un fichier
+
+`build_site_unique.py` : l'en-tête et le pied gardés une fois — après avoir
+**vérifié** qu'ils sont identiques sur les vingt-neuf pages — et les `<main>`
+empilés, tous cachés sauf un. 86 fichiers (74 images, 12 polices) encodés en
+`data:`. 4,7 Mo, zéro appel réseau.
+
+Neuf identifiants étaient en double entre les pages — `courriel` ×33,
+`consentement` ×32. Dans un seul document, `<label for="courriel">` en désigne un
+seul : celui d'une page cachée. On clique l'étiquette, rien ne bouge. Ils sont
+préfixés par page ; les identifiants **uniques** ne le sont pas, parce que deux
+scripts cherchent `#sohaEstim` et `#soha-semaine` par leur nom.
+
+`porte_du_fichier_unique.py` l'ouvre et **clique dedans** : les 29 vues,
+**649 liens cliqués un par un**, le bouton « retour », l'estimateur qui calcule
+et mène à la réservation, le calendrier qui se monte, zéro identifiant en double,
+zéro erreur. **15 vérifications, 0 échec.**
+
+## Signalé, pas corrigé
+Le paragraphe d'accroche d'« Espaces professionnels » est en ivoire `#EDE9E1`,
+19 px, **sans voile ni ombre**, posé sur une photo de plancher clair. Le
+contraste tombe sous le seuil AA sur les zones pâles. C'est dans le kit, pas
+dans le montage : c'est un choix de design, donc c'est à Mala de trancher.
+
+## Livré
+`soha_site-html_20260910_v14.zip` (le dossier **et** le fichier unique) et
+l'artefact cliquable.
+
+## Leçon
+**Une mesure ne prouve que ce qu'elle regarde.** La porte du regard ouvrait
+chaque page, écoutait le réseau, guettait les erreurs et le débordement — et
+elle a laissé passer 420 liens morts pendant deux cycles, parce qu'afficher un
+lien n'est pas le suivre. Le trou n'était pas dans le code : il était dans la
+liste de ce que je vérifiais.

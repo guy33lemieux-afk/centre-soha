@@ -70,6 +70,7 @@ def regarder(site, chromium, port=8760):
             for nom in pages:
                 page = ctx.new_page()
                 manquants, dehors, erreurs = [], [], []
+                liens_absolus, liens_morts = [], []
 
                 page.on("response", lambda r: manquants.append("%d %s" % (r.status, r.url))
                         if r.status >= 400 and "favicon" not in r.url else None)
@@ -89,10 +90,36 @@ def regarder(site, chromium, port=8760):
                     if m["doc"] > m["vue"] + 1:
                         deborde.append("%dpx (doc %dpx)" % (l, m["doc"]))
 
+                # Les liens : le navigateur les affiche, il ne les suit pas.
+                #
+                # C'est le trou par lequel quatre cent vingt liens absolus sont
+                # passés. Le jour où le kit est devenu « /dev » et que la
+                # traduction cherchait encore « /dev2 », chaque adresse interne
+                # est sortie telle quelle. Rien ne manquait, rien n'échouait,
+                # aucune image n'était absente — seulement, hors de
+                # centresoha.com, plus un seul de ces liens ne menait quelque
+                # part. Un lien mort ne se plaint jamais : il faut aller le
+                # chercher.
+                liens = page.eval_on_selector_all(
+                    "a[href]", "els => els.map(e => e.getAttribute('href'))")
+                for h in liens:
+                    h = (h or "").strip()
+                    if not h or h.startswith(("mailto:", "tel:", "#",
+                                              "http://", "https://")):
+                        continue
+                    if h.startswith("/"):
+                        liens_absolus.append(h)
+                        continue
+                    cible = h.split("#")[0].split("?")[0]
+                    if cible and not os.path.exists(os.path.join(site, cible)):
+                        liens_morts.append(h)
+
                 for quoi, liste in (("ressource introuvable", manquants),
                                     ("appel externe", dehors),
                                     ("erreur JavaScript", erreurs),
-                                    ("débordement horizontal", deborde)):
+                                    ("débordement horizontal", deborde),
+                                    ("lien absolu (mort hors du serveur)", sorted(set(liens_absolus))),
+                                    ("lien vers un fichier absent", sorted(set(liens_morts)))):
                     for x in liste:
                         fautes.append((nom, quoi, x))
 
