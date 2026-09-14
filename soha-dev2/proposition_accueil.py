@@ -124,6 +124,13 @@ FEUILLE = """<style>
      Elles cèdent la place aux valeurs que la feuille du site emploie déjà :
      #5A6460 (75 emplois) et #E0D8CA (65). L'italique reprend Soigner du canon. */
   --doux:#5A6460;--filet:#E0D8CA;
+  /* Le cadre. Le gabarit n'avait AUCUNE largeur maximale : le texte du
+     héros atteignait 84,3 caractères sur un large écran, très au-delà des
+     65 lisibles. On ne peut pas poser `max-width` sur les sections — deux
+     d'entre elles portent un fond qui doit saigner jusqu'aux bords. La
+     marge calculée fait les deux : le fond reste pleine page, le contenu
+     tient dans un cadre centré, et il n'y a pas un div de plus. */
+  --cadre:1180px;--marge:max(40px,(100%% - var(--cadre)) / 2);
   --serif:"Fraunces",Georgia,"Times New Roman",serif;
   --sans:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"DM Mono",ui-monospace,Menlo,monospace;
@@ -146,7 +153,12 @@ FEUILLE = """<style>
 .pr-etiq{font-family:var(--mono);font-size:12px;letter-spacing:.16em;
   text-transform:uppercase;color:#3F4A45}
 .pr-chapeau{color:var(--doux);max-width:46ch}
-.pr-dit{font-size:16px;color:var(--doux)}
+/* La description de carte n'avait aucun plafond : 88,1 caracteres mesures a
+   960 px — pire que les 84,3 que le conseil denonçait. Le cadre de 1180 px
+   ne l'attrape pas, parce qu'il ne mord qu'au-dessus de 1260 px de fenetre.
+   La mesure se plafonne donc la ou le texte coule, pas plus haut. 46ch est
+   la valeur que `.pr-chapeau` emploie deja. */
+.pr-dit{font-size:16px;color:var(--doux);max-width:46ch}
 .pr-num{font-family:var(--mono);font-size:12px;color:var(--doux)}
 /* Les sept liens « Voir … » — le geste principal de chaque porte — mesuraient
    20 px de haut à TOUTES les largeurs, quand le site livré impose déjà 44 px
@@ -173,7 +185,7 @@ FEUILLE = """<style>
 
 /* A — le héros. La photo tient la hauteur du texte : plus de colonne vide. */
 .pr-hero{display:grid;grid-template-columns:6fr 6fr;gap:48px;align-items:center;
-  padding:96px 40px;background:var(--ivoire)}
+  padding:96px var(--marge);background:var(--ivoire)}
 .pr-hero-dit{display:flex;flex-direction:column;gap:18px}
 .pr-hero-vue{margin:0;display:flex;flex-direction:column;gap:10px}
 .pr-hero-vue img{aspect-ratio:4/3}
@@ -181,12 +193,12 @@ FEUILLE = """<style>
   text-transform:uppercase;color:var(--doux)}
 
 /* B et C — deux bandes de portes, deux échelles différentes. */
-.pr-bande{padding:120px 40px 48px}
+.pr-bande{padding:120px var(--marge) 48px}
 .pr-bande + .pr-bande{padding-top:48px}
 .pr-tete{display:flex;flex-direction:column;gap:12px;margin-bottom:36px;max-width:62ch}
 .pr-grille{display:grid;gap:32px;align-items:stretch}
-.pr-grille--deux{grid-template-columns:repeat(2,1fr)}
-.pr-grille--trois{grid-template-columns:repeat(3,1fr)}
+.pr-grille--deux{grid-template-columns:repeat(auto-fit,minmax(min(420px,100%%),1fr))}
+.pr-grille--trois{grid-template-columns:repeat(auto-fit,minmax(min(280px,100%%),1fr))}
 .pr-porte{display:flex;flex-direction:column;gap:8px;height:100%%}
 .pr-porte .pr-lien{margin-top:auto;padding-top:8px}
 .pr-porte h3{margin-top:2px}
@@ -199,7 +211,7 @@ FEUILLE = """<style>
 
 /* D — le lieu. Fond encre : la rupture se voit avant d'être lue. */
 .pr-lieu{display:grid;grid-template-columns:7fr 5fr;gap:56px;align-items:center;
-  padding:96px 40px;margin-top:72px;background:var(--encre);color:var(--ivoire)}
+  padding:96px var(--marge);margin-top:72px;background:var(--encre);color:var(--ivoire)}
 .pr-lieu h2{color:var(--ivoire)}
 .pr-lieu .pr-etiq{color:var(--soigner)}
 .pr-lieu em{color:var(--soigner)}
@@ -211,17 +223,22 @@ FEUILLE = """<style>
 .pr-reperes dd{margin:2px 0 0;font-size:14px;color:rgba(244,240,231,.66)}
 
 /* E — la sortie. Courte : la page se referme au lieu de s'éteindre. */
-.pr-sortie{padding:72px 40px 96px}
+.pr-sortie{padding:72px var(--marge) 96px}
 .pr-sortie h2{margin-bottom:28px}
-.pr-chemins{display:grid;grid-template-columns:repeat(2,1fr);gap:40px;
+.pr-chemins{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%%),1fr));gap:40px;
   border-top:1px solid var(--filet);padding-top:28px}
 .pr-chemins > div{display:flex;flex-direction:column;gap:10px}
 
-@media (max-width:900px){
-  .pr-hero,.pr-lieu{grid-template-columns:1fr;gap:32px;padding:56px 22px}
-  .pr-bande{padding:64px 22px 32px}
-  .pr-sortie{padding:48px 22px 64px}
-  .pr-grille--deux,.pr-grille--trois,.pr-chemins{grid-template-columns:1fr}
+/* Un palier intermédiaire : le lieu resserre son asymétrie avant de la
+   rendre, au lieu de la perdre d'un coup. */
+@media (max-width:1080px){
+  .pr-lieu{grid-template-columns:8fr 4fr;gap:40px}
+  .pr-hero{gap:36px}
+}
+@media (max-width:860px){
+  .pr-hero,.pr-lieu{grid-template-columns:1fr;gap:32px;padding:56px var(--marge)}
+  .pr-bande{padding:64px var(--marge) 32px}
+  .pr-sortie{padding:48px var(--marge) 64px}
   .pr-vue--carre{aspect-ratio:16/10}
 }
 @media (prefers-reduced-motion:reduce){.pr-ecran *{transition:none!important}}
