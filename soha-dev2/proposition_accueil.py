@@ -92,7 +92,7 @@ def construire(site):
 
     grandes = "".join(
         '<article class="pr-porte pr-porte--large">'
-        '<div class="pr-vue pr-vue--16x10"><img src="%s" alt="%s, au Centre Soha"></div>'
+        '<div class="pr-vue pr-vue--16x10"><img src="%s" alt=""%.0s></div>'
         '<p class="pr-num">%s</p><h3>%s</h3><p class="pr-dit">%s</p>'
         '<p class="pr-lien"><a href="#">%s <span aria-hidden="true">→</span></a></p>'
         '</article>' % (uri(site, img), titre, num, titre, texte, lien)
@@ -100,7 +100,7 @@ def construire(site):
 
     petites = "".join(
         '<article class="pr-porte">'
-        '<div class="pr-vue pr-vue--carre"><img src="%s" alt="%s, au Centre Soha"></div>'
+        '<div class="pr-vue pr-vue--carre"><img src="%s" alt=""%.0s></div>'
         '<p class="pr-num">%s</p><h3>%s</h3><p class="pr-dit">%s</p>'
         '<p class="pr-lien"><a href="#">%s <span aria-hidden="true">→</span></a></p>'
         '</article>' % (uri(site, img), titre, num, titre, texte, lien)
@@ -148,9 +148,17 @@ FEUILLE = """<style>
 .pr-chapeau{color:var(--doux);max-width:46ch}
 .pr-dit{font-size:16px;color:var(--doux)}
 .pr-num{font-family:var(--mono);font-size:12px;color:var(--doux)}
-.pr-lien a{font-size:14px;font-weight:600;color:var(--encre);text-decoration:none;
-  border-bottom:1.5px solid var(--soigner);padding-bottom:2px}
-.pr-lien a:hover{border-bottom-color:var(--encre)}
+/* Les sept liens « Voir … » — le geste principal de chaque porte — mesuraient
+   20 px de haut à TOUTES les largeurs, quand le site livré impose déjà 44 px
+   (WCAG 2.2, cible tactile). La boîte monte donc à 44 px.
+   Et le filet quitte le BORD de la boîte pour se poser sur les LETTRES : un
+   `border-bottom` sur une boîte de 44 px aurait flotté vingt pixels sous le
+   mot. C'est exactement l'erreur que j'ai faite trois fois ce matin. */
+.pr-lien a{display:inline-flex;align-items:center;min-height:44px;
+  font-size:14px;font-weight:600;color:var(--encre);
+  text-decoration:underline;text-decoration-color:var(--soigner);
+  text-decoration-thickness:1.5px;text-underline-offset:4px}
+.pr-lien a:hover{text-decoration-thickness:3px}
 .pr-bouton{display:inline-flex;align-items:center;justify-content:center;
   min-height:44px;padding:14px 27px;font-size:14px;font-weight:600;
   text-decoration:none;color:var(--encre);border:1px solid var(--soigner);
