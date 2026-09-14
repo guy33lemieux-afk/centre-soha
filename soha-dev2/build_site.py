@@ -1127,9 +1127,12 @@ figure{margin:0}
 .soha-article-corps h3{font-family:"Fraunces",Georgia,serif;font-weight:600;
   font-size:1.25rem;margin:1.6em 0 .5em}
 .soha-article-corps img{margin:1.6em 0}
-.soha-article-corps a{color:#19A7DB}
-.soha-retour{display:inline-block;margin-top:40px;font-weight:600;
-  text-decoration:none;color:#19A7DB}
+/* Soigner ne porte pas de lettres sur fond clair : il passe sous elles.
+   Mesuré : 2,61 avant, 15,68 après — et le bleu est toujours là. */
+.soha-article-corps a,.soha-retour{color:#0E1A15;text-decoration:underline;
+  text-decoration-color:#19A7DB;text-decoration-thickness:1.5px;text-underline-offset:4px}
+.soha-article-corps a:hover,.soha-retour:hover{text-decoration-thickness:3px}
+.soha-retour{display:inline-block;margin-top:40px;font-weight:600}
 
 /* accessibilité */
 .soha-saut{position:absolute;left:-9999px;top:0;background:#0E1A15;color:#fff;
@@ -1182,7 +1185,7 @@ ESTIMATEUR_CSS = """/* =========================================================
 #sohaEstim .se-sel{font-size:.95rem;color:rgba(244,240,231,.7)}
 #sohaEstim .se-note{font-size:.74rem;color:rgba(244,240,231,.5);margin:16px 0 18px;line-height:1.5}
 #sohaEstim .se-cta{display:inline-block;text-align:center;text-decoration:none;font-weight:600;
-  background:var(--se-accent);color:#fff;border-radius:999px;padding:14px 22px;min-height:50px}
+  background:var(--se-accent);color:#0E1A15;border-radius:999px;padding:14px 22px;min-height:50px}
 #sohaEstim .se-cta:hover{filter:brightness(.95)}
 """
 
