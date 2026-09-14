@@ -182,7 +182,7 @@ BLOC_CSS = """
 
 
 /* ============================================================
-   SOHA — la trame de l'accueil · v06 · 14 septembre 2026
+   SOHA — la trame de l'accueil · v06b · 14 septembre 2026
    Deux classes, posées sur la page d'accueil par kit_accueil.py.
    Additif : aucune règle ci-dessus n'est remplacée.
    ============================================================ */
@@ -203,15 +203,39 @@ BLOC_CSS = """
 
 /* --- Le lieu, sur encre ----------------------------------------------------
    Une règle plutôt que quinze réglages de widget : un widget oublié se
-   verrait, une règle non. Le bleu Soigner s'éclaircit pour tenir sur l'encre —
-   #19A7DB n'y passe pas le seuil de contraste, #63C8E6 oui. */
-.soha-lieu,.soha-lieu h1,.soha-lieu h2,.soha-lieu h3,.soha-lieu h4,
-.soha-lieu p,.soha-lieu li,.soha-lieu .elementor-heading-title{color:#F4F0E7}
-.soha-lieu .elementor-widget-text-editor{color:rgba(244,240,231,.82)}
-.soha-lieu em,.soha-lieu .disp-em{color:#63C8E6}
-.soha-lieu a:not(.elementor-button){color:#63C8E6}
-.soha-lieu .elementor-button{color:#F4F0E7;border-color:#F4F0E7}
-.soha-lieu .elementor-button:hover{background:#F4F0E7;color:#0E1A15}
+   verrait, une règle non.
+
+   La classe est DOUBLÉE — `.soha-lieu.soha-lieu` — et ce n'est pas une
+   coquetterie. Elementor écrit ses couleurs ainsi :
+
+       .elementor-element-54f43e66 .elementor-heading-title{color:#0E1A15}
+
+   soit deux classes. Une règle en `.soha-lieu h3` n'en compte qu'une : elle
+   perd, et le titre reste encre SUR l'encre — invisible. C'est exactement ce
+   que la porte du contraste a mesuré, à 1,00 sur 4,5. Répéter la classe porte
+   la nôtre à trois : elle gagne, sans un seul `!important`.
+
+   Et le bleu reste le bleu du canon : #19A7DB tient 6,45 sur l'encre, bien
+   au-dessus des 4,5 exigés. Le #63C8E6 des premières esquisses est abandonné —
+   il n'appartient à aucune des trois familles. */
+.soha-lieu.soha-lieu,
+.soha-lieu.soha-lieu h1,.soha-lieu.soha-lieu h2,.soha-lieu.soha-lieu h3,
+.soha-lieu.soha-lieu h4,.soha-lieu.soha-lieu h5,
+.soha-lieu.soha-lieu p,.soha-lieu.soha-lieu li,
+.soha-lieu.soha-lieu .elementor-heading-title{color:#F4F0E7}
+/* Le surtitre et le corps de texte restent en retrait, sans descendre sous le
+   seuil : l'ivoire à 72 % tient encore 8,14 sur l'encre. */
+.soha-lieu.soha-lieu h6,
+.soha-lieu.soha-lieu h6.elementor-heading-title{color:rgba(244,240,231,.72)}
+.soha-lieu.soha-lieu .elementor-widget-text-editor{color:rgba(244,240,231,.82)}
+.soha-lieu.soha-lieu em,.soha-lieu.soha-lieu .disp-em{color:#19A7DB}
+.soha-lieu.soha-lieu a:not(.elementor-button){color:#19A7DB}
+/* Le bouton portait un texte encre et une bordure bleue : sur l'encre, le texte
+   disparaissait purement et simplement (1,00). */
+.soha-lieu.soha-lieu .elementor-button{color:#F4F0E7;border-color:#F4F0E7;background-color:transparent}
+.soha-lieu.soha-lieu .elementor-button .elementor-button-text{color:inherit}
+.soha-lieu.soha-lieu .elementor-button:hover{background-color:#F4F0E7;color:#0E1A15;border-color:#F4F0E7}
+.soha-lieu.soha-lieu .elementor-button:hover .elementor-button-text{color:#0E1A15}
 /* Les quatre repères portaient chacun le fond ivoire de la page : sur encre,
    ils redeviennent des renseignements posés sur le fond, séparés par un filet. */
 .soha-lieu .e-con[style],.soha-lieu .e-con{background-color:transparent !important}
@@ -224,7 +248,7 @@ def poser_le_style(kit, journal, ecrire=True):
     d = json.load(open(chemin, encoding="utf-8"))
     st = d.setdefault("settings", {})
     css = st.get("custom_css", "")
-    if "la trame de l'accueil · v06" in css:
+    if "la trame de l'accueil · v06b" in css:
         journal.append("style : le bloc v06 est déjà là")
         return
     st["custom_css"] = css + BLOC_CSS

@@ -1095,7 +1095,10 @@ figure{margin:0}
 .soha-champ-case input{flex:none;width:24px;height:24px;min-height:0;margin-top:2px;accent-color:#19A7DB}
 .soha-formulaire button{font:inherit;cursor:pointer;border:0;background:#19A7DB;color:#fff;
   padding:14px 26px;min-height:48px;border-radius:2px;justify-self:start}
-.soha-note-form{font-size:.8rem;color:#6B7A73;margin:0}
+/* L'avis de démonstration n'existe que dans CE site de référence — il ne part
+   jamais vers WordPress. Il se lit quand même : l'encre à 70 % tient 6,23 sur
+   l'ivoire, là où le gris précédent plafonnait à 3,97. */
+.soha-note-form{font-size:.8rem;color:rgba(14,26,21,.70);margin:0}
 
 /* cartes d'articles */
 .soha-carte{display:flex;flex-direction:column;gap:12px;min-width:0}

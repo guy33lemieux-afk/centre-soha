@@ -129,6 +129,47 @@ PIXELS = r"""async (b64) => {
 }"""
 
 
+# ── Le texte posé sur une couleur, et non sur une photo ─────────────────────
+#
+# La première version de cette porte ne regardait que le texte CLAIR posé sur une
+# IMAGE. Elle a donc laissé passer exactement ce qu'un département a trouvé à la
+# main : une étiquette de 12 px en #0F7FA6 sur ivoire, à 4,30 pour un seuil de
+# 4,5. Le défaut n'était pas dans la page, il était dans la liste de ce que je
+# vérifiais — pour la troisième fois de ce projet.
+#
+# Ici, pas de pixels : la couleur du texte et celle du premier fond opaque
+# au-dessus de lui suffisent, et se lisent exactement.
+SUR_COULEUR = r"""() => {
+  function rgb(c){
+    var m = (c||'').match(/[\d.]+/g);
+    return m && m.length >= 3 ? [+m[0], +m[1], +m[2], m.length > 3 ? +m[3] : 1] : null;
+  }
+  var out = [];
+  document.querySelectorAll('main *, #soha-vues *').forEach(function(e){
+    if (e.children.length) return;
+    var t = (e.innerText||'').trim(); if (t.length < 3) return;
+    var cs = getComputedStyle(e);
+    if (cs.visibility === 'hidden' || cs.display === 'none') return;
+    var r = e.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return;
+
+    // Le premier fond opaque en remontant. Une image de fond : on passe —
+    // c'est l'autre moitié de la porte qui s'en occupe, aux pixels.
+    var a = e, fond = null;
+    for (var i = 0; i < 14 && a; i++, a = a.parentElement){
+      var acs = getComputedStyle(a);
+      if (acs.backgroundImage && acs.backgroundImage.indexOf('url(') === 0) return;
+      var b = rgb(acs.backgroundColor);
+      if (b && b[3] >= 0.98){ fond = b; break; }
+    }
+    if (!fond) return;
+    var c = rgb(cs.color); if (!c) return;
+    out.push({texte: t.slice(0,40), couleur: [c[0],c[1],c[2]], fond: [fond[0],fond[1],fond[2]],
+              taille: parseFloat(cs.fontSize), poids: parseInt(cs.fontWeight,10) || 400});
+  });
+  return out;
+}"""
+
+
 def seuil_de(taille, poids):
     """WCAG 2.2 AA : 3,0 pour le texte large, 4,5 pour le reste."""
     grand = taille >= 24 or (taille >= 18.66 and poids >= 700)
@@ -152,6 +193,15 @@ def mesurer(site, chromium, port=PORT):
                 pg = nav.new_page(viewport={"width": 1440, "height": 900})
                 pg.goto("%s/%s" % (base, nom), wait_until="networkidle")
                 pg.wait_for_timeout(250)
+                for x in pg.evaluate(SUR_COULEUR):
+                    resultats.append({
+                        "page": nom, "texte": x["texte"], "ou": "couleur",
+                        "taille": x["taille"], "poids": x["poids"],
+                        "median": contraste(x["couleur"], x["fond"]),
+                        "pire": contraste(x["couleur"], x["fond"]),
+                        "seuil": seuil_de(x["taille"], x["poids"]),
+                    })
+
                 candidats = pg.evaluate(CANDIDATS)
                 if not candidats:
                     pg.close()
@@ -168,7 +218,7 @@ def mesurer(site, chromium, port=PORT):
                     couleur = [int(v) for v in
                                c["couleur"].replace("rgb(", "").replace(")", "").split(",")[:3]]
                     resultats.append({
-                        "page": nom, "texte": c["texte"],
+                        "page": nom, "texte": c["texte"], "ou": "photo",
                         "taille": c["taille"], "poids": c["poids"],
                         "median": contraste(couleur, px[len(px) // 2]),
                         "pire": contraste(couleur, pire),
@@ -203,7 +253,10 @@ def main():
                      "◀ SOUS LE SEUIL" if x["pire"] < x["seuil"] else ""))
         print()
 
-    print("%d texte(s) clair(s) sur photo mesuré(s)." % len(r))
+    photo = [x for x in r if x.get("ou") == "photo"]
+    couleur = [x for x in r if x.get("ou") == "couleur"]
+    print("%d texte(s) mesuré(s) — %d sur photo, %d sur couleur."
+          % (len(r), len(photo), len(couleur)))
     if sous:
         print("%d sous le seuil WCAG AA." % len(sous))
         return 1

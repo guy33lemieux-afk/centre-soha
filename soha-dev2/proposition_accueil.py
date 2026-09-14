@@ -132,14 +132,16 @@ FEUILLE = """<style>
 .pr-ecran h3{font-size:24px;line-height:1.2}
 .pr-ecran p{margin:0}
 .pr-ecran em{font-style:italic;color:var(--soigner-lu)}
+/* 12 px en #0F7FA6 donne 4,30 sur ivoire — sous le seuil de 4,5. L'étiquette
+   passe à l'encre adoucie ; le bleu reste, sur le filet qui la précède. */
 .pr-etiq{font-family:var(--mono);font-size:12px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--soigner-lu)}
+  text-transform:uppercase;color:#3F4A45}
 .pr-chapeau{color:var(--doux);max-width:46ch}
 .pr-dit{font-size:16px;color:var(--doux)}
 .pr-num{font-family:var(--mono);font-size:12px;color:var(--doux)}
-.pr-lien a{font-size:14px;font-weight:600;color:var(--soigner-lu);text-decoration:none;
-  border-bottom:1px solid rgba(15,127,166,.3);padding-bottom:1px}
-.pr-lien a:hover{border-bottom-color:var(--soigner-lu)}
+.pr-lien a{font-size:14px;font-weight:600;color:var(--encre);text-decoration:none;
+  border-bottom:1.5px solid var(--soigner);padding-bottom:2px}
+.pr-lien a:hover{border-bottom-color:var(--encre)}
 .pr-bouton{display:inline-flex;align-items:center;justify-content:center;
   min-height:44px;padding:14px 27px;font-size:14px;font-weight:600;
   text-decoration:none;color:var(--encre);border:1px solid var(--soigner);
@@ -182,8 +184,8 @@ FEUILLE = """<style>
 .pr-lieu{display:grid;grid-template-columns:7fr 5fr;gap:56px;align-items:center;
   padding:96px 40px;margin-top:72px;background:var(--encre);color:var(--ivoire)}
 .pr-lieu h2{color:var(--ivoire)}
-.pr-lieu .pr-etiq{color:#63C8E6}
-.pr-lieu em{color:#63C8E6}
+.pr-lieu .pr-etiq{color:var(--soigner)}
+.pr-lieu em{color:var(--soigner)}
 .pr-lieu-dit{display:flex;flex-direction:column;gap:16px;max-width:52ch}
 .pr-lieu-dit p{color:rgba(244,240,231,.82)}
 .pr-reperes{margin:0;display:grid;gap:1px;background:rgba(244,240,231,.16);align-self:start}
@@ -255,6 +257,10 @@ FEUILLE = """<style>
     <h2>Deux portes <em>voisines</em></h2>
     <p>Le 961 pour les cours, les formations et le studio. Le 957, juste à côté,
     pour les soins, à l'étage.</p>
+    <p>Un lieu change ce qui s'y passe. Une salle trop froide, un mur trop mince,
+    un plancher qui craque — et l'heure est perdue. Nous nous occupons du
+    chauffage, du son, des tapis et du silence, pour qu'il ne te reste qu'à faire
+    ce que tu es venu·e faire.</p>
     <p>Que tu viennes pour une séance ou pour y installer ta pratique, la porte
     est la même.</p>
     <p class="pr-geste">
@@ -271,6 +277,8 @@ FEUILLE = """<style>
   <div class="pr-chemins">
     <div>
       <h3>Tu viens prendre soin de toi</h3>
+      <p class="pr-dit">Choisis un cours ou une thérapeute, et réserve en ligne.
+      C'est ta première fois ?</p>
       <p class="pr-lien"><a href="#">Lis ceci d'abord <span aria-hidden="true">→</span></a></p>
     </div>
     <div>
