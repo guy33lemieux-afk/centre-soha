@@ -641,7 +641,12 @@ class Rendu:
         if self.premiere_image_posee:
             attrs_img = ' loading="lazy" decoding="async"'
         else:
-            attrs_img = ' loading="eager" fetchpriority="high" decoding="async"'
+            # Pas de `fetchpriority="high"` ici : le préchargement de la
+            # <head> le porte déjà, et il vise maintenant le VRAI héros — le
+            # fond CSS. Trois images marquées « high » sur une page, c'est
+            # trois priorités, donc aucune. Le premier <img> reste `eager` :
+            # il ne doit pas attendre, mais il ne passe pas devant le héros.
+            attrs_img = ' loading="eager" decoding="async"' 
             self.premiere_image_posee = True
         balise = '<img src="%s" alt="%s"%s>' % (src, html.escape(alt), attrs_img)
         if s.get("link_to") == "custom" and isinstance(s.get("link"), dict):
@@ -1307,9 +1312,15 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
     # les 12 pages du kit
     for p in kit.pages.values():
         r.premiere_image_posee = False
+        # Les règles s'accumulent page après page dans le même dictionnaire :
+        # on note où on en est AVANT de rendre, pour ne relire que ce que cette
+        # page-ci vient d'ajouter. Sans ça on préchargerait le fond d'une page
+        # rendue plus tôt.
+        avant = len(r.regles)
         contenu = "".join(r.element(e, 0) for e in p["doc"]["content"])
+        neuves = list(r.regles.values())[avant:]
         pre = ""
-        prem = premiere_image(contenu)
+        prem = premiere_image(contenu, "".join(";".join(d) for d in neuves))
         if prem:
             pre = '<link rel="preload" as="image" href="%s" fetchpriority="high">' % prem
         seo = METAS.get(p["id"])
@@ -1518,7 +1529,22 @@ def sommaire(sortie, pages, articles):
     return "lisez-moi.html"
 
 
-def premiere_image(html_page):
+def premiere_image(html_page, css_page=""):
+    """Le vrai héros de la page — pas la première vignette qui traîne.
+
+    La version précédente ne cherchait qu'un `<img src="medias/…">`. Or sur
+    l'accueil, le héros est un FOND CSS : le kit pose `background_image` sur un
+    conteneur Elementor, et un fond ne sera jamais une balise `<img>`. Le
+    préchargement partait donc sur la première vignette de porte — un fichier
+    de 35 ko qui n'est pas ce que le visiteur attend — pendant que le vrai
+    héros, lui, n'était découvert qu'après l'analyse de la feuille de style.
+
+    On regarde donc les deux, et le FOND gagne quand il existe : c'est lui qui
+    couvre l'écran, c'est lui le plus gros élément peint.
+    """
+    m = re.search(r"background-image:url\(\.\./(medias/[^)\"']+)\)", css_page)
+    if m:
+        return m.group(1)
     m = re.search(r'<img src="(medias/[^"]+)"', html_page)
     return m.group(1) if m else ""
 
