@@ -1735,3 +1735,50 @@ La vraie mesure, prise en dessinant cinquante zéros dans la police réelle, dit
 après avoir failli, deux cycles plus tôt, faire corriger un design qui n'avait
 rien. Le même défaut à chaque fois : croire sa propre mesure sans lui demander
 d'où elle sort.
+
+---
+
+# Cycle 27 · La proposition pour l'accueil
+
+Mala : « montre moi la proposition pour l'accueil ».
+
+## La montrer, pas la décrire
+Une proposition de mise en page ne se raconte pas. `proposition_accueil.py`
+fabrique la page **telle qu'elle serait** : ses cinq vraies photos, ses textes
+au mot près, aucun gris de remplissage. Rien n'est appliqué au kit.
+
+## Ce que la trame change
+Cinq sections, **cinq traitements** au lieu de deux :
+héros en deux colonnes de hauteur commune · deux portes larges (16/10) ·
+trois portes en bande (carré) · le lieu sur encre, sans photo · la sortie,
+courte. Les hauteurs décroissent : la page se referme au lieu de s'éteindre.
+
+Le déséquilibre nommé : 552×306, 552×306, puis **600×719**. La troisième carte
+valait les deux autres empilées, et « Espaces professionnels » finissait seul
+tout en bas. Les trois vignettes font maintenant 324 px chacune, **écart 0**.
+
+## Trois bogues attrapés en construisant
+1. **Les `@font-face` posées hors du bloc `<style>`** : le base64 des polices
+   s'affichait comme du texte. Document large de **354 095 px**. Un oubli d'une
+   ligne, visible seulement en mesurant le débordement.
+2. **`height:100%` dans un gabarit formaté par `%`** — `TypeError` à la
+   génération. Le pour cent littéral s'écrit `%%`.
+3. **Les liens « Voir … » décalés de 25 px** parce qu'une description faisait
+   une ligne de plus. Exactement le défaut relevé sur les cartes du Journal.
+   Corrigé ici comme il devra l'être là : cartes étirées à la même hauteur,
+   lien collé au fond. Écart **0 px** sur les deux bandes.
+
+## Remonté à Mala plutôt que tranché
+Le titre du héros tient sur **trois** lignes, pas deux comme le demande le
+canon : cinquante-quatre signes ne rentrent pas en deux lignes sans rapetisser
+le titre au point qu'il cesse d'en être un. Raccourcir la phrase serait toucher
+à son écriture — ce n'est pas à moi de le faire.
+Même traitement pour le bouton « Réserver » (contour alors qu'il est le geste
+principal) et pour la numérotation 01→05 qui traverse deux sections.
+
+## Leçon
+**Ce qu'on propose, on le construit pour de vrai — c'est là qu'on découvre ce
+qu'on n'avait pas prévu.** Les trois bogues de ce cycle n'existaient dans
+aucune maquette : ils sont apparus en rendant la page. Une proposition dessinée
+aurait montré une trame convaincante et caché qu'un texte d'une ligne de plus
+décale tout le reste.

@@ -1,0 +1,166 @@
+<title>La trame de l'accueil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Schibsted+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --fond:#FBF8F3; --surface:#FFFFFF; --creux:#F1EBE1;
+  --texte:#0E1A15; --doux:#5A6862; --tres-doux:#8A968F;
+  --filet:#E2DACC; --filet-fort:#C7BCA8;
+  --avant:#9C1B34; --apres:#40653D; --renvoi:#0F7FA6;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --fond:#0A1310; --surface:#121D19; --creux:#18261F;
+    --texte:#EDE7DB; --doux:#9BA9A2; --tres-doux:#6C7C74;
+    --filet:#263530; --filet-fort:#3B4F47;
+    --avant:#F08099; --apres:#8FC08A; --renvoi:#63C8E6;
+  }
+}
+:root[data-theme="dark"]{
+  --fond:#0A1310; --surface:#121D19; --creux:#18261F;
+  --texte:#EDE7DB; --doux:#9BA9A2; --tres-doux:#6C7C74;
+  --filet:#263530; --filet-fort:#3B4F47;
+  --avant:#F08099; --apres:#8FC08A; --renvoi:#63C8E6;
+}
+*{box-sizing:border-box}
+body{background:var(--fond);color:var(--texte);font-family:var(--sans);
+  font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased}
+.page{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:48px 110px}
+.etroit{max-width:740px;margin-inline:auto}
+p{margin:0 0 .9em;max-width:64ch}
+a{color:var(--renvoi)}
+:focus-visible{outline:2px solid var(--renvoi);outline-offset:3px}
+h1,h2{font-family:var(--serif);font-weight:500;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.2rem,6vw,3.2rem);line-height:1.02;letter-spacing:-.02em}
+h2{font-size:clamp(1.35rem,3vw,1.8rem);line-height:1.14}
+h3{font-family:var(--sans);font-size:1rem;font-weight:600;margin:0;line-height:1.3}
+strong{font-weight:600}
+code{font-family:var(--mono);font-size:.85em;background:var(--creux);padding:.1em .36em}
+.etiq{font-family:var(--mono);font-size:.7rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--doux);margin:0 0 14px}
+.sceau{display:flex;align-items:center;gap:8px;margin-bottom:18px}
+.sceau i{width:9px;height:9px;border-radius:50%;background:var(--renvoi)}
+.sceau b{width:46px;height:2px;background:var(--filet-fort)}
+.sceau u{width:7px;height:7px;border-radius:50%;background:var(--avant)}
+.chapeau{border-bottom:1px solid var(--filet-fort);padding-bottom:28px}
+.chapeau .sous{font-size:1.12rem;color:var(--doux);max-width:54ch;margin-top:14px}
+section{margin-top:52px}
+section > h2{padding-bottom:10px;border-bottom:1px solid var(--filet);margin-bottom:18px}
+
+/* avant / après : une ligne par section de la page */
+.trame{display:grid;gap:1px;background:var(--filet);
+  border-block:1px solid var(--filet);margin-top:22px}
+.trame > div{background:var(--fond);padding:13px 0;display:grid;
+  grid-template-columns:1.6rem 1fr 1fr;gap:16px;align-items:start}
+.trame .n{font-family:var(--mono);font-size:.76rem;color:var(--tres-doux);padding-top:.15em}
+.trame .t{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;
+  text-transform:uppercase;display:block;margin-bottom:3px}
+.trame .av .t{color:var(--avant)} .trame .ap .t{color:var(--apres)}
+.trame b{font-weight:600;display:block}
+.trame span.d{color:var(--doux);font-size:.92rem}
+.trame .entete{background:var(--creux);font-family:var(--mono);font-size:.66rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--doux)}
+
+.note{border-left:3px solid var(--renvoi);padding:14px 18px;margin:24px 0;
+  background:var(--surface)}
+.note p:last-child{margin-bottom:0}
+
+.cadre{margin-top:26px;border:1px solid var(--filet-fort);background:var(--creux);
+  padding:10px}
+.cadre-tete{display:flex;align-items:baseline;justify-content:space-between;
+  gap:12px;flex-wrap:wrap;padding:2px 6px 10px}
+.cadre-tete p{margin:0;font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--doux)}
+
+ul.liste{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:1px;
+  background:var(--filet);border-block:1px solid var(--filet)}
+ul.liste li{background:var(--fond);padding:13px 0;display:grid;
+  grid-template-columns:auto 1fr;gap:14px;align-items:start}
+ul.liste .p{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--doux);padding-top:.2em;white-space:nowrap}
+ul.liste b{display:block;margin-bottom:2px}
+ul.liste span{color:var(--doux);font-size:.94rem}
+
+.pied{margin-top:64px;padding-top:20px;border-top:1px solid var(--filet-fort);
+  font-size:.87rem;color:var(--doux)}
+.pied p{max-width:none}
+@media (max-width:700px){
+  .trame > div{grid-template-columns:1.4rem 1fr;row-gap:10px}
+  .trame .ap{grid-column:2}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="page">
+
+<header class="chapeau etroit">
+  <div class="sceau" aria-hidden="true"><i></i><b></b><u></u></div>
+  <p class="etiq">Centre Soha · proposition · 14 septembre 2026</p>
+  <h1>La trame de l'accueil</h1>
+  <p class="sous">Cinq sections, cinq façons de les poser — au lieu de cinq
+  sections et deux façons. Tes photos, tes textes : je n'ai pas changé un mot.
+  Rien n'est appliqué tant que tu n'as pas dit oui.</p>
+</header>
+
+<section class="etroit">
+  <h2>Ce qui déséquilibrait la page</h2>
+  <p>Les cinq sections étaient toutes en <strong>une seule colonne</strong>, et
+  la seule chose qui les distinguait était la présence ou l'absence de photos.
+  L'œil n'avait aucun repère pour savoir qu'il changeait de sujet.</p>
+  <p>Et dans « Tu soignes, tu enseignes », deux cartes empilées à gauche
+  faisaient face à <strong>une photo de 719 px</strong> à droite. Le titre
+  « Espaces professionnels » finissait tout en bas, seul, très loin de ses
+  voisins. C'est ça qu'on voit sans savoir le nommer.</p>
+</section>
+
+<section>
+  <h2>Avant, après</h2>
+  <div class="trame">
+    <div class="entete"><span></span><span>aujourd'hui</span><span>proposé</span></div>
+    <div><span class="n">0</span>
+      <span class="av"><span class="t">héros</span><b>Texte à gauche, photo à droite</b>
+        <span class="d">La photo descend bien plus bas que le texte : sous le bouton, la colonne gauche est vide sur 600 px.</span></span>
+      <span class="ap"><span class="t">deux colonnes, hauteur commune</span><b>La photo tient la hauteur du texte</b>
+        <span class="d">Cadrée en 4/3 et alignée au centre. Un seul geste proposé — « Louer une salle » redescend là où il est chez lui.</span></span></div>
+    <div><span class="n">1</span>
+      <span class="av"><span class="t">une colonne</span><b>Deux cartes, photos 576 × 452</b>
+        <span class="d">Celle-ci allait déjà bien : les deux photos sont de même taille.</span></span>
+      <span class="ap"><span class="t">deux portes larges</span><b>Inchangé dans l'esprit</b>
+        <span class="d">Cadrage 16/10 posé explicitement, pour qu'une photo remplacée ne fasse pas bouger la rangée.</span></span></div>
+    <div><span class="n">2</span>
+      <span class="av"><span class="t">une colonne</span><b>Trois cartes en escalier</b>
+        <span class="d">552 × 306, 552 × 306, puis 600 × <strong>719</strong>. La troisième vaut les deux autres empilées.</span></span>
+      <span class="ap"><span class="t">trois portes en bande</span><b>Trois colonnes égales, photos carrées</b>
+        <span class="d">Même hauteur, même ligne de base. Le carré change l'échelle : on voit au premier coup d'œil que ce n'est pas la même bande que la précédente.</span></span></div>
+    <div><span class="n">3</span>
+      <span class="av"><span class="t">une colonne</span><b>Trois paragraphes, puis quatre repères en titres de 32 px</b>
+        <span class="d">Sur le même fond ivoire que tout le reste. Rien ne signale qu'on change de registre.</span></span>
+      <span class="ap"><span class="t">bande sur encre</span><b>Texte à gauche, les quatre repères en liste à droite</b>
+        <span class="d">Fond encre : la rupture se voit avant d'être lue. Les repères passent de titres à une liste — ce sont des renseignements, pas des chapitres.</span></span></div>
+    <div><span class="n">4</span>
+      <span class="av"><span class="t">une colonne</span><b>« Par où commencer », deux blocs</b>
+        <span class="d">Aussi long que les sections précédentes : la page s'éteint au lieu de se refermer.</span></span>
+      <span class="ap"><span class="t">la sortie</span><b>Deux chemins, court</b>
+        <span class="d">Moitié moins haut. Les hauteurs décroissent vers le bas : la page se referme.</span></span></div>
+  </div>
+
+  <div class="note etroit">
+    <p><strong>Quatre familles de mise en page au lieu de deux</strong>, et
+    chacune employée une seule fois : deux colonnes asymétriques · grille de
+    deux · grille de trois · bande sur teinte. Plus la sortie, courte. C'est le
+    contrat que la grille de regard demande, et c'est ce qui manquait.</p>
+  </div>
+</section>
+
+<section>
+  <h2>La proposition, rendue</h2>
+  <div class="cadre">
+    <div class="cadre-tete">
+      <p>L'accueil, tel qu'il serait</p>
+      <p>vraies photos · textes inchangés</p>
+    </div>
