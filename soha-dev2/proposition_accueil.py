@@ -117,7 +117,13 @@ FEUILLE = """<style>
 /* La proposition est rendue dans son propre monde : tout est préfixé « pr- »
    pour qu'aucune règle du document qui l'entoure ne vienne la fausser. */
 .pr-ecran{--encre:#0E1A15;--ivoire:#F4F0E7;--papier:#FBF8F3;--soigner:#19A7DB;
-  --soigner-lu:#0F7FA6;--doux:#5A6862;--filet:#E2DACC;
+  /* Trois teintes que j'avais INVENTÉES, et qui n'existent nulle part dans le
+     CSS réellement livré : #0F7FA6 (4,30 — sous le seuil), #5A6862 et #E2DACC.
+     Les deux dernières sont des quasi-doublons de teintes vraies, à 1,05 et
+     1,02 — un écart que personne ne voit, et une dette que tout le monde paie.
+     Elles cèdent la place aux valeurs que la feuille du site emploie déjà :
+     #5A6460 (75 emplois) et #E0D8CA (65). L'italique reprend Soigner du canon. */
+  --doux:#5A6460;--filet:#E0D8CA;
   --serif:"Fraunces",Georgia,"Times New Roman",serif;
   --sans:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"DM Mono",ui-monospace,Menlo,monospace;
@@ -131,7 +137,10 @@ FEUILLE = """<style>
 .pr-ecran h2{font-size:clamp(1.6rem,3vw,2.4rem);line-height:1.12}
 .pr-ecran h3{font-size:24px;line-height:1.2}
 .pr-ecran p{margin:0}
-.pr-ecran em{font-style:italic;color:var(--soigner-lu)}
+/* L'italique sur fond clair reste ENCRE : l'italique porte déjà l'accent, et
+   Soigner sur ivoire ne mesure que 2,43. C'est la clause que je viens de
+   proposer — je n'allais pas l'enfreindre dans la ligne d'à côté. */
+.pr-ecran em{font-style:italic;color:var(--encre)}
 /* 12 px en #0F7FA6 donne 4,30 sur ivoire — sous le seuil de 4,5. L'étiquette
    passe à l'encre adoucie ; le bleu reste, sur le filet qui la précède. */
 .pr-etiq{font-family:var(--mono);font-size:12px;letter-spacing:.16em;
