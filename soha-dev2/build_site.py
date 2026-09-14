@@ -1138,7 +1138,10 @@ figure{margin:0}
 .soha-saut{position:absolute;left:-9999px;top:0;background:#0E1A15;color:#fff;
   padding:12px 18px;z-index:100}
 .soha-saut:focus{left:8px;top:8px}
-:focus-visible{outline:2px solid #19A7DB;outline-offset:2px}
+/* Le meme anneau que le kit : encre pour la forme, halo Soigner pour la
+   presence. L'ancien etait a 2,61 sur le papier — invisible au clavier. */
+:focus-visible{outline:2px solid #0E1A15;outline-offset:2px;border-radius:2px;
+  box-shadow:0 0 0 5px #19A7DB}
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;
     transition-duration:.01ms!important;scroll-behavior:auto!important}
@@ -1413,20 +1416,21 @@ SOMMAIRE = """<!DOCTYPE html>
 .s-avis p{{margin:0 0 .6em}} .s-avis p:last-child{{margin:0}}
 .s-bloc{{margin-top:2.75rem}}
 .s-bloc h2{{font-family:"Fraunces",Georgia,serif;font-weight:500;
-  font-size:1.45rem;margin:0 0 .2em;padding-bottom:.5rem;border-bottom:1px solid #C7BCA8}}
-.s-bloc>p{{margin:.7em 0 0;max-width:40rem;color:#5A6862;font-size:.95rem}}
+  font-size:1.45rem;margin:0 0 .2em;padding-bottom:.5rem;border-bottom:1px solid #E0D8CA}}
+.s-bloc>p{{margin:.7em 0 0;max-width:40rem;color:#5A6460;font-size:.95rem}}
 .s-liste{{list-style:none;margin:1.1rem 0 0;padding:0;
-  display:grid;gap:1px;background:#E2DACC;border-block:1px solid #E2DACC}}
+  display:grid;gap:1px;background:#E0D8CA;border-block:1px solid #E0D8CA}}
 .s-liste li{{background:#FBF8F3;padding:.7rem .2rem}}
 /* `a{{color:inherit}}` dans la feuille du site : sans ceci, vingt-huit liens
    auraient l'air de vingt-huit titres en gras. */
-.s-liste a{{color:#0F7FA6;font-weight:600;text-decoration:none;
-  border-bottom:1px solid rgba(15,127,166,.35)}}
-.s-liste a:hover,.s-liste a:focus-visible{{border-bottom-color:#0F7FA6}}
+.s-liste a{{color:#0E1A15;font-weight:600;text-decoration:underline;
+  text-decoration-color:#19A7DB;text-decoration-thickness:1.5px;
+  text-underline-offset:4px}}
+.s-liste a:hover,.s-liste a:focus-visible{{text-decoration-thickness:3px}}
 .s-liste code{{font-family:"DM Mono",ui-monospace,monospace;
-  font-size:.8rem;color:#5A6862;display:block;margin-top:.15rem}}
-.s-pied{{margin-top:3.5rem;padding-top:1.1rem;border-top:1px solid #C7BCA8;
-  font-size:.88rem;color:#5A6862}}
+  font-size:.8rem;color:#5A6460;display:block;margin-top:.15rem}}
+.s-pied{{margin-top:3.5rem;padding-top:1.1rem;border-top:1px solid #E0D8CA;
+  font-size:.88rem;color:#5A6460}}
 </style>
 </head>
 <body class="soha-page">
