@@ -1250,6 +1250,15 @@ GABARIT = """<!DOCTYPE html>
 <meta property="og:title" content="{titre}">
 <meta property="og:description" content="{description}">
 <meta property="og:locale" content="fr_CA">
+<!-- L'icone du site. Elle manquait sur 30 pages sur 30, et pour une raison
+     structurelle : c'est une option WORDPRESS, pas un reglage Elementor, donc
+     elle ne voyage dans aucun kit. Les fichiers sont un RECADRAGE du logo
+     hebergé — l'anneau O et son point — jamais un redessin. -->
+<link rel="icon" href="assets/icones/icone-32.png" sizes="32x32">
+<link rel="icon" href="assets/icones/icone-512.png" sizes="512x512">
+<link rel="apple-touch-icon" href="assets/icones/icone-180.png">
+<link rel="manifest" href="assets/icones/site.webmanifest">
+<meta name="theme-color" content="#0E1A15">
 <link rel="stylesheet" href="assets/soha.css">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="assets/polices/schibsted-grotesk-v7-latin-regular.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="assets/polices/fraunces-v38-latin-600.woff2">
@@ -1346,6 +1355,16 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
     css_global = (kit.reglages.get("settings") or {}).get("custom_css", "")
     open(os.path.join(sortie, "assets/soha.css"), "w", encoding="utf-8").write(r.feuille(css_global))
     open(os.path.join(sortie, "assets/soha.js"), "w", encoding="utf-8").write(JS)
+
+    # Les icônes voyagent avec le site : le kit les porte, le générateur les
+    # recopie. C'est le seul endroit où les deux couches partagent un fichier.
+    icones = os.path.join(kit.racine, "assets", "icones")
+    if os.path.isdir(icones):
+        cible = os.path.join(sortie, "assets", "icones")
+        os.makedirs(cible, exist_ok=True)
+        for f in sorted(os.listdir(icones)):
+            if f.endswith((".png", ".webmanifest")):
+                shutil.copy2(os.path.join(icones, f), os.path.join(cible, f))
 
     # médias réellement utilisés
     copiees = 0
