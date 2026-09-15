@@ -1372,9 +1372,15 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
         # il est calculé, pas écrit.
         larg = largeur_native(medias, a["vignette"]) if a["vignette"] else 0
         plafond = (' style="max-width:%dpx"' % (larg // 2)) if larg else ""
-        photo = ('<figure class="soha-article-photo"%s><img src="%s" alt="%s" '
+        jeu, _ = tailles_derivees(medias, a["vignette"], sortie, vign)
+        # `sizes` décrit la largeur RÉELLE d'affichage, sinon le navigateur
+        # suppose 100vw et reprend le plus gros échelon : le srcset ne sert
+        # alors à rien.
+        cadre = larg // 2 if larg else 800
+        attrs = (' srcset="%s" sizes="(max-width:%dpx) 100vw, %dpx"' % (jeu, cadre, cadre)) if jeu else ""
+        photo = ('<figure class="soha-article-photo"%s><img src="%s"%s alt="%s" '
                  'loading="eager" fetchpriority="high" decoding="async"></figure>'
-                 % (plafond, vign, html.escape(a["titre"]))) if vign else ""
+                 % (plafond, vign, attrs, html.escape(a["titre"]))) if vign else ""
         corps = r.reecrire_html(a["contenu"])
         if "<p" not in corps:
             corps = "".join("<p>%s</p>" % html.escape(b.strip())
@@ -1392,7 +1398,16 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
             titre=html.escape("%s — Journal du Centre Soha" % a["titre"]),
             description=html.escape(extrait_de(a["contenu"], 28)),
             corps="article",
-            prechargement=('<link rel="preload" as="image" href="%s" fetchpriority="high">' % vign) if vign else "",
+            # Le préchargement DOIT porter le même `srcset` que la balise,
+            # sinon il force le fichier pleine taille et le choix du navigateur
+            # ne sert plus à rien : mesuré, le téléphone téléchargeait 740 ko
+            # au lieu des ~100 ko de l'échelon qui lui convient.
+            prechargement=(
+                '<link rel="preload" as="image" href="%s" imagesrcset="%s" '
+                'imagesizes="(max-width:%dpx) 100vw, %dpx" fetchpriority="high">'
+                % (vign, jeu, cadre, cadre) if jeu else
+                '<link rel="preload" as="image" href="%s" fetchpriority="high">' % vign
+            ) if vign else "",
             entete=entete, pied=pied, contenu=contenu)
         open(os.path.join(sortie, a["fichier"]), "w", encoding="utf-8").write(doc)
         pages_ecrites.append(a["fichier"])
@@ -1562,6 +1577,64 @@ def sommaire(sortie, pages, articles):
     )
     open(os.path.join(sortie, "lisez-moi.html"), "w", encoding="utf-8").write(doc)
     return "lisez-moi.html"
+
+
+ECHELONS = (400, 800, 1200, 1800, 2400)
+
+
+def tailles_derivees(medias, nom, sortie, vign):
+    """Fabrique les largeurs intermédiaires d'une photo et rend son `srcset`.
+
+    POURQUOI. Quand les treize photos du Journal plafonnaient à 800 px, le
+    conseil a examiné le manque de `srcset` et l'a ABATTU : le gaspillage
+    mesuré était de 187 ko, et la complexité ne le valait pas. Il avait raison.
+
+    Puis Mala a envoyé les originaux. Une photo est passée à 2 400 px et 629 ko,
+    et la page d'article est passée de 2 282 ms à 6 320 ms sur une 4G lente —
+    mesuré, pas estimé. Le verdict du conseil portait sur des conditions que
+    j'ai moi-même changées ; il ne tient plus.
+
+    Un téléphone qui affiche cette photo sur 350 px n'a aucune raison de
+    télécharger 2 400 px. Il choisit maintenant l'échelon qui lui convient.
+    """
+    if not vign:
+        return "", ""
+    try:
+        from PIL import Image
+    except ImportError:
+        return "", ""
+    base = os.path.basename((nom or "").split("?")[0])
+    chemin = medias.get(base)
+    if not chemin:
+        import re as _re
+        chemin = medias.get(_re.sub(r"-\d+(\.\w+)$", r"\1", base))
+    if not chemin or not os.path.exists(chemin):
+        return "", ""
+    try:
+        im = Image.open(chemin)
+    except Exception:
+        return "", ""
+    native = im.width
+    if native < ECHELONS[1]:
+        return "", ""                      # trop petite pour valoir un choix
+    dossier = os.path.join(sortie, "medias")
+    os.makedirs(dossier, exist_ok=True)
+    souche, ext = os.path.splitext(os.path.basename(vign))
+    bouts = []
+    for e in ECHELONS:
+        if e > native:
+            continue
+        nom_e = "%s-%d%s" % (souche, e, ext)
+        cible = os.path.join(dossier, nom_e)
+        if not os.path.exists(cible):
+            d = im.convert("RGB")
+            if d.width != e:
+                d = d.resize((e, round(d.height * e / d.width)), Image.LANCZOS)
+            d.save(cible, "WEBP", quality=86, method=6)
+        bouts.append("medias/%s %dw" % (nom_e, e))
+    if native not in ECHELONS and native <= ECHELONS[-1]:
+        bouts.append("%s %dw" % (vign, native))
+    return ", ".join(bouts), str(native)
 
 
 def largeur_native(medias, nom):

@@ -35,6 +35,14 @@ import sys
 SEUIL = 24          # sur 256 bits
 MINI = 400          # une vignette ne peut pas être l'original de quoi que ce soit
 
+# LE PLAFOND. Un original de 5 472 px pèse 2 Mo en WebP — pour une photo que
+# le site affiche au plus à 1 160 px de large. Le générateur borne l'affichage
+# à la MOITIÉ de la largeur native (la taille à laquelle l'image est nette sur
+# un écran 2×), donc tout ce qui dépasse 2 × 1 160 est du poids que personne ne
+# voit. On garde 2 400 px : de quoi couvrir la plus grande fente possible, et
+# pas un pixel de plus.
+PLAFOND = 2400
+
 
 def empreinte(chemin, n=16):
     from PIL import Image
@@ -103,10 +111,15 @@ def appliquer(kit_medias, originaux, ecrire=True):
             doutes.append((os.path.basename(c), os.path.basename(f), d))
         if ecrire:
             im = Image.open(f).convert("RGB")
+            if im.width > PLAFOND:
+                im = im.resize((PLAFOND, round(im.height * PLAFOND / im.width)),
+                               Image.LANCZOS)
             im.save(c, "WEBP", quality=88, method=6)
+        lo = min(lo, PLAFOND)
         remplaces += 1
-        journal.append("  %-24s %4d px → %4d px   (%s, écart %d)"
-                       % (os.path.basename(c), l, lo, os.path.basename(f)[:34], d))
+        journal.append("  %-24s %4d px → %4d px   (%s, écart %d)%s"
+                       % (os.path.basename(c), l, lo, os.path.basename(f)[:34], d,
+                          "  — plafonné" if lo == PLAFOND else ""))
 
     journal.append("originaux : %d photo(s) remplacée(s), %d sans correspondance"
                    % (remplaces, len(absents)))
