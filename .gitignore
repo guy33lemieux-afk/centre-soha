@@ -1,0 +1,5 @@
+# Caches de compilation Python : régénérés à chaque exécution, jamais deux fois
+# identiques d'une machine à l'autre. Ils étaient suivis par erreur, et chaque
+# lancement de build_site.py salissait l'arbre de travail.
+__pycache__/
+*.py[cod]
