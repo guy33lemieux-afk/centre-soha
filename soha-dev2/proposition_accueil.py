@@ -79,13 +79,15 @@ def construire(site):
     faces = []
     # Deux graisses ont ete retirees de cette liste : Fraunces 600 et Schibsted
     # 700. Aucune regle de la feuille ne les demandait — le seul consommateur de
-    # var(--serif) titre en 500, et le gras maximal employe par le sans est 600.
+    # var(--serif) titrait en 500, et le gras maximal employe par le sans est 600.
     # 43 ko embarques en base64 pour rien, sur une page qui en pese 457.
-    # UNE QUESTION RESTE, ET ELLE N'EST PAS AU GENERATEUR DE LA TRANCHER : le
-    # site livre precharge Fraunces 600 pendant que cette maquette titre en 500.
-    # Une des deux graisses est la bonne. Mala decide.
+    # LA QUESTION DES DEUX GRAISSES EST TRANCHEE, ET PAR LE COMPTAGE : le kit
+    # titre en Fraunces 600 sur 127 elements et en 500 sur ZERO. Le 500 etait
+    # une invention de cette maquette. Elle passe en 600 : une seule graisse
+    # de titre sur tout le projet, et le prechargement du site enfin d'accord
+    # avec ce qu'il affiche.
     for f, fam, poids, style in (
-            ("fraunces-v38-latin-500.woff2", "Fraunces", "500", "normal"),
+            ("fraunces-v38-latin-600.woff2", "Fraunces", "600", "normal"),
             ("fraunces-v38-latin-italic.woff2", "Fraunces", "400", "italic"),
             ("schibsted-grotesk-v7-latin-regular.woff2", "Schibsted Grotesk", "400", "normal"),
             ("schibsted-grotesk-v7-latin-600.woff2", "Schibsted Grotesk", "600", "normal"),
@@ -143,7 +145,7 @@ FEUILLE = """<style>
   font-size:19px;line-height:1.6;border:1px solid var(--filet);overflow:hidden}
 .pr-ecran *{box-sizing:border-box}
 .pr-ecran img{display:block;width:100%%;height:100%%;object-fit:cover}
-.pr-ecran h1,.pr-ecran h2,.pr-ecran h3{font-family:var(--serif);font-weight:500;
+.pr-ecran h1,.pr-ecran h2,.pr-ecran h3{font-family:var(--serif);font-weight:600;
   margin:0;text-wrap:balance;letter-spacing:-.012em}
 .pr-ecran h1{font-size:clamp(1.9rem,3.6vw,2.9rem);line-height:1.06}
 .pr-ecran h2{font-size:clamp(1.6rem,3vw,2.4rem);line-height:1.12}
