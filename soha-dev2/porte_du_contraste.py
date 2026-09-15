@@ -89,7 +89,11 @@ CANDIDATS = r"""() => {
     if (e.children.length) return;
     var t = (e.innerText||'').trim(); if (t.length < 12) return;
     var cs = getComputedStyle(e); var L = lum(cs.color);
-    if (L === null || L < 0.45) return;
+    if (L === null) return;
+    // Aucun filtre de luminance : un texte SOMBRE ou COLORÉ posé sur une
+    // photo se mesure aussi. Le filtre « texte clair seulement » laissait
+    // passer les surtitres cyan des héros, posés sur la partie nue de la
+    // photo depuis que le voile est parti — invisibles, et jamais mesurés.
     var r = e.getBoundingClientRect();
     var a = e, fond = null;
     for (var i=0; i<8 && a; i++, a = a.parentElement){
@@ -126,8 +130,16 @@ CACHER = r"""() => {
     if (e.children.length) return;
     var t = (e.innerText||'').trim(); if (t.length < 12) return;
     var m = getComputedStyle(e).color.match(/\d+/g); if (!m) return;
-    var L = (0.2126*+m[0] + 0.7152*+m[1] + 0.0722*+m[2]) / 255;
-    if (L > 0.6) e.style.visibility = 'hidden';
+    // `color: transparent` et non `visibility: hidden` : un texte peut porter
+    // son propre sol (le cartel du surtitre des héros, DM Mono sur encre).
+    // `visibility: hidden` effaçait ce sol avec les lettres, et la porte
+    // mesurait la photo en dessous — 3,58 sur le Journal, pour un cartel
+    // qui tient à 15. On efface les lettres, on garde ce qu'elles ont sous
+    // les pieds. Le filet de bordure s'efface aussi : il est de la couleur
+    // du texte, pas du sol.
+    e.style.color = 'transparent';
+    e.style.borderColor = 'transparent';
+    e.style.textShadow = 'none';
   });
 }"""
 

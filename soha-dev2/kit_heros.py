@@ -47,38 +47,50 @@ import json
 import os
 
 ENCRE = "#0E1A15"
+IVOIRE = "#F4F0E7"
+SOIGNER = "#19A7DB"      # l'accent d'une école de soha.live — il n'a rien à faire ici
 VOILE = "rgba(14,26,21,0.68)"
 
 DEBUT = "/* ==== soha-heros début ==== */"
 FIN = "/* ==== soha-heros fin ==== */"
 
 BLOC_CSS = DEBUT + """
-/* ---- les héros en widget image · v04 ------------------------------------
+/* ---- les héros en widget image · v06 ------------------------------------
    La photo n'est plus un fond : c'est une balise. Elle se place donc à la
-   main, derrière le texte, et porte son voile elle-même.
+   main, derrière le texte.
 
-   v02 : Elementor emballe chaque widget dans `.elementor-widget-container`.
-   Sans hauteur sur cette enveloppe, le `height:100%` de l'image se résout
-   contre une hauteur automatique — c'est-à-dire contre rien — et la photo
-   retombe à sa taille naturelle. */
-/* Pas d'`overflow:hidden` ici : il fabrique un contexte de formatage et
-   empêche les marges des enfants de fusionner vers l'extérieur. Mesuré :
-   prendre-soin perdait 105 px, espaces-professionnels en gagnait 298. La
-   photo est en `inset:0` et en `object-fit:cover` — elle ne déborde pas. */
-.soha-hero{position:relative}
-/* `top/right/bottom/left` et non `inset` : Safari avant 14.1 ignore `inset`,
-   et une photo de héros qui manque sur un iPad de 2020 est une photo qui
-   manque. Les quatre propriétés coûtent trois mots de plus. */
+   v05 — LE VOILE QUITTE LA PHOTO. Mala : « enlève-moi le voile sur les
+   photos ». Le voile uniforme rgba(14,26,21,0.68) repeignait la photo en
+   froid (mesuré : 94,2 % de pixels chauds avant, 4,2 % après). Mais voile
+   retiré, 24 textes tombaient sous 4,5. Donc : le texte descend au bas du
+   héros, et un dégradé d'encre ne monte que sous lui — le haut de la photo
+   est nu, le texte garde son sol. Les arrêts du dégradé sont MESURÉS par
+   porte_du_contraste.py sur les huit pages, pas choisis à l'œil.
+
+   v04 — `top/right/bottom/left` et non `inset` : Safari avant 14.1 ignore
+   `inset`. v03 — pas d'`overflow:hidden` (il décale les hauteurs). v02 —
+   `height:100%` sur `.elementor-widget-container`, sinon la photo retombe
+   à sa taille naturelle. */
+.soha-hero{position:relative;min-height:min(78vh,720px);justify-content:flex-end}
 .soha-hero-fond{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;
   margin:0;padding:0;z-index:0;pointer-events:none}
 .soha-hero-fond > .elementor-widget-container{height:100%}
 .soha-hero-fond img{width:100%;height:100%;object-fit:cover;display:block}
 .soha-hero-fond::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;
-  background:rgba(14,26,21,0.68)}
+  background:linear-gradient(180deg,
+    rgba(14,26,21,0) 0%, rgba(14,26,21,0) 16%,
+    rgba(14,26,21,.58) 36%, rgba(14,26,21,.84) 56%, rgba(14,26,21,.92) 100%)}
 .soha-hero-texte{position:relative;z-index:1}
+/* Le surtitre est un CARTEL : DM Mono sur encre, comme « PLANCHE 01 » sur
+   l'accueil. Posé en haut du bloc de texte, il tombait sur la partie claire
+   de la photo — mesuré 1,75 à 3,86 pour 4,5. Sur encre plein, il tient
+   partout, quelle que soit la photo. */
+.soha-hero-texte .elementor-widget-heading:first-child .elementor-heading-title{
+  display:inline-block;background:#0E1A15;padding:6px 12px 6px 14px;margin-left:0}
+@media (max-width:767px){.soha-hero{min-height:min(72vh,600px)}}
 """ + FIN + "\n"
 
-MARQUE = "les héros en widget image · v04"
+MARQUE = "les héros en widget image · v06"
 
 
 def classes(s, ajout):
@@ -127,10 +139,18 @@ def convertir(noeud, journal, page):
     s.setdefault("background_background", "classic")
     s.setdefault("background_color", ENCRE)
     classes(s, "soha-hero")
+    # v05 : le texte au bas du héros, sur la partie dense du dégradé. Le
+    # padding haut ne sert plus à rien : c'est la hauteur minimale qui fait
+    # respirer la photo.
+    s["flex_justify_content"] = "flex-end"
+    p = s.get("padding") if isinstance(s.get("padding"), dict) else {}
+    s["padding"] = {"unit": "px", "top": "72", "bottom": "64",
+                    "left": p.get("left", "22"), "right": p.get("right", "22"), "isLinked": False}
 
     for enfant in noeud.get("elements") or []:
         if enfant.get("elType") == "container":
             classes(enfant.setdefault("settings", {}), "soha-hero-texte")
+            surtitres_en_ivoire(enfant, journal, page)
 
     noeud.setdefault("elements", []).insert(0, {
         "id": identifiant(noeud.get("id", "hero")),
@@ -145,6 +165,47 @@ def convertir(noeud, journal, page):
         },
     })
     journal.append((page, noeud.get("id"), os.path.basename(photo["url"])))
+    return True
+
+
+def surtitres_en_ivoire(conteneur, journal, page):
+    """Le surtitre du héros (« LOUER LE STUDIO AU 961 ») était en cyan Soigner,
+    lettres et filet. Depuis que le voile a quitté la photo, il tombe sur sa
+    partie nue : mesuré illisible, et jamais mesuré par la porte, qui ne
+    regardait que le texte clair. En ivoire, il est clair — donc mesuré —
+    et il ne porte plus la couleur d'une école de l'autre pôle."""
+    n = 0
+    for w in conteneur.get("elements") or []:
+        st = w.get("settings") or {}
+        if w.get("widgetType") == "heading" and st.get("title_color", "").upper() == SOIGNER:
+            st["title_color"] = IVOIRE
+            if st.get("_border_color", "").upper() == SOIGNER:
+                st["_border_color"] = IVOIRE
+            n += 1
+    if n:
+        journal.append((page, conteneur.get("id"), "%d surtitre(s) en ivoire" % n))
+    return n
+
+
+def deja_converti(noeud):
+    s = noeud.get("settings") or {}
+    return noeud.get("elType") == "container" and "soha-hero" in (s.get("_css_classes") or "").split()
+
+
+def retoucher(noeud, journal, page):
+    """Un héros converti par une version précédente reçoit les réglages v05."""
+    s = noeud["settings"]
+    change = 0
+    for enfant in noeud.get("elements") or []:
+        if enfant.get("elType") == "container":
+            change += surtitres_en_ivoire(enfant, journal, page)
+    if s.get("flex_justify_content") == "flex-end" and (s.get("padding") or {}).get("top") == "72":
+        return bool(change)
+    s["flex_justify_content"] = "flex-end"
+    p = s.get("padding") if isinstance(s.get("padding"), dict) else {}
+    s["padding"] = {"unit": "px", "top": "72", "bottom": "64",
+                    "left": p.get("left", "22"), "right": p.get("right", "22"), "isLinked": False}
+    journal.append((page, noeud.get("id"), "v05 : texte en bas, padding 72/64"))
     return True
 
 
@@ -183,6 +244,8 @@ def appliquer(kit, ecrire=True):
         change = False
         for noeud in arbre:
             if est_un_hero(noeud, 0) and convertir(noeud, journal, page):
+                change = True
+            elif deja_converti(noeud) and retoucher(noeud, journal, page):
                 change = True
         if change:
             touches += 1

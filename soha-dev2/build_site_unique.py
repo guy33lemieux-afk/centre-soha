@@ -72,7 +72,10 @@ def decouper(texte, nom):
         "titre": (titre.group(1).strip() if titre else ""),
         "description": (descr.group(1) if descr else ""),
         "classe": (corps.group(1) if corps else "soha-page"),
-        "entete": prendre(r'<header class="soha-entete">.*?</header>', "l'en-tête"),
+        # `[^"]*` : l'en-tête porte maintenant aussi « soha-collant ». Sans
+        # ça le script s'arrêtait à la première page, et le fichier unique
+        # précédent restait sur le disque — la porte le validait, périmé.
+        "entete": prendre(r'<header class="soha-entete[^"]*">.*?</header>', "l'en-tête"),
         "main": prendre(r"<main\b.*?</main>", "le contenu principal"),
         "pied": prendre(r'<footer class="soha-pied">.*?</footer>', "le pied"),
         "scripts": re.findall(r"<script>(.*?)</script>", texte, re.S),

@@ -1380,7 +1380,14 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
 
     # en-tête et pied, rendus une fois et partagés
     entete = "".join(r.element(e, 0) for e in (kit.entete["content"] if kit.entete else []))
-    entete = '<header class="soha-entete">%s</header>' % entete
+    # Le kit déclare l'en-tête « sticky: top ». Le générateur posait
+    # `position:sticky` sur le conteneur racine — DANS <header>, dont la
+    # hauteur est celle du conteneur : un élément collant ne bouge jamais
+    # hors de son parent, donc il ne collait à rien. Mesuré : à 700 px de
+    # défilement, l'en-tête était à −700 px. La classe va sur <header>.
+    racine = (kit.entete["content"][0].get("settings") or {}) if kit.entete and kit.entete["content"] else {}
+    collant = " soha-collant" if racine.get("sticky") == "top" else ""
+    entete = '<header class="soha-entete%s">%s</header>' % (collant, entete)
     r.premiere_image_posee = False
     pied = "".join(r.element(e, 0) for e in (kit.pied["content"] if kit.pied else []))
     pied = '<footer class="soha-pied">%s</footer>' % pied
