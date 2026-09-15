@@ -1124,7 +1124,12 @@ figure{margin:0}
   letter-spacing:.14em;text-transform:uppercase;color:#5A6460;margin:0 0 14px}
 .soha-article h1{font-family:"Fraunces",Georgia,serif;font-weight:600;
   font-size:clamp(2rem,5vw,3rem);line-height:1.06;margin:0 0 12px}
-.soha-article-photo{margin:0 0 34px}
+/* `auto` sur les cotes, et c'est tout le sujet : sans plafond la photo
+   remplissait la largeur et le centrage ne se voyait pas. Depuis qu'elle
+   est bornee a la moitie de sa largeur native — la seule taille a laquelle
+   elle est nette — elle restait collee a gauche pendant que le texte, lui,
+   est centre : une vignette orpheline. */
+.soha-article-photo{margin:0 auto 34px}
 .soha-article-corps{max-width:38rem;margin:0 auto;font-size:1.06rem;line-height:1.7;
   overflow-wrap:break-word}
 .soha-article-corps h2{font-family:"Fraunces",Georgia,serif;font-weight:600;
@@ -1355,9 +1360,21 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
     for a in kit.articles:
         r.premiere_image_posee = True      # la photo de l'article est posée à la main
         vign = r.media(a["vignette"]) if a["vignette"] else ""
-        photo = ('<figure class="soha-article-photo"><img src="%s" alt="%s" '
+        # LA PHOTO NE DÉPASSE PAS LA MOITIÉ DE SA LARGEUR NATIVE.
+        #
+        # Les treize photos du Journal plafonnent à 800 px, et trois descendent
+        # à 300. Affichées à leur largeur native, elles sont donc molles sur
+        # tout écran à haute densité — c'est-à-dire sur tous les téléphones.
+        # Aucune règle CSS ne fabrique des pixels : la seule chose honnête est
+        # de les montrer PLUS PETITES et NETTES plutôt que grandes et floues.
+        #
+        # Le jour où les originaux arrivent, ce plafond se lève tout seul :
+        # il est calculé, pas écrit.
+        larg = largeur_native(medias, a["vignette"]) if a["vignette"] else 0
+        plafond = (' style="max-width:%dpx"' % (larg // 2)) if larg else ""
+        photo = ('<figure class="soha-article-photo"%s><img src="%s" alt="%s" '
                  'loading="eager" fetchpriority="high" decoding="async"></figure>'
-                 % (vign, html.escape(a["titre"]))) if vign else ""
+                 % (plafond, vign, html.escape(a["titre"]))) if vign else ""
         corps = r.reecrire_html(a["contenu"])
         if "<p" not in corps:
             corps = "".join("<p>%s</p>" % html.escape(b.strip())
@@ -1545,6 +1562,33 @@ def sommaire(sortie, pages, articles):
     )
     open(os.path.join(sortie, "lisez-moi.html"), "w", encoding="utf-8").write(doc)
     return "lisez-moi.html"
+
+
+def largeur_native(medias, nom):
+    """La largeur réelle du fichier, en pixels. 0 si on ne peut pas la lire.
+
+    On ne devine pas : on ouvre l'image. Sans Pillow, on renvoie 0 et la page
+    se comporte comme avant — un plafond qu'on ne sait pas calculer ne se
+    pose pas au jugé.
+    """
+    try:
+        from PIL import Image
+    except ImportError:
+        return 0
+    # `nom` est une URL WordPress complète, pas un nom de fichier — et le nom
+    # réel porte parfois un suffixe « -1 » que WordPress ajoute aux doublons.
+    # On se rabat sur le fichier livré, qui est la seule vérité ici.
+    base = os.path.basename((nom or "").split("?")[0])
+    chemin = medias.get(base) if isinstance(medias, dict) else None
+    if not chemin and base:
+        souche = re.sub(r"-\d+(\.\w+)$", r"\1", base)
+        chemin = medias.get(souche)
+    if not chemin or not os.path.exists(chemin):
+        return 0
+    try:
+        return Image.open(chemin).size[0]
+    except Exception:
+        return 0
 
 
 def fil_dariane_jsonld(contenu, lien):
