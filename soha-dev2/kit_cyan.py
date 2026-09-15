@@ -38,6 +38,7 @@ import argparse, glob, json, os, re
 from kit_soigner import clair
 
 CYAN = "#19A7DB"; ENCRE = "#0E1A15"; IVOIRE = "#F4F0E7"
+CYAN_PALE = "#DDF0F5"; SABLE = "#F2ECE1"   # le cyan pâle (fond « aujourd'hui » de l'horaire) → sable, neutre déclarée du kit
 FONDS = ("background_color", "_background_color")
 TEXTE_SURVOL = {"button_background_hover_color": "button_hover_color",
                 "background_hover_color": "hover_color"}
@@ -70,8 +71,9 @@ def en_ligne(s, fond, journal, page, eid):
         nonlocal n
         if isinstance(obj, dict):
             for cle, val in list(obj.items()):
-                if isinstance(val, str) and CYAN.lower() in val.lower():
-                    obj[cle] = re.sub(re.escape(CYAN), neutre, val, flags=re.I); n += 1
+                if isinstance(val, str) and (CYAN.lower() in val.lower() or CYAN_PALE.lower() in val.lower()):
+                    val = re.sub(re.escape(CYAN), neutre, val, flags=re.I)
+                    obj[cle] = re.sub(re.escape(CYAN_PALE), SABLE, val, flags=re.I); n += 1
                 else:
                     descendre(val)
         elif isinstance(obj, list):
@@ -92,8 +94,8 @@ def globales(kit, journal, ecrire):
         for c in st.get(liste) or []:
             if (c.get("color") or "").upper() == CYAN:
                 c["color"] = ENCRE; c["title"] = c.get("title", "") + " (retiré → encre)"; n += 1
-            elif (c.get("color") or "").upper() == "#DDF0F5":
-                c["color"] = "#FBF8F3"; c["title"] = c.get("title", "") + " (retiré → papier)"; n += 1
+            elif (c.get("color") or "").upper() == CYAN_PALE:
+                c["color"] = SABLE; c["title"] = c.get("title", "") + " (retiré → sable)"; n += 1
     if ecrire: json.dump(d, open(p, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
     journal.append(("globales", "-", "%d couleur(s) globale(s) neutralisée(s)" % n))
 
@@ -151,7 +153,8 @@ def feuille(kit, journal, ecrire):
     def une(m):
         regle = m.group(0)
         sombre = any(k in regle for k in (".soha-lieu", ".soha-hero", "#0E1A15;", "background:#0E1A15"))
-        return re.sub(re.escape(CYAN), IVOIRE if sombre else ENCRE, regle, flags=re.I)
+        regle = re.sub(re.escape(CYAN), IVOIRE if sombre else ENCRE, regle, flags=re.I)
+        return re.sub(re.escape(CYAN_PALE), SABLE, regle, flags=re.I)
     css = re.sub(r"[^{}]+\{[^}]*\}", une, css)
     st["custom_css"] = css
     if ecrire: json.dump(d, open(p, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
