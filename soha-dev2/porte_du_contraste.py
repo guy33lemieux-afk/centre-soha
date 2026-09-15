@@ -90,13 +90,29 @@ CANDIDATS = r"""() => {
     var t = (e.innerText||'').trim(); if (t.length < 12) return;
     var cs = getComputedStyle(e); var L = lum(cs.color);
     if (L === null || L < 0.45) return;
+    var r = e.getBoundingClientRect();
     var a = e, fond = null;
     for (var i=0; i<8 && a; i++, a = a.parentElement){
       var acs = getComputedStyle(a);
       if (acs.backgroundImage && acs.backgroundImage.indexOf('url(') === 0){ fond = a; break; }
     }
+    // Un fond peut aussi être une VRAIE image posée derrière le texte. Depuis
+    // que les huit héros sont des widgets `image` et non des `background-image`,
+    // cette porte ne voyait plus une seule photo : elle annonçait « 0 texte sur
+    // photo » sur les pages mêmes pour lesquelles elle avait été écrite. Une
+    // porte aveugle est pire qu'une porte absente.
+    if (!fond) {
+      var imgs = document.querySelectorAll('img');
+      for (var j=0; j<imgs.length; j++){
+        // On ne filtre PAS sur la position de l'image : dans le kit, c'est son
+        // enveloppe qui est en `absolute`, l'image elle-même reste statique.
+        // Le test qui compte est géométrique — l'image couvre-t-elle le texte.
+        var ir = imgs[j].getBoundingClientRect();
+        if (ir.left <= r.left && ir.top <= r.top &&
+            ir.right >= r.right && ir.bottom >= r.bottom){ fond = imgs[j]; break; }
+      }
+    }
     if (!fond) return;
-    var r = e.getBoundingClientRect();
     out.push({texte: t.slice(0,44), couleur: cs.color,
               taille: parseFloat(cs.fontSize), poids: parseInt(cs.fontWeight, 10) || 400,
               x: Math.round(r.left+scrollX), y: Math.round(r.top+scrollY),

@@ -113,6 +113,25 @@ METAS = {
 MQ_TABLETTE = "@media (max-width:1024px)"
 MQ_TELEPHONE = "@media (max-width:767px)"
 
+
+def sizes_grille(col, colt, colm):
+    """`sizes` d'une image dans une grille à N colonnes, aux trois paliers.
+
+    On ne devine pas la largeur : le nombre de colonnes est déclaré dans le
+    kit, et les paliers sont ceux du kit (767 et 1024). La fraction de fenêtre
+    est LARGE — le conteneur est plus étroit que la fenêtre — donc le
+    navigateur choisira au pire un échelon un cran trop grand, jamais trop
+    petit. Une image trop petite se voit ; quelques kilo-octets de marge, non.
+    """
+    def part(n):
+        try:
+            n = max(1, int(n))
+        except (TypeError, ValueError):
+            n = 1
+        return "100vw" if n <= 1 else "%dvw" % round(100 / n)
+    return "(max-width:767px) %s, (max-width:1024px) %s, %s" % (
+        part(colm), part(colt), part(col))
+
 # Adresses de pages du kit → fichiers du site statique
 def fichier_de_slug(slug):
     return "index.html" if slug in ("", "dev2", "accueil") else slug + ".html"
@@ -877,8 +896,25 @@ class Rendu:
             vign = self.media(a["vignette"]) if a["vignette"] else ""
             extrait = extrait_de(a["contenu"], int(s.get("classic_excerpt_length") or 18))
             balise = s.get("classic_title_tag") or "h3"
-            img = ('<a class="soha-carte-img" href="%s"><img src="%s" alt="%s" loading="lazy" decoding="async"></a>'
-                   % (a["fichier"], vign, html.escape(a["titre"]))) if vign else ""
+            # Les vignettes de cette grille pesaient jusqu'à 508 ko chacune :
+            # ce sont les originaux de Mala, servis en pleine taille dans une
+            # carte de 300 px. La grille a un nombre de colonnes DÉCLARÉ à
+            # chaque palier — on peut donc écrire `sizes` sans rien deviner.
+            jeu = ""
+            lw = lh = 0
+            if vign:
+                jeu, _ = tailles_derivees(self.medias, a["vignette"], self.sortie, vign)
+                lw, lh = dimensions_natives(self.medias, a["vignette"])
+            attrs = ""
+            if jeu:
+                attrs += ' srcset="%s" sizes="%s"' % (jeu, sizes_grille(
+                    s.get("classic_columns") or "3",
+                    s.get("classic_columns_tablet") or "2",
+                    s.get("classic_columns_mobile") or "1"))
+            if lw and lh:
+                attrs += ' width="%d" height="%d"' % (lw, lh)
+            img = ('<a class="soha-carte-img" href="%s"><img src="%s" alt="%s"%s loading="lazy" decoding="async"></a>'
+                   % (a["fichier"], vign, html.escape(a["titre"]), attrs)) if vign else ""
             cartes.append(
                 '<article class="soha-carte">%s<div class="soha-carte-corps">'
                 '<p class="soha-carte-meta">%s</p>'
@@ -1660,7 +1696,17 @@ def tailles_derivees(medias, nom, sortie, vign):
             if d.width != e:
                 d = d.resize((e, round(d.height * e / d.width)), Image.LANCZOS)
             d.save(cible, "WEBP", quality=86, method=6)
+        # Un échelon plus LOURD que l'original ne sert personne. Mesuré : le
+        # héros du Journal pèse 29 ko en 1 500 px ; mon échelon 1 200 px en
+        # pesait 33. Le téléphone téléchargeait donc 4 ko de plus pour une
+        # image plus petite. Une photo déjà bien compressée n'a pas besoin
+        # qu'on la redécoupe.
+        if os.path.getsize(cible) >= os.path.getsize(chemin):
+            os.remove(cible)
+            continue
         bouts.append("medias/%s %dw" % (nom_e, e))
+    if not bouts:
+        return "", str(native)            # aucun échelon plus léger : on n'en pose aucun
     if native not in ECHELONS and native <= ECHELONS[-1]:
         bouts.append("%s %dw" % (vign, native))
     return ", ".join(bouts), str(native)
