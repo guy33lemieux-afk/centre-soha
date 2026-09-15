@@ -77,13 +77,18 @@ def police(site, nom):
 def construire(site):
     hero = uri(site, "soha-accueil-plate-b4c136c1.webp")
     faces = []
+    # Deux graisses ont ete retirees de cette liste : Fraunces 600 et Schibsted
+    # 700. Aucune regle de la feuille ne les demandait — le seul consommateur de
+    # var(--serif) titre en 500, et le gras maximal employe par le sans est 600.
+    # 43 ko embarques en base64 pour rien, sur une page qui en pese 457.
+    # UNE QUESTION RESTE, ET ELLE N'EST PAS AU GENERATEUR DE LA TRANCHER : le
+    # site livre precharge Fraunces 600 pendant que cette maquette titre en 500.
+    # Une des deux graisses est la bonne. Mala decide.
     for f, fam, poids, style in (
             ("fraunces-v38-latin-500.woff2", "Fraunces", "500", "normal"),
-            ("fraunces-v38-latin-600.woff2", "Fraunces", "600", "normal"),
             ("fraunces-v38-latin-italic.woff2", "Fraunces", "400", "italic"),
             ("schibsted-grotesk-v7-latin-regular.woff2", "Schibsted Grotesk", "400", "normal"),
             ("schibsted-grotesk-v7-latin-600.woff2", "Schibsted Grotesk", "600", "normal"),
-            ("schibsted-grotesk-v7-latin-700.woff2", "Schibsted Grotesk", "700", "normal"),
             ("dm-mono-v16-latin-regular.woff2", "DM Mono", "400", "normal")):
         u = police(site, f)
         if u:
@@ -181,6 +186,16 @@ FEUILLE = """<style>
 .pr-bouton--clair:hover{background:var(--ivoire);color:var(--encre)}
 .pr-bouton--fantome{color:var(--ivoire);border-color:rgba(244,240,231,.34)}
 .pr-bouton--fantome:hover{background:rgba(244,240,231,.12);color:var(--ivoire)}
+
+/* Quatre regles :hover, zero regle :focus — la maquette repondait a la souris
+   et pas au clavier. Chaque lien retombait sur l'anneau par defaut du
+   navigateur, qui ne connait ni le papier ni l'encre.
+   L'anneau suit le FOND plutot que d'etre unique : encre sur les sections
+   claires (16,84 sur papier, 15,68 sur ivoire), Soigner sur la section encre
+   (6,45). Les trois fonds du canon passent largement les 3:1 de WCAG 1.4.11.
+   `:focus-visible` et non `:focus` : la souris ne declenche rien. */
+.pr-ecran :focus-visible{outline:2px solid var(--encre);outline-offset:3px;border-radius:1px}
+.pr-lieu :focus-visible{outline-color:var(--soigner)}
 .pr-geste{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
 
 /* A — le héros. La photo tient la hauteur du texte : plus de colonne vide. */

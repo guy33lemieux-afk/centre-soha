@@ -1192,9 +1192,25 @@ ESTIMATEUR_CSS = """/* =========================================================
 #sohaEstim .se-price small{font-size:1rem;color:var(--se-accent)}
 #sohaEstim .se-sel{font-size:.95rem;color:rgba(244,240,231,.7)}
 #sohaEstim .se-note{font-size:.74rem;color:rgba(244,240,231,.5);margin:16px 0 18px;line-height:1.5}
-#sohaEstim .se-cta{display:inline-block;text-align:center;text-decoration:none;font-weight:600;
-  background:var(--se-accent);color:#0E1A15;border-radius:999px;padding:14px 22px;min-height:50px}
-#sohaEstim .se-cta:hover{filter:brightness(.95)}
+/* Repris MOT POUR MOT de l'extension livree (soha-estimateur.php:169-178) :
+   le generateur avait garde un `filter:brightness(.95)` et un
+   `border-radius:999px` que l'extension a abandonnes. Deux surfaces qui
+   disent deux choses du meme bouton — et c'est celle de Mala qui a raison. */
+#sohaEstim .se-cta{display:inline-flex;align-items:center;justify-content:center;
+  text-align:center;text-decoration:none;font-weight:600;
+  /* UNE SEULE divergence avec l'extension, et elle est mesuree : au repos
+     elle pose `color:#fff` sur le fond Soigner, soit 2,77:1 — sous le seuil.
+     Le texte reste donc encre (6,45) tant que le fond est bleu ; au survol le
+     fond devient encre et le blanc reprend sa place (15,68). La forme est
+     celle de l'extension, la couleur est celle qui se lit. */
+  background:var(--se-accent);color:var(--se-ink);border:1px solid var(--se-accent);
+  border-radius:0;padding:14px 27px;min-height:48px;
+  transition:background-color 140ms cubic-bezier(.22,.61,.36,1),
+             border-color 140ms cubic-bezier(.22,.61,.36,1)}
+#sohaEstim .se-cta:hover,
+#sohaEstim .se-cta:focus-visible{background:var(--se-ink);border-color:var(--se-ink);color:#fff}
+#sohaEstim .se-cta:focus-visible{outline:2px solid var(--se-accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){#sohaEstim .se-cta{transition:none}}
 """
 
 JS = """/* Centre Soha — le strict nécessaire : le menu, et l'estimateur. */
@@ -1321,8 +1337,10 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
         neuves = list(r.regles.values())[avant:]
         pre = ""
         prem = premiere_image(contenu, "".join(";".join(d) for d in neuves))
+        ariane = fil_dariane_jsonld(contenu, r.lien)
         if prem:
             pre = '<link rel="preload" as="image" href="%s" fetchpriority="high">' % prem
+        pre += ariane
         seo = METAS.get(p["id"])
         doc = GABARIT.format(
             titre=html.escape(seo[0] if seo else "%s — Centre Soha" % p["titre"]),
@@ -1527,6 +1545,38 @@ def sommaire(sortie, pages, articles):
     )
     open(os.path.join(sortie, "lisez-moi.html"), "w", encoding="utf-8").write(doc)
     return "lisez-moi.html"
+
+
+def fil_dariane_jsonld(contenu, lien):
+    """Le BreadcrumbList, tire du fil REELLEMENT affiche par la page.
+
+    Pas l'inverse : on ne decrit pas aux moteurs une hierarchie que le
+    visiteur ne voit pas. Treize pages du kit n'ont pas de fil — elles
+    n'auront pas de donnees structurees non plus, tant que Mala n'aura pas
+    decide de quoi elles descendent.
+    """
+    m = re.search(r'<nav class="soha-ariane"[^>]*>(.*?)</nav>', contenu, re.S)
+    if not m:
+        return ""
+    bouts = re.findall(r'<a href="([^"]*)">(.*?)</a>|<span aria-current="page">(.*?)</span>',
+                       m.group(1), re.S)
+    items, rang = [], 0
+    for url, texte, courant in bouts:
+        nom = re.sub(r"<[^>]+>", "", texte or courant).strip()
+        if not nom:
+            continue
+        rang += 1
+        e = {"@type": "ListItem", "position": rang, "name": nom}
+        if url:
+            e["item"] = lien(url)
+        items.append(e)
+    if len(items) < 2:
+        return ""
+    return ('<script type="application/ld+json">%s</script>'
+            % json.dumps({"@context": "https://schema.org",
+                          "@type": "BreadcrumbList",
+                          "itemListElement": items},
+                         ensure_ascii=False, separators=(",", ":")))
 
 
 def premiere_image(html_page, css_page=""):
