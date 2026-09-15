@@ -216,7 +216,7 @@ BLOC_CSS = """
    la nôtre à trois : elle gagne, sans un seul `!important`.
 
    Et le bleu reste le bleu du canon : #19A7DB tient 6,45 sur l'encre, bien
-   au-dessus des 4,5 exigés. Le #63C8E6 des premières esquisses est abandonné —
+   au-dessus des 4,5 exigés. Le cyan clair des premières esquisses est abandonné —
    il n'appartient à aucune des trois familles. */
 .soha-lieu.soha-lieu,
 .soha-lieu.soha-lieu h1,.soha-lieu.soha-lieu h2,.soha-lieu.soha-lieu h3,

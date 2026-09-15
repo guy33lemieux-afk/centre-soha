@@ -43,7 +43,11 @@ import json
 import os
 import sys
 
-GRAND, COURT, FIN = 120, 48, 96
+# v02 (15 septembre, département rythme) : GRAND passe de 120 à 144. Les
+# intervalles sont la somme de deux paddings ; avec 120/48 on obtenait 168 et
+# 216, hors de toute échelle. Avec 144/48/96, chaque intervalle du site vaut
+# 96, 144 ou 192 — trois valeurs, toutes dans l'échelle 48·n.
+GRAND, COURT, FIN = 144, 48, 96
 
 
 def pages(kit):
@@ -84,8 +88,8 @@ def rythmer(kit, ecrire=True):
         for i, c in enumerate(candidats):
             s = c.setdefault("settings", {})
             p = s.get("padding")
-            if not isinstance(p, dict) or str(p.get("top")) != "80":
-                continue                       # on ne touche que le 80/80 uniforme
+            if not isinstance(p, dict) or str(p.get("top")) not in ("80", "120", "76", "90", "96"):
+                continue                       # le 80/80 d'origine, le 120/48 de v01, et les 76/90/96 uniformes
             ouvre = porte_une_etiquette(c) or i == 0
             haut = GRAND if ouvre else COURT
             bas = FIN if i == len(candidats) - 1 else COURT

@@ -1228,7 +1228,7 @@ html{scroll-behavior:smooth}
 ESTIMATEUR_CSS = """/* ============================================================
    Estimateur de location — porté de l'extension soha-estimateur v2.0.1.
    Deux écarts au canon corrigés ici : la police passe d'Inter à
-   Schibsted Grotesk, et l'ivoire #F4F1E9 (retiré) devient #F4F0E7.
+   Schibsted Grotesk, et l'ancien ivoire (retiré) devient #F4F0E7.
    ============================================================ */
 #sohaEstim{--se-accent:#0E1A15;--se-ink:#0E1A15;--se-paper:#F4F0E7;
   --se-card:#14100C;--se-card-ink:#F4F0E7;--se-line:rgba(14,26,21,.16);
