@@ -128,7 +128,16 @@ def embarquer_css(css, coffre):
 
 
 def embarquer_html(frag, coffre):
-    """Les `src` et `href` qui pointent vers `medias/` deviennent le fichier."""
+    """Les `src` et `href` qui pointent vers `medias/` deviennent le fichier.
+
+    Le `srcset`, lui, est RETIRÉ, pas embarqué. Mala a ouvert le fichier et
+    a vu des images cassées partout : le navigateur choisit un candidat du
+    `srcset` — un chemin relatif vers un fichier qui n'existe pas à côté du
+    document — et ignore le `src` embarqué. Emballer cinq échelons par photo
+    en base64 quintuplerait le poids pour rien : dans un fichier unique, la
+    seule version qui compte est celle qu'on a sous la main.
+    """
+    frag = re.sub(r'\s(?:srcset|sizes|imagesrcset|imagesizes)="[^"]*"', "", frag)
     def attribut(m):
         return '%s="%s"' % (m.group(1), coffre.uri(m.group(2)))
     return re.sub(r'\b(src|href|content)="(medias/[^"]+)"', attribut, frag)

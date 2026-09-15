@@ -62,6 +62,7 @@ def banc(fichier, chromium):
 
         # --- 1. chaque vue s'affiche, et son titre suit -----------------------
         titres_vus = 0
+        images_vues = 0
         for f in vues:
             page.evaluate("f => { location.hash = '#/' + f; }", f)
             page.wait_for_timeout(90)
@@ -83,7 +84,31 @@ def banc(fichier, chromium):
                 continue
             if etat["titre"]:
                 titres_vus += 1
+            # Chaque image de la vue doit VRAIMENT se décoder. Cette porte a
+            # rendu « 15 réussites, 0 échec » sur un fichier où toutes les
+            # photos du Journal étaient cassées : elle comptait des caractères,
+            # jamais des pixels. Une porte qui ne regarde pas les images ne
+            # protège pas les images.
+            images = page.evaluate("""async () => {
+                var v = document.querySelector('#soha-vues > .vue:not([hidden])');
+                var imgs = Array.from(v ? v.querySelectorAll('img') : []);
+                var cassees = [];
+                for (var im of imgs) {
+                    var src = im.currentSrc || im.getAttribute('src') || '';
+                    if (!src.startsWith('data:')) { cassees.push('hors fichier : ' + src.slice(0, 60)); continue; }
+                    im.loading = 'eager';
+                    try { await im.decode(); } catch (e) { cassees.push('indécodable : ' + (im.alt || '?').slice(0, 40)); continue; }
+                    if (!im.naturalWidth) cassees.push('largeur nulle : ' + (im.alt || '?').slice(0, 40));
+                }
+                return {n: imgs.length, cassees: cassees};
+            }""")
+            images_vues += images["n"]
+            for c in images["cassees"]:
+                fautes.append(("image %s" % f, c))
+                print(" ✗ %-56s %s" % ("l'image s'affiche : " + f, c))
         dit("chaque vue s'affiche seule, avec du contenu", True, "%d vues parcourues" % len(vues))
+        dit("chaque image se décode depuis le fichier lui-même",
+            not any(k.startswith("image ") for k, _ in fautes), "%d images" % images_vues)
         dit("le titre de l'onglet suit la page", titres_vus == len(vues),
             "%d/%d" % (titres_vus, len(vues)))
 
