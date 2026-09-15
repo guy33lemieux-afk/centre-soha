@@ -53,7 +53,7 @@ DEBUT = "/* ==== soha-heros début ==== */"
 FIN = "/* ==== soha-heros fin ==== */"
 
 BLOC_CSS = DEBUT + """
-/* ---- les héros en widget image · v03 ------------------------------------
+/* ---- les héros en widget image · v04 ------------------------------------
    La photo n'est plus un fond : c'est une balise. Elle se place donc à la
    main, derrière le texte, et porte son voile elle-même.
 
@@ -66,16 +66,19 @@ BLOC_CSS = DEBUT + """
    prendre-soin perdait 105 px, espaces-professionnels en gagnait 298. La
    photo est en `inset:0` et en `object-fit:cover` — elle ne déborde pas. */
 .soha-hero{position:relative}
-.soha-hero-fond{position:absolute;inset:0;width:100%;height:100%;
+/* `top/right/bottom/left` et non `inset` : Safari avant 14.1 ignore `inset`,
+   et une photo de héros qui manque sur un iPad de 2020 est une photo qui
+   manque. Les quatre propriétés coûtent trois mots de plus. */
+.soha-hero-fond{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;
   margin:0;padding:0;z-index:0;pointer-events:none}
 .soha-hero-fond > .elementor-widget-container{height:100%}
 .soha-hero-fond img{width:100%;height:100%;object-fit:cover;display:block}
-.soha-hero-fond::after{content:"";position:absolute;inset:0;
+.soha-hero-fond::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;
   background:rgba(14,26,21,0.68)}
 .soha-hero-texte{position:relative;z-index:1}
 """ + FIN + "\n"
 
-MARQUE = "les héros en widget image · v03"
+MARQUE = "les héros en widget image · v04"
 
 
 def classes(s, ajout):
