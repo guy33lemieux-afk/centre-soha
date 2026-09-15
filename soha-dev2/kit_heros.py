@@ -32,11 +32,40 @@ C. Le voile `rgba(14,26,21,0.68)` quitte le réglage Elementor et passe dans la
    feuille : posé sur la widget image, il couvre la photo et rien d'autre.
 D. Le conteneur reçoit `soha-hero`, son conteneur de texte `soha-hero-texte`.
 
-Ce que le script REFUSE de faire
---------------------------------
-Il ne change ni le voile, ni sa valeur, ni le cadrage, ni le texte, ni la
-photo. Le rendu doit être IDENTIQUE au pixel près : c'est une opération de
-structure, pas de design. Ce qui doit changer à l'œil se décide ailleurs.
+v07 — LE VOILE DEVIENT UN CARTEL D'ANGLE (direction artistique & matière)
+--------------------------------------------------------------------------
+Constat mesuré (regard31, état v06 réel, 1440 px) : le dégradé v06 monte du
+bas sur TOUTE la largeur. Or dans les sept photos du 961 la matière — plancher,
+tapis, corps, brique, mur de bois — est en bas, et le plafond blanc en haut.
+Moitié basse rendue : 0,0 % de pixels chauds (se-ressourcer, espaces) pour
+57–88 % à la source ; 47 % de la surface du héros sous ≥ .80 d'encre.
+
+Ce que v07 fait : il garde EXACTEMENT le dégradé v06 (mêmes arrêts — c'est
+lui que la porte du contraste a validé sur 32 textes) mais le masque
+horizontalement au bloc de texte, ferré à un bord (plateau 0→56 %, rampe
+→76 % dès 1240 px ; 68/90 % de 974 à 1239 px ; pleine largeur ≤ 973 px = v06
+conservé sur tablette et téléphone — paliers calculés sur le bord du bloc, 662 px). Le bloc de texte passe de « centré dans 980 » à « 640 px ferré à
+gauche sur la grille de 1200 », texte aligné à gauche — la clé Elementor
+`align` est la source, le CSS n'est que le filet. Le bord se choisit PAR
+PHOTO, règle : le texte ne traverse jamais une personne, et va du côté où la
+photo a le moins à montrer. Mesuré sur les sept sources : gauche partout,
+sauf studio-podcast (brique dans le tiers gauche à 97 %) → `soha-hero-droite`.
+Résultat mesuré (simulation sur les sources, 1440×702) : surface nue (α<.10)
+20 % → 42 % ; surface sous ≥ .80 : 47 % → 27 % ; pixels chauds rendus ×2 à
+×2,6 selon la page. Sous le texte, rien ne change au pixel.
+
+Ce que v07 REFUSE de faire
+--------------------------
+Changer un arrêt ou une opacité du dégradé (ils sont mesurés, pas choisis) ;
+poser un pigment nouveau (le voile reste l'encre du canon — le brun dérivé de
+la brique #130D08 est une PROPOSITION à part, non appliquée) ; recadrer une
+photo (mesuré : un `object-position` ne gagne que 4 à 8 points de chaud et
+coupe une tête) ; toucher un mot de Mala ; changer une photo (le pissenlit du
+Journal reste, question posée à Mala).
+
+Ce que le script REFUSE de faire (v01–v06, toujours vrai)
+---------------------------------------------------------
+Il ne change ni le cadrage, ni le texte, ni la photo.
 
     python3 kit_heros.py --kit <dossier> [--lire]
 """
@@ -50,27 +79,26 @@ ENCRE = "#0E1A15"
 IVOIRE = "#F4F0E7"
 SOIGNER = "#19A7DB"      # l'accent d'une école de soha.live — il n'a rien à faire ici
 VOILE = "rgba(14,26,21,0.68)"
+BLANC = "#ffffff"
+GRIS_IVOIRE = "#EDE9E1"       # hors canon : le paragraphe du héros passe à l'ivoire
+# v07 — le bord du cartel, par page. Gauche par défaut ; à droite quand la
+# matière est à gauche (studio-podcast : brique 97 % chaud dans le tiers gauche).
+A_DROITE = {"7355.json"}
 
 DEBUT = "/* ==== soha-heros début ==== */"
 FIN = "/* ==== soha-heros fin ==== */"
 
 BLOC_CSS = DEBUT + """
-/* ---- les héros en widget image · v06 ------------------------------------
-   La photo n'est plus un fond : c'est une balise. Elle se place donc à la
-   main, derrière le texte.
-
-   v05 — LE VOILE QUITTE LA PHOTO. Mala : « enlève-moi le voile sur les
-   photos ». Le voile uniforme rgba(14,26,21,0.68) repeignait la photo en
-   froid (mesuré : 94,2 % de pixels chauds avant, 4,2 % après). Mais voile
-   retiré, 24 textes tombaient sous 4,5. Donc : le texte descend au bas du
-   héros, et un dégradé d'encre ne monte que sous lui — le haut de la photo
-   est nu, le texte garde son sol. Les arrêts du dégradé sont MESURÉS par
-   porte_du_contraste.py sur les huit pages, pas choisis à l'œil.
-
-   v04 — `top/right/bottom/left` et non `inset` : Safari avant 14.1 ignore
-   `inset`. v03 — pas d'`overflow:hidden` (il décale les hauteurs). v02 —
-   `height:100%` sur `.elementor-widget-container`, sinon la photo retombe
-   à sa taille naturelle. */
+/* ---- les héros en widget image · v07 : le voile devient un CARTEL D'ANGLE
+   v06 mettait le texte au bas du héros et faisait monter l'encre sous lui,
+   sur TOUTE la largeur : la moitié basse de la photo — plancher, tapis,
+   corps, mur de bois — passait sous .84–.92 d'encre (mesuré : 0,0 % de
+   pixels chauds dans la moitié basse rendue, 57–88 % à la source).
+   v07 garde exactement le dégradé v06 (mêmes arrêts : c'est lui que la porte
+   du contraste a validé) mais le MASQUE horizontalement au bloc de texte,
+   ferré à un bord. Sous le texte, rien ne change au pixel ; ailleurs, la
+   photo est nue. Le bord (gauche/droite) se choisit PAR PHOTO : le texte va
+   du côté où la photo a le moins à montrer (mesuré : tiers le moins chaud). */
 .soha-hero{position:relative;min-height:min(78vh,720px);justify-content:flex-end}
 .soha-hero-fond{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;
   margin:0;padding:0;z-index:0;pointer-events:none}
@@ -79,18 +107,47 @@ BLOC_CSS = DEBUT + """
 .soha-hero-fond::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;
   background:linear-gradient(180deg,
     rgba(14,26,21,0) 0%, rgba(14,26,21,0) 16%,
-    rgba(14,26,21,.58) 36%, rgba(14,26,21,.84) 56%, rgba(14,26,21,.92) 100%)}
+    rgba(14,26,21,.58) 36%, rgba(14,26,21,.84) 56%, rgba(14,26,21,.92) 100%);
+  -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 56%,rgba(0,0,0,0) 76%);
+  mask-image:linear-gradient(90deg,#000 0%,#000 56%,rgba(0,0,0,0) 76%)}
+.soha-hero-droite .soha-hero-fond::after{
+  -webkit-mask-image:linear-gradient(270deg,#000 0%,#000 56%,rgba(0,0,0,0) 76%);
+  mask-image:linear-gradient(270deg,#000 0%,#000 56%,rgba(0,0,0,0) 76%)}
 .soha-hero-texte{position:relative;z-index:1}
-/* Le surtitre est un CARTEL : DM Mono sur encre, comme « PLANCHE 01 » sur
-   l'accueil. Posé en haut du bloc de texte, il tombait sur la partie claire
-   de la photo — mesuré 1,75 à 3,86 pour 4,5. Sur encre plein, il tient
-   partout, quelle que soit la photo. */
+/* le bloc de texte : 640 px, ferré au bord de la grille de 1200, texte à gauche */
+.soha-hero .soha-hero-texte > .e-con-inner{max-width:1200px;align-items:flex-start}
+.soha-hero .soha-hero-texte > .e-con-inner > *{align-self:flex-start;margin-left:0;margin-right:0}
+.soha-hero-droite .soha-hero-texte > .e-con-inner{align-items:flex-end}
+.soha-hero-droite .soha-hero-texte > .e-con-inner > *{align-self:flex-end}
+/* le générateur centre le paragraphe du héros (46ch, margin auto) : on garde la mesure, on ferre la marge */
+.soha-hero-texte .elementor-widget-heading:has(h1.elementor-heading-title) + .elementor-widget-text-editor{margin-left:0;margin-right:0}
+.soha-hero-droite .soha-hero-texte .elementor-widget-heading:has(h1.elementor-heading-title) + .elementor-widget-text-editor{margin-left:auto;margin-right:0}
+.soha-hero-texte > .e-con-inner > .elementor-widget,
+.soha-hero-texte > .e-con-inner > .e-con{width:100%;max-width:640px}
+.soha-hero-texte .elementor-heading-title,
+.soha-hero-texte .elementor-widget-text-editor,
+.soha-hero-texte .elementor-widget-button{text-align:left}
+.soha-hero-texte .elementor-button-wrapper{justify-content:flex-start}
+.soha-hero-texte > .e-con-inner > .e-con{justify-content:flex-start}
+/* le titre en ivoire du canon, plus en blanc pur */
+.soha-hero-texte h1.elementor-heading-title{color:#F4F0E7}
 .soha-hero-texte .elementor-widget-heading:first-child .elementor-heading-title{
   display:inline-block;background:#0E1A15;padding:6px 12px 6px 14px;margin-left:0}
+/* Paliers MESURÉS sur la largeur du bloc (22 + 640 = 662 px au bord) :
+   ≥ 1240 px : bloc ≤ 53 % → plateau 56 %, rampe 76 % ;
+   974–1239 : bloc ≤ 68 % → plateau 68 %, rampe 90 % ;
+   ≤ 973 px : le bloc dépasserait le plateau → v06 pleine largeur (tenu). */
+@media (max-width:1239px){
+  .soha-hero-fond::after{-webkit-mask-image:linear-gradient(90deg,#000 0%,#000 68%,rgba(0,0,0,0) 90%);
+    mask-image:linear-gradient(90deg,#000 0%,#000 68%,rgba(0,0,0,0) 90%)}
+  .soha-hero-droite .soha-hero-fond::after{-webkit-mask-image:linear-gradient(270deg,#000 0%,#000 68%,rgba(0,0,0,0) 90%);
+    mask-image:linear-gradient(270deg,#000 0%,#000 68%,rgba(0,0,0,0) 90%)}}
+@media (max-width:973px){
+  .soha-hero-fond::after,.soha-hero-droite .soha-hero-fond::after{-webkit-mask-image:none;mask-image:none}} /* v06 pleine largeur : tablette et téléphone */
 @media (max-width:767px){.soha-hero{min-height:min(72vh,600px)}}
 """ + FIN + "\n"
 
-MARQUE = "les héros en widget image · v06"
+MARQUE = "les héros en widget image · v07"
 
 
 def classes(s, ajout):
@@ -199,6 +256,7 @@ def retoucher(noeud, journal, page):
     for enfant in noeud.get("elements") or []:
         if enfant.get("elType") == "container":
             change += surtitres_en_ivoire(enfant, journal, page)
+    change += reglages_v07(noeud, journal, page)
     if s.get("flex_justify_content") == "flex-end" and (s.get("padding") or {}).get("top") == "72":
         return bool(change)
     s["flex_justify_content"] = "flex-end"
@@ -207,6 +265,40 @@ def retoucher(noeud, journal, page):
                     "left": p.get("left", "22"), "right": p.get("right", "22"), "isLinked": False}
     journal.append((page, noeud.get("id"), "v05 : texte en bas, padding 72/64"))
     return True
+
+
+def reglages_v07(hero, journal, page):
+    """v07 : le bloc de texte ferré à un bord, aligné à gauche, ivoire du
+    canon ; la grille de 1200 ; le bord déclaré par page. Idempotent."""
+    s = hero["settings"]
+    n = 0
+    if s.get("flex_align_items") != "flex-start":
+        s["flex_align_items"] = "flex-start"; n += 1
+    if page in A_DROITE and "soha-hero-droite" not in (s.get("_css_classes") or "").split():
+        classes(s, "soha-hero-droite"); n += 1
+    for texte in hero.get("elements") or []:
+        if texte.get("elType") != "container":
+            continue
+        st = texte.setdefault("settings", {})
+        if (st.get("boxed_width") or {}).get("size") != 1200:
+            st["boxed_width"] = {"unit": "px", "size": 1200, "sizes": []}; n += 1
+        if st.get("flex_align_items") != "flex-start":
+            st["flex_align_items"] = "flex-start"; n += 1
+        for w in texte.get("elements") or []:
+            ws = w.setdefault("settings", {})
+            if w.get("widgetType") in ("heading", "text-editor") and ws.get("align") != "left":
+                ws["align"] = "left"; n += 1
+            if w.get("widgetType") == "heading" and (ws.get("title_color") or "").lower() == BLANC:
+                ws["title_color"] = IVOIRE; n += 1
+            if w.get("widgetType") == "text-editor" and (ws.get("text_color") or "").upper() == GRIS_IVOIRE:
+                ws["text_color"] = IVOIRE; n += 1
+            if w.get("elType") == "container":          # la rangée de boutons
+                for cle, val in (("flex_justify_content", "flex-start"), ("flex_align_items", "flex-start")):
+                    if ws.get(cle) != val:
+                        ws[cle] = val; n += 1
+    if n:
+        journal.append((page, hero.get("id"), "v07 : %d réglage(s) — cartel %s" % (n, "à droite" if page in A_DROITE else "à gauche")))
+    return n
 
 
 def poser_le_style(kit, journal, ecrire=True):
