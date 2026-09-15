@@ -406,9 +406,10 @@ class Kit:
 #  Rendu
 # --------------------------------------------------------------------------
 class Rendu:
-    def __init__(self, kit, medias_dispo, journal_fichier="journal.html"):
+    def __init__(self, kit, medias_dispo, sortie=".", journal_fichier="journal.html"):
         self.kit = kit
         self.medias = medias_dispo          # {nom de base: chemin source}
+        self.sortie = sortie                # pour fabriquer les échelons du héros
         self.regles = OrderedDict()         # sélecteur → déclarations (base)
         self.regles_tab = OrderedDict()
         self.regles_tel = OrderedDict()
@@ -417,6 +418,7 @@ class Rendu:
         self.journal_fichier = journal_fichier
         self.estimateur_pose = False
         self.premiere_image_posee = False
+        self.hero_srcset = ""        # le srcset du héros de la page en cours
 
     # ---- chemins ----
     def media(self, url):
@@ -561,6 +563,12 @@ class Rendu:
         classes = ["elementor-element", "elementor-element-%s" % eid,
                    "elementor-widget", "elementor-widget-%s" % genre]
         classes.extend(extra_classes)
+        # Elementor pose les classes personnalisées sur les widgets comme sur
+        # les conteneurs. Le générateur ne les posait que sur les conteneurs :
+        # une classe écrite dans le kit sur une widget n'existait donc pas dans
+        # la page rendue, sans erreur — elle disparaissait, simplement.
+        for c in (s.get("_css_classes") or "").split():
+            classes.append(c)
         m = boite(s.get("_margin"))
         if m:
             self.ajoute(self.sel(eid), ["margin:%s" % m])
@@ -636,6 +644,16 @@ class Rendu:
             d.append("border-radius:%s" % r)
         self.ajoute(self.sel(eid) + " img", d)
         alt = texte_alternatif(src)
+        # Le héros est le seul <img> dont on connaisse la largeur d'affichage
+        # sans deviner : il couvre l'écran. `sizes` peut donc valoir 100vw en
+        # toute honnêteté. Pour les autres images, on ne sait pas — et un
+        # `sizes` faux coûte plus cher que pas de `srcset` du tout.
+        jeu_attrs = ""
+        if "soha-hero-fond" in (s.get("_css_classes") or ""):
+            jeu, _ = tailles_derivees(self.medias, img.get("url", ""), self.sortie, src)
+            if jeu:
+                jeu_attrs = ' srcset="%s" sizes="100vw"' % jeu
+                self.hero_srcset = jeu
         # la première image de la page est celle du héros : elle est préchargée,
         # donc jamais paresseuse — sinon le préchargement se contredit lui-même
         if self.premiere_image_posee:
@@ -648,7 +666,10 @@ class Rendu:
             # il ne doit pas attendre, mais il ne passe pas devant le héros.
             attrs_img = ' loading="eager" decoding="async"' 
             self.premiere_image_posee = True
-        balise = '<img src="%s" alt="%s"%s>' % (src, html.escape(alt), attrs_img)
+        lw, lh = dimensions_natives(self.medias, img.get("url", ""))
+        dim = ' width="%d" height="%d"' % (lw, lh) if lw and lh else ""
+        balise = '<img src="%s" alt="%s"%s%s%s>' % (
+            src, html.escape(alt), dim, jeu_attrs, attrs_img)
         if s.get("link_to") == "custom" and isinstance(s.get("link"), dict):
             balise = '<a href="%s">%s</a>' % (self.lien(s["link"].get("url", "")), balise)
         return self.enveloppe(e, "image", balise)
@@ -1319,7 +1340,7 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
     os.makedirs(os.path.join(sortie, "assets"), exist_ok=True)
     os.makedirs(os.path.join(sortie, "medias"), exist_ok=True)
 
-    r = Rendu(kit, medias)
+    r = Rendu(kit, medias, sortie)
 
     # en-tête et pied, rendus une fois et partagés
     entete = "".join(r.element(e, 0) for e in (kit.entete["content"] if kit.entete else []))
@@ -1333,6 +1354,7 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
     # les 12 pages du kit
     for p in kit.pages.values():
         r.premiere_image_posee = False
+        r.hero_srcset = ""
         # Les règles s'accumulent page après page dans le même dictionnaire :
         # on note où on en est AVANT de rendre, pour ne relire que ce que cette
         # page-ci vient d'ajouter. Sans ça on préchargerait le fond d'une page
@@ -1344,7 +1366,14 @@ def construire(kit_dir, medias_dir, sortie, polices_dir=None):
         prem = premiere_image(contenu, "".join(";".join(d) for d in neuves))
         ariane = fil_dariane_jsonld(contenu, r.lien)
         if prem:
-            pre = '<link rel="preload" as="image" href="%s" fetchpriority="high">' % prem
+            # Un préchargement sans `imagesrcset` force le fichier pleine
+            # taille et annule le `srcset` de la balise : mesuré à 740 ko sur
+            # téléphone là où la balise seule n'en demandait que 111.
+            if r.hero_srcset:
+                pre = ('<link rel="preload" as="image" href="%s" imagesrcset="%s" '
+                       'imagesizes="100vw" fetchpriority="high">' % (prem, r.hero_srcset))
+            else:
+                pre = '<link rel="preload" as="image" href="%s" fetchpriority="high">' % prem
         pre += ariane
         seo = METAS.get(p["id"])
         doc = GABARIT.format(
@@ -1635,6 +1664,35 @@ def tailles_derivees(medias, nom, sortie, vign):
     if native not in ECHELONS and native <= ECHELONS[-1]:
         bouts.append("%s %dw" % (vign, native))
     return ", ".join(bouts), str(native)
+
+
+def dimensions_natives(medias, nom):
+    """La taille réelle du fichier, en pixels : (largeur, hauteur), ou (0, 0).
+
+    POURQUOI. Une balise `<img>` sans `width` ni `height` n'occupe aucune
+    place tant que l'octet n'est pas arrivé : le texte se met en place, puis
+    saute quand la photo atterrit. Mesuré ici en changeant l'ordre de
+    chargement : un bloc de la page « prendre soin » passait de 3 969 à
+    4 074 px selon qu'une photo était chargée ou non. Ce n'est pas une
+    régression de ce changement-ci — c'est un défaut qu'il a révélé.
+
+    Avec les deux attributs, le navigateur réserve le rapport de forme avant
+    d'avoir l'image, et la page ne bouge plus.
+    """
+    try:
+        from PIL import Image
+    except ImportError:
+        return 0, 0
+    base = os.path.basename((nom or "").split("?")[0])
+    chemin = medias.get(base) if isinstance(medias, dict) else None
+    if not chemin and base:
+        chemin = medias.get(re.sub(r"-\d+(\.\w+)$", r"\1", base))
+    if not chemin or not os.path.exists(chemin):
+        return 0, 0
+    try:
+        return Image.open(chemin).size
+    except Exception:
+        return 0, 0
 
 
 def largeur_native(medias, nom):
