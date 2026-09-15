@@ -273,6 +273,14 @@ def css_conteneur(s, media=None):
     mh = longueur(s.get("min_height"))
     if mh:
         base.append("min-height:%s" % mh)
+    # Le kit déclare aussi les hauteurs de tablette et de téléphone. Le
+    # générateur les jetait : le premier écran de l'accueil rendait une bande
+    # photo de 78,7 px à 390×900 là où le kit demande 48 vh — ma maquette
+    # mentait sur l'écran que 100 % des visiteurs voient.
+    for cle, dest in (("min_height_tablet", tab), ("min_height_mobile", tel)):
+        v = longueur(s.get(cle))
+        if v:
+            dest.append("min-height:%s" % v)
     if s.get("background_background") == "classic":
         if s.get("background_color"):
             base.append("background-color:%s" % s["background_color"])

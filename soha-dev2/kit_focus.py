@@ -44,7 +44,26 @@ import json
 import os
 import sys
 
-MARQUEUR = "l'anneau de focus · v02"
+MARQUEUR_V2 = "l'anneau de focus · v02"
+MARQUEUR = "l'anneau de focus · v03"
+
+# v02 → v03 (15 septembre, département mouvement) : le halo quitte l'accent
+# de Soigner pour l'ivoire du canon. Mesuré : ivoire sur encre 15,68 ; et comme
+# l'outline est PEINT PAR-DESSUS le halo (offset 2 + 2 px de trait < 5 px de
+# spread), l'encre se lit sur l'ivoire à 15,68 quel que soit le fond. Sur une
+# photo, le pire pixel possible pour l'ivoire est L = 0,188 → 3,87:1. Le
+# #E0D8CA proposé par le brief mesure 1,24 sur ivoire, pas 3,1 — refusé.
+HALO_V2 = "  box-shadow:0 0 0 5px #19A7DB;\n}"
+HALO_V3 = "  box-shadow:0 0 0 5px #F4F0E7;\n}"
+ENTETE_V2 = """   SOHA — l'anneau de focus · v02 · 14 septembre 2026"""
+ENTETE_V3 = """   SOHA — l'anneau de focus · v03 · 15 septembre 2026
+   v03 : le halo n'emprunte plus l'accent de Soigner (#19A7DB). Il est
+   ivoire #F4F0E7 : 15,68 sur l'encre, et l'outline encre, peint
+   par-dessus lui, se lit a 15,68 sur TOUS les fonds — papier, ivoire,
+   encre, photo (pire pixel possible pour l'ivoire : 3,87). Deux
+   anneaux, zero pigment.
+   v02 · 14 septembre 2026"""
+
 
 # La règle de septembre, au caractère près. Si elle a bougé, on n'écrit rien
 # plutôt que de deviner.
@@ -73,7 +92,13 @@ BLOC = """
 
 
 /* ============================================================
-   SOHA — l'anneau de focus · v02 · 14 septembre 2026
+   SOHA — l'anneau de focus · v03 · 15 septembre 2026
+   v03 : le halo n'emprunte plus l'accent de Soigner (#19A7DB). Il est
+   ivoire #F4F0E7 : 15,68 sur l'encre, et l'outline encre, peint
+   par-dessus lui, se lit a 15,68 sur TOUS les fonds — papier, ivoire,
+   encre, photo (pire pixel possible pour l'ivoire : 3,87). Deux
+   anneaux, zero pigment.
+   v02 · 14 septembre 2026
    Une seule regle, avec de VRAIS selecteurs. La version du matin
    etait ecrite en `:where()`, qui vaut zero en specificite : elle
    perdait contre le bloc de septembre reste dans le meme fichier,
@@ -98,7 +123,7 @@ summary:focus-visible,
   outline:2px solid #0E1A15;
   outline-offset:2px;
   border-radius:2px;
-  box-shadow:0 0 0 5px #19A7DB;
+  box-shadow:0 0 0 5px #F4F0E7;
 }
 """
 
@@ -111,7 +136,19 @@ def appliquer(kit, ecrire=True):
     journal = []
 
     if MARQUEUR in css:
-        journal.append("focus : le bloc v02 est déjà là")
+        journal.append("focus : le bloc v03 est déjà là")
+        return journal
+
+    if MARQUEUR_V2 in css:
+        # montée v02 → v03 : on ne touche qu'au halo et à l'en-tête du bloc
+        if HALO_V2 not in css or ENTETE_V2 not in css:
+            raise SystemExit("focus : le bloc v02 a changé de forme — on n'écrit rien.")
+        css = css.replace(HALO_V2, HALO_V3).replace(ENTETE_V2, ENTETE_V3)
+        st["custom_css"] = css
+        if ecrire:
+            json.dump(d, open(chemin, "w", encoding="utf-8"),
+                      ensure_ascii=False, separators=(",", ":"))
+        journal.append("focus : v02 → v03, halo #19A7DB (accent de Soigner) → ivoire #F4F0E7")
         return journal
 
     if SEPTEMBRE not in css:
@@ -128,7 +165,7 @@ def appliquer(kit, ecrire=True):
     if ecrire:
         json.dump(d, open(chemin, "w", encoding="utf-8"),
                   ensure_ascii=False, separators=(",", ":"))
-    journal.append("focus : règle unique v02 posée (%d caractères)" % len(BLOC))
+    journal.append("focus : règle unique v03 posée (%d caractères)" % len(BLOC))
     return journal
 
 
