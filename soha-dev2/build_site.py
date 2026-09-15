@@ -1161,9 +1161,9 @@ figure{margin:0}
 .soha-radios{display:flex;flex-wrap:wrap;gap:8px 18px}
 .soha-radio{display:inline-flex;align-items:center;gap:8px;min-height:44px;
   font-weight:400;cursor:pointer}
-.soha-radio input{flex:none;width:20px;height:20px;min-height:0;accent-color:#19A7DB}
-.soha-champ-case input{flex:none;width:24px;height:24px;min-height:0;margin-top:2px;accent-color:#19A7DB}
-.soha-formulaire button{font:inherit;cursor:pointer;border:0;background:#19A7DB;color:#fff;
+.soha-radio input{flex:none;width:20px;height:20px;min-height:0;accent-color:#0E1A15}
+.soha-champ-case input{flex:none;width:24px;height:24px;min-height:0;margin-top:2px;accent-color:#0E1A15}
+.soha-formulaire button{font:inherit;cursor:pointer;border:0;background:#0E1A15;color:#F4F0E7;
   padding:14px 26px;min-height:48px;border-radius:2px;justify-self:start}
 /* L'avis de démonstration n'existe que dans CE site de référence — il ne part
    jamais vers WordPress. Il se lit quand même : l'encre à 70 % tient 6,23 sur
@@ -1205,7 +1205,7 @@ figure{margin:0}
 /* Soigner ne porte pas de lettres sur fond clair : il passe sous elles.
    Mesuré : 2,61 avant, 15,68 après — et le bleu est toujours là. */
 .soha-article-corps a,.soha-retour{color:#0E1A15;text-decoration:underline;
-  text-decoration-color:#19A7DB;text-decoration-thickness:1.5px;text-underline-offset:4px}
+  text-decoration-color:#0E1A15;text-decoration-thickness:1.5px;text-underline-offset:4px}
 .soha-article-corps a:hover,.soha-retour:hover{text-decoration-thickness:3px}
 .soha-retour{display:inline-block;margin-top:40px;font-weight:600}
 
@@ -1216,7 +1216,7 @@ figure{margin:0}
 /* Le meme anneau que le kit : encre pour la forme, halo Soigner pour la
    presence. L'ancien etait a 2,61 sur le papier — invisible au clavier. */
 :focus-visible{outline:2px solid #0E1A15;outline-offset:2px;border-radius:2px;
-  box-shadow:0 0 0 5px #19A7DB}
+  box-shadow:0 0 0 5px #F4F0E7}
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;
     transition-duration:.01ms!important;scroll-behavior:auto!important}
@@ -1230,7 +1230,7 @@ ESTIMATEUR_CSS = """/* =========================================================
    Deux écarts au canon corrigés ici : la police passe d'Inter à
    Schibsted Grotesk, et l'ivoire #F4F1E9 (retiré) devient #F4F0E7.
    ============================================================ */
-#sohaEstim{--se-accent:#19A7DB;--se-ink:#0E1A15;--se-paper:#F4F0E7;
+#sohaEstim{--se-accent:#0E1A15;--se-ink:#0E1A15;--se-paper:#F4F0E7;
   --se-card:#14100C;--se-card-ink:#F4F0E7;--se-line:rgba(14,26,21,.16);
   font-family:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
   color:var(--se-ink);max-width:960px;margin:0 auto;width:100%}
@@ -1257,9 +1257,9 @@ ESTIMATEUR_CSS = """/* =========================================================
 #sohaEstim .se-out{background:var(--se-card);color:var(--se-card-ink);border-radius:14px;
   padding:28px 26px;display:flex;flex-direction:column;justify-content:center}
 #sohaEstim .se-lab{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--se-accent);font-weight:600}
+  color:var(--se-card-ink);font-weight:600}
 #sohaEstim .se-price{font-family:"Fraunces",Georgia,serif;font-size:3rem;line-height:1.05;margin:8px 0 6px}
-#sohaEstim .se-price small{font-size:1rem;color:var(--se-accent)}
+#sohaEstim .se-price small{font-size:1rem;color:var(--se-card-ink)}
 #sohaEstim .se-sel{font-size:.95rem;color:rgba(244,240,231,.7)}
 #sohaEstim .se-note{font-size:.74rem;color:rgba(244,240,231,.5);margin:16px 0 18px;line-height:1.5}
 /* Repris MOT POUR MOT de l'extension livree (soha-estimateur.php:169-178) :
@@ -1273,13 +1273,13 @@ ESTIMATEUR_CSS = """/* =========================================================
      Le texte reste donc encre (6,45) tant que le fond est bleu ; au survol le
      fond devient encre et le blanc reprend sa place (15,68). La forme est
      celle de l'extension, la couleur est celle qui se lit. */
-  background:var(--se-accent);color:var(--se-ink);border:1px solid var(--se-accent);
+  background:var(--se-accent);color:var(--se-paper);border:1px solid var(--se-accent);
   border-radius:0;padding:14px 27px;min-height:48px;
   transition:background-color 140ms cubic-bezier(.22,.61,.36,1),
              border-color 140ms cubic-bezier(.22,.61,.36,1)}
 #sohaEstim .se-cta:hover,
-#sohaEstim .se-cta:focus-visible{background:var(--se-ink);border-color:var(--se-ink);color:#fff}
-#sohaEstim .se-cta:focus-visible{outline:2px solid var(--se-accent);outline-offset:2px}
+#sohaEstim .se-cta:focus-visible{background:var(--se-ink);border-color:var(--se-paper);color:#fff}
+#sohaEstim .se-cta:focus-visible{outline:2px solid var(--se-paper);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){#sohaEstim .se-cta{transition:none}}
 """
 
@@ -1584,7 +1584,7 @@ SOMMAIRE = """<!DOCTYPE html>
 /* `a{{color:inherit}}` dans la feuille du site : sans ceci, vingt-huit liens
    auraient l'air de vingt-huit titres en gras. */
 .s-liste a{{color:#0E1A15;font-weight:600;text-decoration:underline;
-  text-decoration-color:#19A7DB;text-decoration-thickness:1.5px;
+  text-decoration-color:#0E1A15;text-decoration-thickness:1.5px;
   text-underline-offset:4px}}
 .s-liste a:hover,.s-liste a:focus-visible{{text-decoration-thickness:3px}}
 .s-liste code{{font-family:"DM Mono",ui-monospace,monospace;
