@@ -19,6 +19,20 @@
 - **Skill de jugement** : `soha-gout` — `scripts/slop.py <html>` (détecteur de tells d'IA, 0 trouvaille sur l'accueil) ; `scripts/regard.py <page> --out <dir> --plein` avec `PW_CHROMIUM=/opt/pw-browsers/chromium-1194/chrome-linux/chrome` ; grille sur 20 dans `references/grille-regard.md`. **L'auteur ne note pas sa propre sortie.**
 - **Livrables envoyés à Mala** : `soha_site_20260915_v05.html` (le site), `NOTE-DE-LIVRAISON.md`, `verdict-couleur.md`, `proposition-legendes.md`, `proposition-voix.md` (les deux derniers sont dans le dépôt).
 
+## 2 bis. Les photos et le kit média
+- **Kit média** = ce qui doit être téléversé dans WordPress AVANT l'import du kit (`wp-content/uploads/2026/08/` et `/09/`). Source de travail : `scratchpad/medias15/2026/` — **74 fichiers, tous en WebP**, nommés `soha-<page>-<NNN>.webp` (convention `soha_<objet>_AAAAMMJJ_vNN` pour les livrables). Une liste `_medias.csv` dit lesquels téléverser avant import. Les zips de livraison sont dans le dépôt : `soha_kitdev_20260914_v18.zip` (kit), `soha_site-html_20260911_v16.zip` (site HTML), plus les trois extensions et les documents maison.
+- **Ce qu'il y a, et à quelle taille** (mesuré) :
+  - 7 héros `soha-hero-*.webp` : 1 500–1 800 px, 612 ko en tout ; le seul qui n'est pas le 961 : `soha-hero-journal.webp` (pissenlit, 1 500×400).
+  - 16 studio `soha-studio-podcast-056…070.webp` : 1 000–1 100 px.
+  - 13 journal `soha-journal-079…091.webp` : 300–2 400 px, 2,8 Mo — les originaux retrouvés par Mala (2020–2023) ; `086` reste à 300 px (introuvable dans 2020–2023, peut-être 2017–2019).
+  - 17 portraits `soha-portrait-<prenom-nom>.webp` : 200–300 px — **trop petits pour plus qu'une ligne de 200 px**.
+  - accueil 6 (900–1 400), espaces 5 (800–1 000), se-transformer 3 (640–800), prendre-soin 3 (300 !), contact 1 (900), événement 1 (800), logos 2 (300).
+  - **Aucune photo du 961 lui-même ne dépasse 1 100 × 734 px.** C'est la limite dure de tout ce qui reste (aire, matière). Il faut les originaux — JPEG pleine taille ou RAW du shooting — ou une matinée de prises de vue.
+- **Formats imposés par le générateur** (`build_site.py`) : chaque `<img>` porte `width`/`height` (anti-CLS) et `alt` dérivé du nom de fichier (`texte_alternatif()`) ; le héros et les vignettes du Journal portent un `srcset` aux **échelons 400 / 800 / 1 200 / 1 800 / 2 400 px** (`ECHELONS`), fabriqués à la volée en WebP q86, **jamais plus lourds que l'original** (sinon supprimés) ; `sizes` n'est écrit que là où la largeur d'affichage est connue (100vw pour le héros, colonnes déclarées pour la grille) ; le héros est préchargé avec `imagesrcset`. Le fichier unique retire les `srcset` et embarque le `src` seul en base64.
+- **Retrouver un original** : `medias_originaux.py` apparie par empreinte perceptuelle (dHash 16×16, distance ≤ 24 sur 256 bits), refuse sous 400 px, plafonne à **2 400 px** de large (au-delà, le WebP dépasse 600 ko pour rien).
+- **Le voile** n'existe plus comme réglage Elementor : c'est `.soha-hero-fond::after` (kit_heros.py v07), un dégradé d'encre masqué au bloc de texte. Pour changer une photo de héros : remplacer la clé `image` de la widget `soha-hero-fond` de la page, rien d'autre.
+- **Favicon** : `kit_favicon.py` découpe l'anneau du O du logo (`soha_logo-site_20260828.webp`) en 32/180/192/512 + maskable ; à poser dans WordPress via Apparence → Personnaliser → Identité du site (voir `LISEZ-MOI.md` produit par le script). Le point cyan du logo est un fichier : il reste.
+
 ## 3. Ce qui est fait (mesuré, 15 septembre)
 | | avant | après |
 |---|---|---|
