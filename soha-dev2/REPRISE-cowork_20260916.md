@@ -63,3 +63,24 @@ Plus anciens : hiérarchie des 13 pages sans fil d'Ariane ; double signature des
 4. Formulaires : `aria-live`, ids en double (pied de page), champs cachés de l'estimateur rendus visibles.
 5. Légendes des planches (après réponse de Mala).
 6. **Import du kit dans WordPress `/dev`** — la prochaine étape visible pour Mala ; le kit est prêt (SEO, favicon, `import-seo.php`).
+
+## 6. Le fil de la conversation, dans l'ordre (12–16 septembre)
+*Ce que Mala a demandé, mot pour mot quand ça compte, et ce qui en est sorti.*
+
+1. **« montre-moi le verdict du conseil »** — premier conseil de dix départements sur l'accueil : deux gestes survivants, conclusion « ce qui reste ne se règle pas en CSS ».
+2. **« vas-y pour le balayage de Soigner sur les 24 pages … Oui on est neutre mais pas plate »** — `kit_soigner.py` : Soigner ne porte plus de lettres sur fond clair (78 textes à 2,4 → encre). Un premier correctif avait repeint 4 liens sur encre en invisible ; repris.
+3. **« relance la contre-épreuve des 26 constats restants » / « applique ce qui tient »** — appliqués ; anneau de focus corrigé après avoir découvert que `:where()` a une spécificité nulle (le correctif annoncé était inerte).
+4. **« Membres en règle … une voix sur l'accueil, je te fais confiance »** — `kit_repere.py` (« Reçus d'assurance »), `kit_voix.py` (citation de Yuv Baboolall — accord à confirmer).
+5. **« continue avec le SEO et le favicon … trouve un moyen de ne pas trop te perdre car tu bouffes l'ensemble des tokens »** — `kit_meta.py` (Rank Math, 14 pages), `kit_favicon.py` (anneau du O), mode éco-tokens.
+6. **« Fraunces 500 je ne sais pas lequel choisir »** — planche comparée, choix tenu.
+7. Envois de Mala : kit média v04, HTML du blogue, images + vidéo, **2023 / 2022 / 2021 / 2020.zip** (originaux du Journal). **« copier les treize fichiers depuis wp-content/uploads »**, **« 3. oui 1. je ne sais pas et je n'ai pas les photos »** — `medias_originaux.py` apparie 9 originaux sur 13 ; `srcset` ajouté (LCP 2 282 → 6 320 ms avec les originaux nus, ramené à 2 966 avec `srcset` + `imagesrcset`).
+8. **« envoie-moi le site complet à jour »** — fichier unique.
+9. **« vas-y pour les héros en widget image, tout ça devient drabe … Convoque le grand conseil, je suis perdu »** — héros convertis (`kit_heros.py`), grand conseil lancé (bug de jointure : aucun geste jugé ; corrigé).
+10. **« tu reviens encore sur les couleurs des écoles qui font partie de Soha Live … décroche de soha live »** — la règle. Conseil arrêté et reconvoqué sur la bonne question (route A / route B). Mesuré : 264 emplois du cyan d'une école ; 78 % des photos du 961 sont chaudes.
+11. **« montre moi le site ça fait 2 jours que tu sembles tourner pour arriver nulle part »** — artefact + fichier unique.
+12. **« fais le moi en html »** — fichier unique livré **avec toutes les photos cassées** (le `srcset` n'était pas embarqué) alors qu'une porte disait « 0 échec » : la porte comptait des caractères, pas des pixels. Corrigée, prouvée sur l'état cassé (26 défauts), relivrée.
+13. **« aucune intelligence, ce n'est que de l'IA bas de gamme … extrêmement décevant » / « Perte de deux jours » / « Utilise le grand conseil avec tous les départements et tous les skills et pour une fois sois digne d'une grande agence »** — workflow « grande agence » (brief, 12 départements, contre-épreuve, production, regard final).
+14. **« Continue en arrière-plan … et enlève-moi le voile sur les photos »** puis **« et bloque la barre de menu en haut lorsqu'on descend la page »** — voile retiré (dégradé sous le texte, puis cartel d'angle v07), surtitres en cartel, menu collé (la classe était sur le mauvais élément), porte du contraste élargie à tout texte sur photo.
+15. Le conseil a épuisé la session **trois fois** (10 h, 15 h, 20 h 10 UTC) — **« J'ai atteint ma limite … Veuillez continuer »** ×2, **« go »**. Résultat : brief (9/20), verdict de la couleur (route A), 7 spécifications de départements ; production faite à la main ensuite.
+16. **« montre-moi le verdict complet et le fichier quand c'est fini »** — `verdict-couleur.md` envoyé ; v02 → v05 livrées au fil des gestes (héros v07, hauteurs téléphone, focus, mouvement, cyan → 0, cibles 44 px, en-tête 63 px, fiches en liste, rythme v02), avec `NOTE-DE-LIVRAISON.md` et les deux fichiers de propositions.
+17. **« fais moi un résumé importable dans cowork »** → ce dossier ; **« tu as mis aussi les formats photos et le kit média »** → section 2 bis ; **« tu as tout mis le fil de la conversation »** → cette section.
